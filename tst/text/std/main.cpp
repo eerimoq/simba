@@ -70,7 +70,7 @@ static int test_sprintf(void)
     char buf[128];
     ssize_t size;
 
-    size = std_sprintf(buf,
+    size = std_sprintf(&buf[0],
                        FSTR("Normal:                '%c' '%d' '%lu' '%s'"),
                        'b', -43, 0xffffffffUL, "foo");
     std_printf(FSTR("%s\r\n"), buf);
@@ -79,7 +79,7 @@ static int test_sprintf(void)
               "Normal:                'b' '-43' '4294967295' 'foo'",
               size + 1);
 
-    size = std_sprintf(buf,
+    size = std_sprintf(&buf[0],
                        FSTR("Left justification:    '%-10c' '%-10d' '%-10lu' '%-10s'"),
                        'b', -43, 0xffffffffUL, "foo");
     BTASSERT(size == 74);
@@ -88,7 +88,7 @@ static int test_sprintf(void)
               "'4294967295' 'foo       '",
               size + 1);
 
-    size = std_sprintf(buf,
+    size = std_sprintf(&buf[0],
                        FSTR("Preceding with blanks: '%10c' '%10d' '%10lu' '%10s'"),
                        'b', -43, 0xffffffffUL, "foo");
     BTASSERT(size == 74);
@@ -97,7 +97,7 @@ static int test_sprintf(void)
               "'4294967295' '       foo'",
               size + 1);
 
-    size = std_sprintf(buf,
+    size = std_sprintf(&buf[0],
                        FSTR("Preceding with zeros:  '%010c' '%010d' '%010lu' '%010s'"),
                        'b', -43, 0xffffffffUL, "foo");
     BTASSERT(size == 74);
@@ -106,35 +106,35 @@ static int test_sprintf(void)
               "'4294967295' '0000000foo'",
               size + 1);
 
-    size = std_sprintf(buf, FSTR("Bad format: %g %"));
+    size = std_sprintf(&buf[0], FSTR("Bad format: %g %"));
     BTASSERT(size == 14);
     BTASSERTM(&buf[0], "Bad format: g ", size + 1);
 
-    size = std_sprintf(buf, FSTR("INT_MAX %%i: %i"), 0xffffffffL);
+    size = std_sprintf(&buf[0], FSTR("INT_MAX %%i: %i"), 0xffffffffL);
     BTASSERT(size == 14);
     BTASSERTM(&buf[0], "INT_MAX %i: -1", size + 1);
 
-    size = std_sprintf(buf, FSTR("INT_MAX %%d: %d"), 0xffffffffL);
+    size = std_sprintf(&buf[0], FSTR("INT_MAX %%d: %d"), 0xffffffffL);
     BTASSERT(size == 14);
     BTASSERTM(&buf[0], "INT_MAX %d: -1", size + 1);
 
-    size = std_sprintf(buf, FSTR("INT_MAX %%lu: %lu"), 0xffffffffL);
+    size = std_sprintf(&buf[0], FSTR("INT_MAX %%lu: %lu"), 0xffffffffL);
     BTASSERT(size == 23);
     BTASSERTM(&buf[0], "INT_MAX %lu: 4294967295", size + 1);
 
-    size = std_sprintf(buf, FSTR("INT_MAX %%lx: %lx"), 0xffffffffL);
+    size = std_sprintf(&buf[0], FSTR("INT_MAX %%lx: %lx"), 0xffffffffL);
     BTASSERT(size == 21);
     BTASSERTM(&buf[0], "INT_MAX %lx: ffffffff", size + 1);
 
-    size = std_sprintf(buf, FSTR("NULL string: %s"), NULL);
+    size = std_sprintf(&buf[0], FSTR("NULL string: %s"), NULL);
     BTASSERTM(&buf[0], "NULL string: (null)", size + 1);
 
 #ifdef ARCH_LINUX
-    size = std_sprintf(buf, FSTR("Big unsigned:          '%u'"), 0xffffffffU);
+    size = std_sprintf(&buf[0], FSTR("Big unsigned:          '%u'"), 0xffffffffU);
     BTASSERT(size == 35);
     BTASSERTM("Big unsigned:          '4294967295'", &buf[0], size + 1);
 #else
-    size = std_sprintf(buf, FSTR("Big unsigned:          '%u'"), 0xffffU);
+    size = std_sprintf(&buf[0], FSTR("Big unsigned:          '%u'"), 0xffffU);
     BTASSERT(size == 30);
     BTASSERTM("Big unsigned:          '65535'", &buf[0], size + 1);
 #endif
@@ -146,13 +146,26 @@ static int test_snprintf(void)
 {
     char buf[128];
 
-    BTASSERT(std_snprintf(buf, sizeof(buf), FSTR("foo")) == 3);
+    BTASSERT(std_snprintf(&buf[0], sizeof(buf), FSTR("foo")) == 3);
+    BTASSERTM(&buf[0], "foo", 4);
+
+    BTASSERT(std_snprintf(&buf[0], 4, FSTR("foo")) == 3);
     BTASSERTM(&buf[0], "foo", 4);
 
     /* Destination buffer too small. */
-    memset(buf, -1, sizeof(buf));
-    BTASSERT(std_snprintf(buf, 2, FSTR("foo")) == 3);
-    BTASSERTM(&buf[0], "fo\xff", 3);
+    memset(&buf[0], -1, sizeof(buf));
+    BTASSERT(std_snprintf(&buf[0], 2, FSTR("foo")) == -ENOMEM);
+    BTASSERTM(&buf[0], "f\x00\xff", 3);
+
+    /* Destination buffer too small. */
+    memset(&buf[0], -1, sizeof(buf));
+    BTASSERT(std_snprintf(&buf[0], 3, FSTR("foo")) == -ENOMEM);
+    BTASSERTM(&buf[0], "fo", 3);
+
+    /* Destination buffer too small. */
+    memset(&buf[0], -1, sizeof(buf));
+    BTASSERT(std_snprintf(&buf[0], 3, FSTR("foobar")) == -ENOMEM);
+    BTASSERTM(&buf[0], "fo", 3);
 
     return (0);
 }
@@ -192,7 +205,7 @@ static int test_sprintf_double(void)
               size + 1);
 #endif
 
-    BTASSERT((size = std_sprintf(buf,
+    BTASSERT((size = std_sprintf(&buf[0],
                                  FSTR("Left justification:    '%-12f' '%-12f'"),
                                  10.5f, -37.731)) == 52);
     BTASSERT(size == 52);
@@ -206,7 +219,7 @@ static int test_sprintf_double(void)
               size + 1);
 #endif
 
-    size = std_sprintf(buf,
+    size = std_sprintf(&buf[0],
                        FSTR("Preceding with blanks: '%12f' '%12f'"),
                        10.5f, -37.731);
     BTASSERT(size == 52);
@@ -220,7 +233,7 @@ static int test_sprintf_double(void)
               size + 1);
 #endif
 
-    size = std_sprintf(buf,
+    size = std_sprintf(&buf[0],
                        FSTR("Preceding with zeros:  '%012f' '%012f'"),
                        10.5f, -37.731);
     BTASSERT(size == 52);
@@ -391,13 +404,13 @@ static int test_strcpy(void)
 {
     char buf[16];
 
-    BTASSERT(std_strcpy(buf, FSTR("foo")) == 3);
+    BTASSERT(std_strcpy(&buf[0], FSTR("foo")) == 3);
     BTASSERT(buf[0] == 'f');
     BTASSERT(buf[1] == 'o');
     BTASSERT(buf[2] == 'o');
     BTASSERT(buf[3] == '\0');
 
-    BTASSERT(std_strcpy(buf, FSTR("")) == 0);
+    BTASSERT(std_strcpy(&buf[0], FSTR("")) == 0);
     BTASSERT(buf[0] == '\0');
 
     return (0);
@@ -438,26 +451,26 @@ static int test_strip(void)
     char *expected_p;
 
     /* Leading whitespace characters. */
-    strcpy(buf, leading_whitespace);
+    strcpy(&buf[0], leading_whitespace);
     expected_p = &buf[2];
-    BTASSERT(std_strip(buf, NULL) == expected_p);
+    BTASSERT(std_strip(&buf[0], NULL) == expected_p);
 
     /* Trailing whitespace characters. */
-    strcpy(buf, trailing_whitespace);
+    strcpy(&buf[0], trailing_whitespace);
     expected_p = buf;
-    BTASSERT(std_strip(buf, NULL) == expected_p);
+    BTASSERT(std_strip(&buf[0], NULL) == expected_p);
     BTASSERT(buf[3] == '\0');
 
     /* Empty string. */
-    strcpy(buf, empty_string);
+    strcpy(&buf[0], empty_string);
     expected_p = buf;
-    BTASSERT(std_strip(buf, NULL) == expected_p);
+    BTASSERT(std_strip(&buf[0], NULL) == expected_p);
     BTASSERT(buf[0] == '\0');
 
     /* Strip chosen character set. */
-    strcpy(buf, leading_and_trailing_abc_string);
+    strcpy(&buf[0], leading_and_trailing_abc_string);
     expected_p = &buf[3];
-    BTASSERT(std_strip(buf, "xyzabc") == expected_p);
+    BTASSERT(std_strip(&buf[0], "xyzabc") == expected_p);
     BTASSERT(buf[6] == '\0');
 
     return (0);
@@ -672,9 +685,9 @@ static int test_printf_isr(void)
     struct timer_t timer;
     struct queue_t queue;
     uint8_t buf[64];
-    
+
     queue_init(&queue, &buf[0], sizeof(buf));
-    
+
     timeout.seconds = 0;
     timeout.nanoseconds = 1;
 
@@ -688,7 +701,7 @@ static int test_printf_isr(void)
     BTASSERTI(harness_expect(&queue,
                              "std_fprintf_isr(): 2\r\n",
                              NULL), ==, 22);
-    
+
     return (0);
 }
 

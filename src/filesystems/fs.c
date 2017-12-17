@@ -843,7 +843,7 @@ static int ls_spiffs(struct spiffs_t *fs_p,
 static int create_absolute_path(char *dst_p,
                                 const char *path_p)
 {
-    int size;
+    ssize_t res;
     const char *cwd_p;
     const char *slash_p;
 
@@ -863,14 +863,14 @@ static int create_absolute_path(char *dst_p,
         }
     }
 
-    size = std_snprintf(dst_p,
-                        CONFIG_FS_PATH_MAX,
-                        FSTR("%s%s%s"),
-                        cwd_p,
-                        slash_p,
-                        path_p);
+    res = std_snprintf(dst_p,
+                       CONFIG_FS_PATH_MAX,
+                       FSTR("%s%s%s"),
+                       cwd_p,
+                       slash_p,
+                       path_p);
 
-    return (size < CONFIG_FS_PATH_MAX ? 0 : -1);
+    return (res < 0 ? res : 0);
 }
 
 int file_open_null(struct fs_filesystem_t *filesystem_p,

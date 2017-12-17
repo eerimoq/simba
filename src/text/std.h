@@ -69,7 +69,7 @@ int std_module_init(void);
  * @param[in] ... Variable arguments list.
  *
  * @return Length of the string written to the destination buffer, not
- *         inclusing the null termination, or negative error code.
+ *         including the null termination, or negative error code.
  */
 ssize_t std_sprintf(char *dst_p, far_string_t fmt_p, ...);
 
@@ -84,7 +84,9 @@ ssize_t std_sprintf(char *dst_p, far_string_t fmt_p, ...);
  * @param[in] ... Variable arguments list.
  *
  * @return Length of the string written to the destination buffer, not
- *         inclusing the null termination, or negative error code.
+ *         including the null termination, -ENOMEM if the string does
+ *         not fit in the destination buffer, or other negative error
+ *         code.
  */
 ssize_t std_snprintf(char *dst_p,
                      size_t size,
@@ -101,7 +103,7 @@ ssize_t std_snprintf(char *dst_p,
  * @param[in] ap_p Variable arguments list.
  *
  * @return Length of the string written to the destination buffer, not
- *         inclusing the null termination, or negative error code.
+ *         including the null termination, or negative error code.
  */
 ssize_t std_vsprintf(char *dst_p, far_string_t fmt_p, va_list *ap_p);
 
@@ -116,7 +118,9 @@ ssize_t std_vsprintf(char *dst_p, far_string_t fmt_p, va_list *ap_p);
  * @param[in] ap_p Variable arguments list.
  *
  * @return Length of the string written to the destination buffer, not
- *         inclusing the null termination, or negative error code.
+ *         including the null termination, -ENOMEM if the string does
+ *         not fit in the destination buffer, or other negative error
+ *         code.
  */
 ssize_t std_vsnprintf(char *dst_p, size_t size, far_string_t fmt_p, va_list *ap_p);
 

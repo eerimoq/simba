@@ -517,6 +517,13 @@ ssize_t std_vsnprintf(char *dst_p,
     vcprintf(snprintf_putc, &output, fmt_p, ap_p);
     snprintf_putc('\0', &output);
 
+    /* Force the string to be NULL terminated. */
+    dst_p[size - 1] = '\0';
+
+    if (output.size > size) {
+        return (-ENOMEM);
+    }
+
     return (output.size - 1);
 }
 
