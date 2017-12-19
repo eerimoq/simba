@@ -433,6 +433,12 @@
 /** Resource not mounted. */
 #define ENOTMOUNTED    1004
 
+/** Key not found. */
+#define EKEYNOTFOUND   1005
+
+/** Bad value. */
+#define EBADVALUE      1006
+
 /**
  * Map given error number to a string.
  *

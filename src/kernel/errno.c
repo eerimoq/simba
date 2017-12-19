@@ -294,12 +294,18 @@ static FAR const char estack_string[] = "Stack corrupt";
 static FAR const char ebtassert_string[] = "Test assertion";
 static FAR const char eassert_string[] = "Assertion";
 static FAR const char enocommand_string[] = "Command not found";
+static FAR const char enotmounted_string[] = "Resource not mounted";
+static FAR const char ekeynotfound_string[] = "Key not found";
+static FAR const char ebadvalue_string[] = "Bad value";
 
 static FAR const char *FAR const simba_strings[] = {
     estack_string,
     ebtassert_string,
     eassert_string,
     enocommand_string,
+    enotmounted_string,
+    ekeynotfound_string,
+    ebadvalue_string
 };
 
 far_string_t errno_as_string(int errno)
@@ -310,7 +316,7 @@ far_string_t errno_as_string(int errno)
 
     if ((errno >= EPERM) && (errno <= EKEYREJECTED)) {
         return strings[errno - EPERM];
-    } else if ((errno >= ESTACK) && (errno <= ENOCOMMAND)) {
+    } else if ((errno >= ESTACK) && (errno <= EBADVALUE)) {
         return simba_strings[errno - ESTACK];
     } else {
         return (NULL);

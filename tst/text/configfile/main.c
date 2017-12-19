@@ -43,8 +43,8 @@ static int test_get_colon(void)
 
     /* Get the value of property 'milk' in section 'shopping list'. */
     BTASSERT(configfile_get(&configfile,
-                            "shopping list", 
-                            "milk", 
+                            "shopping list",
+                            "milk",
                             value,
                             sizeof(value)) == &value[0]);
     BTASSERT(strcmp(&value[0], "3") == 0);
@@ -90,8 +90,8 @@ static int test_get_equal_sign(void)
 
     /* Get the value of property 'milk' in section 'shopping list'. */
     BTASSERT(configfile_get(&configfile,
-                            "shopping list", 
-                            "milk", 
+                            "shopping list",
+                            "milk",
                             value,
                             sizeof(value)) == &value[0]);
     BTASSERT(strcmp(&value[0], "3") == 0);
@@ -113,31 +113,31 @@ static int test_get_long(void)
 
     /* Get the value of property 'positive' in section 'numbers'. */
     BTASSERT(configfile_get_long(&configfile,
-                                 "numbers", 
-                                 "positive", 
+                                 "numbers",
+                                 "positive",
                                  &value) == 0);
     BTASSERT(value == 3);
 
     /* Get the value of property 'negative' in section 'numbers'. */
     BTASSERT(configfile_get_long(&configfile,
-                                 "numbers", 
-                                 "negative", 
+                                 "numbers",
+                                 "negative",
                                  &value) == 0);
     BTASSERT(value == -54);
 
     /* Get the value of property 'NaN' in section 'numbers'. Fails
        since "NaN" is not an integer. */
     BTASSERT(configfile_get_long(&configfile,
-                                 "numbers", 
-                                 "NaN", 
-                                 &value) == -1);
+                                 "numbers",
+                                 "NaN",
+                                 &value) == -EBADVALUE);
 
     /* Get the value of property 'missing' in section 'numbers'. Fails
        since the property is missing. */
     BTASSERT(configfile_get_long(&configfile,
-                                 "numbers", 
-                                 "missing", 
-                                 &value) == -1);
+                                 "numbers",
+                                 "missing",
+                                 &value) == -EKEYNOTFOUND);
 
     return (0);
 }
@@ -157,38 +157,38 @@ static int test_get_float(void)
 
     /* Get the value of property 'positive' in section 'numbers'. */
     BTASSERT(configfile_get_float(&configfile,
-                                  "numbers", 
-                                  "positive", 
+                                  "numbers",
+                                  "positive",
                                   &value) == 0);
     BTASSERT(value == 3.0f);
 
     /* Get the value of property 'negative' in section 'numbers'. */
     BTASSERT(configfile_get_float(&configfile,
-                                  "numbers", 
-                                  "negative", 
+                                  "numbers",
+                                  "negative",
                                   &value) == 0);
     BTASSERT(value == -54.5f);
 
     /* Get the value of property 'NaN' in section 'numbers'. Fails
        since "NaN" is not an integer. */
     BTASSERT(configfile_get_float(&configfile,
-                                  "numbers", 
-                                  "NaN", 
-                                  &value) == -1);
+                                  "numbers",
+                                  "NaN",
+                                  &value) == -EBADVALUE);
 
     /* Get the value of property 'NaN2' in section 'numbers'. Fails
        since "NaN2" is not an integer. */
     BTASSERT(configfile_get_float(&configfile,
-                                  "numbers", 
-                                  "NaN2", 
-                                  &value) == -1);
+                                  "numbers",
+                                  "NaN2",
+                                  &value) == -EBADVALUE);
 
     /* Get the value of property 'missing' in section 'numbers'. Fails
        since the property is missing. */
     BTASSERT(configfile_get_float(&configfile,
-                                  "numbers", 
-                                  "missing", 
-                                  &value) == -1);
+                                  "numbers",
+                                  "missing",
+                                  &value) == -EKEYNOTFOUND);
 
     return (0);
 }
@@ -208,8 +208,8 @@ static int test_get_line_termination(void)
 
     /* Get the value of property 'milk' in section 'shopping list'. */
     BTASSERT(configfile_get(&configfile,
-                            "shopping list", 
-                            "milk", 
+                            "shopping list",
+                            "milk",
                             value,
                             sizeof(value)) == &value[0]);
     BTASSERT(strcmp(&value[0], "3") == 0);
@@ -243,8 +243,8 @@ static int test_get_null_after_section(void)
 
     /* Get the value of property 'milk' in section 'shopping list'. */
     BTASSERT(configfile_get(&configfile,
-                            "shopping list", 
-                            "milk", 
+                            "shopping list",
+                            "milk",
                             value,
                             sizeof(value)) == NULL);
 
@@ -261,8 +261,8 @@ static int test_get_missing_section_termination(void)
 
     /* Get the value of property 'milk' in section 'shopping list'. */
     BTASSERT(configfile_get(&configfile,
-                            "shopping list", 
-                            "milk", 
+                            "shopping list",
+                            "milk",
                             value,
                             sizeof(value)) == NULL);
 
@@ -284,8 +284,8 @@ static int test_get_comments(void)
     /* Get the value of property 'milk' in section 'shopping
        list'. Finds nothing since the milk line is a coment.*/
     BTASSERT(configfile_get(&configfile,
-                            "shopping list", 
-                            "milk", 
+                            "shopping list",
+                            "milk",
                             value,
                             sizeof(value)) == NULL);
 
@@ -314,8 +314,8 @@ static int test_get_whitespace(void)
 
     /* Get the value of property 'milk' in section 'shopping list'. */
     BTASSERT(configfile_get(&configfile,
-                            "shopping list", 
-                            "milk", 
+                            "shopping list",
+                            "milk",
                             value,
                             sizeof(value)) == &value[0]);
     BTASSERT(strcmp(&value[0], "3") == 0);
@@ -380,20 +380,18 @@ static int test_set(void)
     memset(buf, '\0', sizeof(buf));
     BTASSERT(configfile_init(&configfile, buf, sizeof(buf)) == 0);
 
-#if 0
-
     /* Set the value of property 'milk' in section 'shopping list'. */
-    BTASSERT(configfile_set(&configfile, "shopping list", "milk", "2") == 0);
+    BTASSERT(configfile_set(&configfile, "shopping list", "milk", "2") == -ENOSYS);
 
     /* Set the value of property 'cheese' in section 'shopping
        list'. */
-    BTASSERT(configfile_set(&configfile, "shopping list", "cheese", "brie") == 0);
+    BTASSERT(configfile_set(&configfile, "shopping list", "cheese", "brie") == -ENOSYS);
 
     /* Set the value of property 'skirt' in section 'clothes'. */
-    BTASSERT(configfile_set(&configfile, "clothes", "skirt", "1") == 0);
+    BTASSERT(configfile_set(&configfile, "clothes", "skirt", "1") == -ENOSYS);
 
     /* No room left in the buffer for another property. */
-    BTASSERT(configfile_set(&configfile, "clothes", "pants", "2") == -1);
+    BTASSERT(configfile_set(&configfile, "clothes", "pants", "2") == -ENOSYS);
 
     BTASSERT(memcmp(buf,
                     "[shopping list]\r\n"
@@ -401,9 +399,7 @@ static int test_set(void)
                     "cheese: brie\r\n"
                     "[clothes]\r\n"
                     "skirt: 1\r\n",
-                    66) == 0);
-
-#endif
+                    66) != 0);
 
     return (0);
 }
@@ -412,7 +408,7 @@ static int test_set(void)
 static int test_get_complex(void)
 {
     struct configfile_t configfile;
-    char buf[] = 
+    char buf[] =
         "; last modified 1 April 2001 by John Doe\n"
         "[owner]\n"
         "name = John Doe\n"
@@ -430,8 +426,8 @@ static int test_get_complex(void)
 
     /* owner -> name. */
     BTASSERT(configfile_get(&configfile,
-                            "owner", 
-                            "name", 
+                            "owner",
+                            "name",
                             value,
                             sizeof(value)) == &value[0]);
     BTASSERT(strcmp(&value[0], "John Doe") == 0);
@@ -468,7 +464,7 @@ static int test_get_complex(void)
     BTASSERT(strcmp(&value[0], "\"payroll.dat\"") == 0);
 
     return (0);
-}         
+}
 
 int main()
 {
