@@ -174,6 +174,7 @@ def parse_args(args, comment):
             sys.exit("Invalid argument '{}'.".format(arg))
 
         type_, name = mo.groups()
+        name = re.escape(name)
         mo = re.search(r'\[(\w+)\]\s+{}\s'.format(name),
                        comment,
                        re.DOTALL)
