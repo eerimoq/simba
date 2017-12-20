@@ -347,11 +347,11 @@ int test_errno(void)
 
     BTASSERT(std_strcmp("Stack corrupt",
                         errno_as_string(ESTACK)) == 0);
-    BTASSERT(std_strcmp("Command not found",
-                        errno_as_string(ENOCOMMAND)) == 0);
+    BTASSERT(std_strcmp("Bad value",
+                        errno_as_string(EBADVALUE)) == 0);
 
     BTASSERT(errno_as_string(ESTACK - 1) == NULL);
-    BTASSERT(errno_as_string(ENOCOMMAND + 1) == NULL);
+    BTASSERT(errno_as_string(EBADVALUE + 1) == NULL);
 
     return (0);
 }
