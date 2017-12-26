@@ -250,31 +250,31 @@ static void thrd_reschedule(void)
 
 static void thrd_fill_pattern(char *from_p, size_t size)
 {
-  size_t i;
+    size_t i;
 
-  for (i = 0; i < size; i++) {
-    from_p[i] = THRD_FILL_PATTERN;
-  }
+    for (i = 0; i < size; i++) {
+        from_p[i] = THRD_FILL_PATTERN;
+    }
 }
 
 #if CONFIG_THRD_FS_COMMANDS == 1
 
 static int thrd_get_used_stack(struct thrd_t *thrd_p)
 {
-  char *stack_p;
-  size_t i;
+    char *stack_p;
+    size_t i;
 
-  stack_p = (char *)&thrd_p[1];
-  i = 0;
+    stack_p = (char *)&thrd_p[1];
+    i = 0;
 
-  /* Stack grows towards lower memory addresses, so start from the
-     bottom.*/
-  while ((i < thrd_p->stack_size) &&
-         (stack_p[i] == THRD_FILL_PATTERN)) {
-      i++;
-  }
+    /* Stack grows towards lower memory addresses, so start from the
+       bottom.*/
+    while ((i < thrd_p->stack_size) &&
+           (stack_p[i] == THRD_FILL_PATTERN)) {
+        i++;
+    }
 
-  return (thrd_p->stack_size - i);
+    return (thrd_p->stack_size - i);
 }
 
 #endif
