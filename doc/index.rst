@@ -42,7 +42,6 @@ are available on the :doc:`videos` page.
    library-reference
    license
    videos
-   Forum <http://forum.simbaos.org>
    links
 
 Features

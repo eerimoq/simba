@@ -40,8 +40,6 @@ Need help?
 
 #. Have a look at the `Simba documentation`_. It's actually pretty good. =)
 
-#. Visit the `Simba forum`_.
-
 #. Write an issue here on GitHub.
 
 
@@ -86,4 +84,3 @@ may have other licenses. Most third party code is placed in the
 .. _Arduino IDE: https://www.arduino.cc/en/Main/Software
 .. _Simba installation documentation: http://simba-os.readthedocs.io/en/latest/getting-started.html#arduino-arduino-ide
 .. _Simba documentation: http://simba-os.readthedocs.io/en/latest
-.. _Simba forum: http://forum.simbaos.org
