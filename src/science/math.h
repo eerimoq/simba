@@ -3,6 +3,7 @@
  *
  * The MIT License (MIT)
  *
+ * Copyright (c) 2015 Dan Moulding (logarithms)
  * Copyright (c) 2017-2018, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
@@ -52,5 +53,41 @@ float math_radians_to_degrees(float value);
  * @return Angle in radians, or NaN if an error occurred.
  */
 float math_degrees_to_radians(float value);
+
+/**
+ * Calculate the 2-logarithm of given value in given fixed point
+ * precision.
+ *
+ * @param[in] x Value to calculate the 2-logarithm of.
+ * @param[in] precision Fixed point precision in the range 1 to 31,
+ *                      inclusive.
+ *
+ * @return 2-logarithm of given value x, in given precision.
+ */
+int32_t math_log2_fixed_point(uint32_t x, int precision);
+
+/**
+ * Calculate the natural logarithm of given value in given fixed point
+ * precision.
+ *
+ * @param[in] x Value to calculate the natural logarithm of.
+ * @param[in] precision Fixed point precision in the range 1 to 31,
+ *                      inclusive.
+ *
+ * @return Natural logarithm of given value x, in given precision.
+ */
+int32_t math_ln_fixed_point(uint32_t x, int precision);
+
+/**
+ * Calculate the 10-logarithm of given value in given fixed point
+ * precision.
+ *
+ * @param[in] x Value to calculate the 10-logarithm of.
+ * @param[in] precision Fixed point precision in the range 1 to 31,
+ *                      inclusive.
+ *
+ * @return 10-logarithm of given value x, in given precision.
+ */
+int32_t math_log10_fixed_point(uint32_t x, int precision);
 
 #endif
