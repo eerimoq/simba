@@ -182,14 +182,17 @@ void RAM_CODE timer_high_resolution_isr(void)
 
     sys_lock_isr();
 
-    /* Start the next timer, if any. */
-    if (list_p->head_p->next_p != &list_p->tail) {
-        timer_port_high_resolution_start_isr(list_p->head_p->next_p);
+    /* Remove the timer from the list. */
+    timer_p = list_p->head_p;
+    list_p->head_p = timer_p->next_p;
+
+    /* Start the next timer before calling the callback for higher
+       accuracy, if any. */
+    if (list_p->head_p != &list_p->tail) {
+        timer_port_high_resolution_start_isr(list_p->head_p);
     }
 
     /* Fire the expired timer.*/
-    timer_p = list_p->head_p;
-    list_p->head_p = timer_p->next_p;
     timer_p->callback(timer_p->arg_p);
 
     sys_unlock_isr();
@@ -218,16 +221,16 @@ int timer_init(struct timer_t *self_p,
         self_p->timeout = 1;
     }
 
-    if ((flags & TIMER_HIGH_RESOLUTION)
-        || ((self_p->timeout <= 1)
-            && ((flags & TIMER_PERIODIC) == 0))) {
-        res = timer_port_high_resolution_init(self_p,
-                                              timeout_p);
+    if ((flags & TIMER_PERIODIC) == 0) {
+        if ((self_p->timeout <= 1) || (flags & TIMER_HIGH_RESOLUTION)) {
+            res = timer_port_high_resolution_init(self_p,
+                                                  timeout_p);
 
-        if (res == 0) {
-            flags |= TIMER_HIGH_RESOLUTION;
-        } else {
-            flags &= ~TIMER_HIGH_RESOLUTION;
+            if (res == 0) {
+                flags |= TIMER_HIGH_RESOLUTION;
+            } else {
+                flags &= ~TIMER_HIGH_RESOLUTION;
+            }
         }
     }
 
