@@ -30,7 +30,6 @@
 
 #include "simba.h"
 
-static struct thrd_t *thrd_p;
 struct event_t event;
 
 static void callback(void *arg_p)
@@ -60,8 +59,6 @@ int test_single_shot(void)
                         callback,
                         &callback_mask,
                         0) == 0);
-
-    thrd_p = thrd_self();
 
     /* Start the timer 3 ms into the 10 ms system tick. */
     thrd_sleep_ms(20);
@@ -109,8 +106,6 @@ int test_single_shot_high_resolution(void)
                         &callback_mask,
                         TIMER_HIGH_RESOLUTION) == 0);
 
-    thrd_p = thrd_self();
-
     sys_uptime(&start);
 
     BTASSERT(timer_start(&timer) == 0);
@@ -153,8 +148,6 @@ int test_single_shot_short_timeout(void)
                         &callback_mask,
                         0) == 0);
 
-    thrd_p = thrd_self();
-
     sys_uptime(&start);
 
     BTASSERT(timer_start(&timer) == 0);
@@ -194,7 +187,6 @@ int test_periodic(void)
 
     event_init(&event);
     callback_mask = 0x1;
-    thrd_p = thrd_self();
 
     /* Periodic timer. */
     std_printf(FSTR("Starting a periodic timer with 100 ms period.\r\n"));
@@ -248,7 +240,6 @@ int test_multiple_timers(void)
     };
 
     event_init(&event);
-    thrd_p = thrd_self();
 
     /* Periodic timers. */
     for (i = 0; i < membersof(timers); i++) {
