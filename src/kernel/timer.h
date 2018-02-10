@@ -43,8 +43,8 @@
 #define TIMER_PERIODIC        (1 << 0)
 
 /**
- * Force the timer to have high resolution, if supported by selected
- * port.
+ * High resolution timer, if supported by selected port. May not be
+ * combined with TIMER_PERIODIC.
  */
 #define TIMER_HIGH_RESOLUTION (1 << 1)
 
@@ -86,11 +86,9 @@ int timer_module_init(void);
  *                     from interrupt context.
  * @param[in] arg_p Function callback argument. Passed to the callback
  *                  when the timer expires.
-
  * @param[in] flags Set TIMER_PERIODIC for periodic timer. Set
- *                  TIMER_HIGH_RESOLUTION for high resolution
- *                  timer. High resolution timers cannot be
- *                  periodic.
+ *                  TIMER_HIGH_RESOLUTION for high resolution timer. A
+ *                  high resolution timer cannot be periodic.
  *
  * @return zero(0) or negative error code.
  */
