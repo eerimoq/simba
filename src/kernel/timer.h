@@ -48,7 +48,7 @@
  */
 #define TIMER_HIGH_RESOLUTION (1 << 1)
 
-/** Time callback prototype. */
+/** Timer callback prototype. */
 typedef void (*timer_callback_t)(void *arg_p);
 
 /* Timer. */
