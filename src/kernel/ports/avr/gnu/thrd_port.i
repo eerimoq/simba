@@ -184,11 +184,10 @@ static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
 
 static const void *thrd_port_get_bottom_of_stack(struct thrd_t *thrd_p)
 {
-    char dummy;
     const void *bottom_p;
 
     if (thrd_p == thrd_self()) {
-        bottom_p = (const void *)&dummy;
+        bottom_p = __builtin_frame_address(0);
     } else {
         sys_lock();
         bottom_p = thrd_p->port.context_p;

@@ -426,7 +426,7 @@ int thrd_stack_free(void *stack_p);
  * Get the pointer to given threads' bottom of stack.
  *
  * @return The pointer to given threds' bottom of stack, or NULL on
- * error.
+ *         error.
  */
 const void *thrd_get_bottom_of_stack(struct thrd_t *thrd_p);
 
@@ -434,7 +434,7 @@ const void *thrd_get_bottom_of_stack(struct thrd_t *thrd_p);
  * Get the pointer to given threads' top of stack.
  *
  * @return The pointer to given threds' top of stack, or NULL on
- * error.
+ *         error.
  */
 const void *thrd_get_top_of_stack(struct thrd_t *thrd_p);
 
