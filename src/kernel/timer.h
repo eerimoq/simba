@@ -77,7 +77,7 @@ int timer_module_init(void);
  * callback. The timer resolution directly depends on the system tick
  * frequency and is rounded up to the closest possible value. This
  * applies to both single shot and periodic timers. Some ports support
- * high resolution single shot timers which often have higher
+ * high resolution single shot timers, which often have higher
  * resolution than the system tick.
  *
  * @param[in] self_p Timer object to initialize with given parameters.

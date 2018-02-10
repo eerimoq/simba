@@ -12,8 +12,8 @@ The timeout resolution is the system tick period. Timeouts are always
 rounded up to the closest system tick. That is, a timer can never
 expire early, but may expire slightly late.
 
-An application requiring timers with higher precision than the system
-tick must use the hardware timers.
+Some ports support high resolution single shot timers, which often
+have higher resolution than the system tick.
 
 ----------------------------------------------
 
