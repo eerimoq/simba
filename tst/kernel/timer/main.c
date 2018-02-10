@@ -55,14 +55,16 @@ int test_single_shot(void)
 
     event_init(&event);
     callback_mask = 0x1;
-    BTASSERT(timer_init(&timer, &timeout, callback, &callback_mask, 0) == 0);
+    BTASSERT(timer_init(&timer,
+                        &timeout,
+                        callback,
+                        &callback_mask,
+                        0) == 0);
 
     thrd_p = thrd_self();
 
-    std_printf(OSTR("timer.timeout: %d\r\n"), timer.timeout);
-
     /* Start the timer 3 ms into the 10 ms system tick. */
-    thrd_sleep_ms(1);
+    thrd_sleep_ms(20);
     time_busy_wait_us(3000);
     sys_uptime(&start);
 
@@ -80,6 +82,94 @@ int test_single_shot(void)
     std_printf(OSTR("Elapsed:  %lu %lu\r\n"), elapsed.seconds, elapsed.nanoseconds);
 
     BTASSERTI(elapsed.nanoseconds, >=, 100000000);
+
+    /* Not necessary to stop an expired timer, but should still
+       work. */
+    BTASSERT(timer_stop(&timer) == 0);
+
+    return (0);
+}
+
+int test_single_shot_high_resolution(void)
+{
+    uint32_t mask;
+    uint32_t callback_mask;
+    struct timer_t timer;
+    struct time_t timeout = {
+        .seconds = 0,
+        .nanoseconds = 100000000
+    };
+    struct time_t start, stop, elapsed;
+
+    event_init(&event);
+    callback_mask = 0x1;
+    BTASSERT(timer_init(&timer,
+                        &timeout,
+                        callback,
+                        &callback_mask,
+                        TIMER_HIGH_RESOLUTION) == 0);
+
+    thrd_p = thrd_self();
+
+    sys_uptime(&start);
+
+    BTASSERT(timer_start(&timer) == 0);
+
+    mask = 0x1;
+    event_read(&event, &mask, sizeof(mask));
+
+    BTASSERT(sys_uptime(&stop) == 0);
+    BTASSERT(time_subtract(&elapsed, &stop, &start) == 0);
+
+    std_printf(OSTR("Start:    %lu %lu\r\n"), start.seconds, start.nanoseconds);
+    std_printf(OSTR("Stop:     %lu %lu\r\n"), stop.seconds, stop.nanoseconds);
+    std_printf(OSTR("Elapsed:  %lu %lu\r\n"), elapsed.seconds, elapsed.nanoseconds);
+
+    BTASSERTI(elapsed.nanoseconds, >=, 100000);
+
+    /* Not necessary to stop an expired timer, but should still
+       work. */
+    BTASSERT(timer_stop(&timer) == 0);
+
+    return (0);
+}
+
+int test_single_shot_short_timeout(void)
+{
+    uint32_t mask;
+    uint32_t callback_mask;
+    struct timer_t timer;
+    struct time_t timeout = {
+        .seconds = 0,
+        .nanoseconds = 100000
+    };
+    struct time_t start, stop, elapsed;
+
+    event_init(&event);
+    callback_mask = 0x1;
+    BTASSERT(timer_init(&timer,
+                        &timeout,
+                        callback,
+                        &callback_mask,
+                        0) == 0);
+
+    thrd_p = thrd_self();
+
+    sys_uptime(&start);
+
+    BTASSERT(timer_start(&timer) == 0);
+
+    mask = 0x1;
+    event_read(&event, &mask, sizeof(mask));
+
+    BTASSERT(sys_uptime(&stop) == 0);
+    BTASSERT(time_subtract(&elapsed, &stop, &start) == 0);
+
+    std_printf(OSTR("Start:    %lu %lu\r\n"), start.seconds, start.nanoseconds);
+    std_printf(OSTR("Stop:     %lu %lu\r\n"), stop.seconds, stop.nanoseconds);
+    std_printf(OSTR("Elapsed:  %lu %lu\r\n"), elapsed.seconds, elapsed.nanoseconds);
+
+    BTASSERTI(elapsed.nanoseconds, >=, 100000);
 
     /* Not necessary to stop an expired timer, but should still
        work. */
@@ -211,6 +301,8 @@ int main()
 {
     struct harness_testcase_t testcases[] = {
         { test_single_shot, "test_single_shot" },
+        { test_single_shot_high_resolution, "test_single_shot_high_resolution" },
+        { test_single_shot_short_timeout, "test_single_shot_short_timeout" },
         { test_periodic, "test_periodic" },
 #if !defined(BOARD_ARDUINO_NANO) && !defined(BOARD_ARDUINO_UNO) && !defined(BOARD_ARDUINO_PRO_MICRO)
         { test_multiple_timers, "test_multiple_timers" },

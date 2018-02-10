@@ -221,15 +221,15 @@ int timer_init(struct timer_t *self_p,
         self_p->timeout = 1;
     }
 
-    if ((flags & TIMER_PERIODIC) == 0) {
-        if ((self_p->timeout <= 1) || (flags & TIMER_HIGH_RESOLUTION)) {
+    if ((self_p->timeout <= 1) || (flags & TIMER_HIGH_RESOLUTION)) {
+        flags &= ~TIMER_HIGH_RESOLUTION;
+
+        if ((flags & TIMER_PERIODIC) == 0) {
             res = timer_port_high_resolution_init(self_p,
                                                   timeout_p);
 
             if (res == 0) {
                 flags |= TIMER_HIGH_RESOLUTION;
-            } else {
-                flags &= ~TIMER_HIGH_RESOLUTION;
             }
         }
     }
