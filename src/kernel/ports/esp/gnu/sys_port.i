@@ -127,7 +127,7 @@ static int sys_port_backtrace(void **buf_pp, size_t size)
 
 static int sys_port_get_time_into_tick()
 {
-    return (0);
+    return (system_get_time()*1000);
 }
 
 static void sys_port_lock(void)
