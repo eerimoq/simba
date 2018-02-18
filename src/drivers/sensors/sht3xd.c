@@ -200,6 +200,8 @@ int sht3xd_start(struct sht3xd_driver_t *self_p)
     return (0);
 }
 
+#if CONFIG_FLOAT == 1
+
 /**
  * Calculate the temperature in Celsius from SHT3xD raw temperature.
  */
@@ -268,6 +270,8 @@ int sht3xd_get_temp_humid(struct sht3xd_driver_t *self_p,
 
     return (0);
 }
+
+#endif
 
 int sht3xd_get_serial(struct sht3xd_driver_t *self_p,
                       uint32_t *serial_p)

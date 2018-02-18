@@ -31,7 +31,11 @@
 #include "simba.h"
 
 struct header_t {
+#if CONFIG_ALIGNMENT != 8
     size_t size;
+#else
+    uint64_t size;
+#endif
 };
 
 int circular_heap_init(struct circular_heap_t *self_p,
@@ -56,13 +60,19 @@ void *circular_heap_alloc(struct circular_heap_t *self_p,
     ASSERTNRN(self_p != NULL, EINVAL);
     ASSERTNRN(size > 0, EINVAL);
 
-    struct header_t *header_p = NULL;
+    struct header_t *header_p;
 
+    header_p = NULL;
     size += sizeof(*header_p);
 
     /* Align the buffer to a 4 byte boundary. */
+#if CONFIG_ALIGNMENT != 0
+    size |= CONFIG_ALIGNMENT;
+    size &= (-1 & ~(CONFIG_ALIGNMENT - 1));
+#else
     size += 3;
     size &= 0xffffffc;
+#endif
 
     /* Does it fit before end_p or free_p? */
     if (self_p->alloc_p >= self_p->free_p)  {

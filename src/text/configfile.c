@@ -268,6 +268,8 @@ int configfile_get_long(struct configfile_t *self_p,
     return (0);
 }
 
+#if CONFIG_FLOAT == 1
+
 int configfile_get_float(struct configfile_t *self_p,
                          const char *section_p,
                          const char *property_p,
@@ -295,3 +297,5 @@ int configfile_get_float(struct configfile_t *self_p,
 
     return (0);
 }
+
+#endif

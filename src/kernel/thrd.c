@@ -640,10 +640,14 @@ int thrd_terminate(struct thrd_t *thrd_p)
     return (0);
 }
 
+#if CONFIG_FLOAT == 1
+
 int thrd_sleep(float seconds)
 {
     return (thrd_sleep_us(1000000 * seconds));
 }
+
+#endif
 
 int thrd_sleep_ms(int milliseconds)
 {

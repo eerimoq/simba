@@ -40,5 +40,10 @@ fi
 
 export IDF_PATH=${SIMBA_ROOT}/3pp/esp32/esp-idf
 
+export XVISOR_ROOT=${SIMBA_ROOT}/3pp/xvisor
+
+export PATH=$PATH:$(readlink -f ../gcc-linaro-7.2.1-2017.11-x86_64_aarch64-elf/bin)
+export PATH=$PATH:$(readlink -f ../gcc-linaro-7.2.1-2017.11-x86_64_aarch64-linux-gnu/bin)
+
 export FREESCALE_POWERPC_EABIVLE_ROOT=$(readlink -f ../../Freescale/S32_Power_v1.1/Cross_Tools/powerpc-eabivle-4_9)
 export PATH=${PATH}:${FREESCALE_POWERPC_EABIVLE_ROOT}/bin

@@ -49,17 +49,6 @@ struct snprintf_output_t {
     size_t size_max;
 };
 
-static char *skipwhite(const char *q_p)
-{
-    char *p_p = (char *)q_p;
-
-    while (isspace((int)*p_p)) {
-        p_p++;
-    }
-
-    return (p_p);
-}
-
 /**
  * @return true(1) if the character is part of the string, otherwise
  *         false(0).
@@ -726,6 +715,19 @@ const char *std_strtol(const char *str_p, long *value_p)
     return (std_strtolb(str_p, value_p, 0));
 }
 
+#if CONFIG_FLOAT == 1
+
+static char *skipwhite(const char *q_p)
+{
+    char *p_p = (char *)q_p;
+
+    while (isspace((int)*p_p)) {
+        p_p++;
+    }
+
+    return (p_p);
+}
+
 /*
  * strtod implementation.
  * author: Yasuhiro Matsumoto
@@ -849,6 +851,8 @@ const char *std_strtod(const char *str, double *value_p)
 
     return (a);
 }
+
+#endif
 
 const char *std_strtodfp(const char *str_p,
                          long *value_p,

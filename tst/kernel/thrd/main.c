@@ -33,6 +33,9 @@
 #if defined(ARCH_ESP32)
 static THRD_STACK(suspend_resume_stack, 512);
 static THRD_STACK(terminate_stack, 512);
+#elif defined(ARCH_ARM64)
+static THRD_STACK(suspend_resume_stack, 4096);
+static THRD_STACK(terminate_stack, 4096);
 #else
 static THRD_STACK(suspend_resume_stack, 256);
 static THRD_STACK(terminate_stack, 256);
@@ -119,7 +122,9 @@ int test_yield(void)
 
 int test_sleep(void)
 {
+#if CONFIG_FLOAT == 1
     BTASSERT(thrd_sleep(0.001) == 0);
+#endif
     BTASSERT(thrd_sleep_ms(1) == 0);
     BTASSERT(thrd_sleep_us(1000) == 0);
 

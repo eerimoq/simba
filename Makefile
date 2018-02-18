@@ -439,6 +439,33 @@ ifeq ($(BOARD), spc56ddiscovery)
 	storage/eeprom_soft)
 endif
 
+ifeq ($(BOARD), xvisor_raspberry_pi_3)
+    TESTS = $(addprefix tst/kernel/, \
+	sys \
+	thrd \
+	time \
+	timer)
+    TESTS += $(addprefix tst/sync/, \
+	cond \
+	event \
+	mutex \
+	queue)
+    TESTS += $(addprefix tst/alloc/, \
+	heap \
+	circular_heap)
+    TESTS += $(addprefix tst/debug/, \
+	log)
+    TESTS += $(addprefix tst/encode/, \
+	base64 \
+	json)
+    TESTS += $(addprefix tst/hash/, \
+	crc \
+	sha1)
+    TESTS += $(addprefix tst/text/, \
+	std \
+	emacs)
+endif
+
 # List of all application to build
 APPS += $(TESTS)
 
@@ -529,6 +556,9 @@ clean-photon:
 clean-spc56ddiscovery:
 	$(MAKE) BOARD=spc56ddiscovery clean
 
+clean-xvisor-raspberry-pi-3:
+	$(MAKE) BOARD=xvisor_raspberry_pi_3 clean
+
 test-arduino-due:
 	@echo "Arduino Due"
 	$(MAKE) BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due test
@@ -568,6 +598,11 @@ test-photon:
 test-spc56ddiscovery:
 	@echo "SPC56D Discovery"
 	$(MAKE) BOARD=spc56ddiscovery SERIAL_PORT=/dev/simba-spc56ddiscovery CONTROL_PORT=/dev/simba-spc56ddiscovery-control test
+
+test-xvisor-raspberry-pi-3:
+	@echo "Xvisor Raspberry Pi 3"
+	$(MAKE) -C tst/kernel/sys BOARD=xvisor_raspberry_pi_3 all
+	$(MAKE) BOARD=xvisor_raspberry_pi_3 SERIAL_PORT=/dev/arduino test
 
 clean-arduino-due-platformio:
 	@echo "Arduino Due"
@@ -617,6 +652,7 @@ test-all-boards:
 	$(MAKE) test-nodemcu
 	$(MAKE) test-nano32
 	$(MAKE) test-spc56ddiscovery
+	$(MAKE) test-xvisor-raspberry-pi-3
 
 clean-all-boards:
 	$(MAKE) clean-arduino-due
@@ -632,6 +668,7 @@ clean-all-boards:
 	$(MAKE) clean-nodemcu
 	$(MAKE) clean-nano32
 	$(MAKE) clean-spc56ddiscovery
+	$(MAKE) clean-xvisor-raspberry-pi-3
 
 doc:
 	+bin/dbgen.py > database.json

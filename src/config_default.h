@@ -159,6 +159,11 @@
 #    define PORT_HAS_FLASH
 #endif
 
+#if defined(FAMILY_XVISOR_VIRT)
+#    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_FLASH
+#endif
+
 #if defined(PORT_HAS_I2C_SOFT) && !defined(PORT_HAS_I2C)
 #    define PORT_HAS_I2C
 #    define CONFIG_SOFTWARE_I2C                            1
@@ -512,7 +517,7 @@
  * Enable the flash driver.
  */
 #ifndef CONFIG_FLASH
-#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX) || defined(ARCH_ESP) || defined(ARCH_ESP32) || defined(FAMILY_STM32F1) || defined(FAMILY_STM32F2) || defined(FAMILY_STM32F3) || defined(FAMILY_SPC5) || defined(FAMILY_NRF5)
+#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX) || defined(ARCH_ESP) || defined(ARCH_ESP32) || defined(FAMILY_STM32F1) || defined(FAMILY_STM32F2) || defined(FAMILY_STM32F3) || defined(FAMILY_SPC5) || defined(FAMILY_NRF5) || defined(FAMILY_XVISOR_VIRT)
 #        define CONFIG_FLASH                                1
 #    else
 #        define CONFIG_FLASH                                0
@@ -1329,7 +1334,7 @@
  * Initialize the inet module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_INET
-#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC) || defined(ARCH_ARM64)
 #        define CONFIG_MODULE_INIT_INET                     0
 #    else
 #        define CONFIG_MODULE_INIT_INET                     1
@@ -1340,7 +1345,7 @@
  * Initialize the ping module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_PING
-#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC) || defined(ARCH_ARM64)
 #        define CONFIG_MODULE_INIT_PING                     0
 #    else
 #        define CONFIG_MODULE_INIT_PING                     1
@@ -1351,7 +1356,7 @@
  * Initialize the socket module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_SOCKET
-#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC) || defined(ARCH_ARM64)
 #        define CONFIG_MODULE_INIT_SOCKET                   0
 #    else
 #        define CONFIG_MODULE_INIT_SOCKET                   1
@@ -1362,7 +1367,7 @@
  * Initialize the network_interface module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_NETWORK_INTERFACE
-#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC) || defined(ARCH_ARM64)
 #        define CONFIG_MODULE_INIT_NETWORK_INTERFACE        0
 #    else
 #        define CONFIG_MODULE_INIT_NETWORK_INTERFACE        1
@@ -1454,7 +1459,7 @@
  * Debug file system command to list all network interfaces.
  */
 #ifndef CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM64)
 #        define CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST    0
 #    else
 #        define CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST    1
@@ -1996,7 +2001,7 @@
  * Configure a default non-volatile memory.
  */
 #ifndef CONFIG_START_NVM
-#    if defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM64)
 #        define CONFIG_START_NVM                            0
 #    else
 #        define CONFIG_START_NVM                            1
@@ -2134,7 +2139,7 @@
 #ifndef CONFIG_START_SHELL_STACK_SIZE
 #    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_ESP) || defined(ARCH_PPC)
 #        define CONFIG_START_SHELL_STACK_SIZE            1536
-#    elif defined(ARCH_ESP32)
+#    elif defined(ARCH_ESP32) || defined(ARCH_ARM64)
 #        define CONFIG_START_SHELL_STACK_SIZE            4096
 #    else
 #        define CONFIG_START_SHELL_STACK_SIZE             768
@@ -2165,7 +2170,7 @@
 #ifndef CONFIG_START_SOAM_STACK_SIZE
 #    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_ESP)
 #        define CONFIG_START_SOAM_STACK_SIZE             1536
-#    elif defined(ARCH_ESP32)
+#    elif defined(ARCH_ESP32) || defined(ARCH_ARM64)
 #        define CONFIG_START_SOAM_STACK_SIZE             4096
 #    else
 #        define CONFIG_START_SOAM_STACK_SIZE              840
@@ -2183,7 +2188,22 @@
  * Use floating point numbers instead of intergers where applicable.
  */
 #ifndef CONFIG_FLOAT
-#    define CONFIG_FLOAT                                    1
+#    if defined(ARCH_ARM64)
+#        define CONFIG_FLOAT                                0
+#    else
+#        define CONFIG_FLOAT                                1
+#    endif
+#endif
+
+/**
+ * Memory alignment for runtime memory allocations.
+ */
+#ifndef CONFIG_ALIGNMENT
+#    if defined(ARCH_ARM64)
+#        define CONFIG_ALIGNMENT                            8
+#    else
+#        define CONFIG_ALIGNMENT                            0
+#    endif
 #endif
 
 /**
@@ -2261,7 +2281,7 @@
 #    elif defined(ARCH_ESP)
 #        define CONFIG_THRD_IDLE_STACK_SIZE               768
 #    else
-#        define CONFIG_THRD_IDLE_STACK_SIZE              1024
+#        define CONFIG_THRD_IDLE_STACK_SIZE              2048
 #    endif
 #endif
 
@@ -2276,7 +2296,7 @@
 #    elif defined(ARCH_AVR)
 #        define CONFIG_THRD_MONITOR_STACK_SIZE            256
 #    else
-#        define CONFIG_THRD_MONITOR_STACK_SIZE           1024
+#        define CONFIG_THRD_MONITOR_STACK_SIZE           2048
 #    endif
 #endif
 
@@ -2422,7 +2442,7 @@
 #ifndef CONFIG_HARNESS_MOCK_ENTRIES_MAX
 #    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
 #        define CONFIG_HARNESS_MOCK_ENTRIES_MAX             1
-#    elif defined(ARCH_LINUX)
+#    elif defined(ARCH_LINUX) || defined(ARCH_ARM64)
 #        define CONFIG_HARNESS_MOCK_ENTRIES_MAX          1024
 #    else
 #        define CONFIG_HARNESS_MOCK_ENTRIES_MAX            64

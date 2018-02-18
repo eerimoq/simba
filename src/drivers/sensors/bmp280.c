@@ -477,6 +477,8 @@ int bmp280_stop(struct bmp280_driver_t *self_p)
     return (-ENOSYS);
 }
 
+#if CONFIG_FLOAT == 1
+
 int bmp280_read(struct bmp280_driver_t *self_p,
                 float *temperature_p,
                 float *pressure_p)
@@ -501,6 +503,8 @@ int bmp280_read(struct bmp280_driver_t *self_p,
 
     return (res);
 }
+
+#endif
 
 int bmp280_read_fixed_point(struct bmp280_driver_t *self_p,
                             long *temperature_p,

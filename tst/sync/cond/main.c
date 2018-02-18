@@ -30,14 +30,22 @@
 
 #include "simba.h"
 
+static volatile int data0;
+static volatile int data1;
+static volatile int data2;
 static struct cond_t cond0;
 static struct cond_t cond1;
 static struct cond_t cond2;
-static struct mutex_t mutex;
+static struct mutex_t mutex0;
+static struct mutex_t mutex1;
+static struct mutex_t mutex2;
 
 #if defined(ARCH_ESP32) || defined(ARCH_PPC)
 static THRD_STACK(t0_stack, 512);
 static THRD_STACK(t1_stack, 512);
+#elif defined(ARCH_ARM64)
+static THRD_STACK(t0_stack, 1024);
+static THRD_STACK(t1_stack, 1024);
 #else
 static THRD_STACK(t0_stack, 224);
 static THRD_STACK(t1_stack, 224);
@@ -45,58 +53,90 @@ static THRD_STACK(t1_stack, 224);
 
 static void *cond_main_0(void *arg_p)
 {
+    thrd_set_name("cond_0");
+
     /* test_signal */
-    mutex_lock(&mutex);
-    cond_wait(&cond0, &mutex, NULL);
-    mutex_unlock(&mutex);
+    mutex_lock(&mutex0);
+
+    if (data0 == 0) {
+        cond_wait(&cond0, &mutex0, NULL);
+    }
+
+    BTASSERTN(data0 == 1);
+    data0 = 0;
+    mutex_unlock(&mutex0);
 
     thrd_sleep_ms(1);
 
-    mutex_lock(&mutex);
-    std_printf(OSTR("Signalling thread 1.\r\n"));
+    mutex_lock(&mutex1);
+    std_printf(OSTR("Thread 0 signalling thread 1.\r\n"));
+    data1 = 1;
     cond_signal(&cond1);
-    mutex_unlock(&mutex);
+    mutex_unlock(&mutex1);
 
     /* test_broadcast */
-    mutex_lock(&mutex);
-    cond_wait(&cond0, &mutex, NULL);
-    mutex_unlock(&mutex);
+    mutex_lock(&mutex0);
+
+    if (data0 == 0) {
+        cond_wait(&cond0, &mutex0, NULL);
+    }
+
+    BTASSERTN(data0 >= 1);
+    data0--;
+    mutex_unlock(&mutex0);
 
     thrd_sleep_ms(1);
 
-    mutex_lock(&mutex);
-    std_printf(OSTR("Signalling main thread.\r\n"));
+    mutex_lock(&mutex1);
+    std_printf(OSTR("Thread 0 signalling main thread.\r\n"));
+    data1 = 1;
     cond_signal(&cond1);
-    mutex_unlock(&mutex);
+    mutex_unlock(&mutex1);
 
     return (NULL);
 }
 
 static void *cond_main_1(void *arg_p)
 {
+    thrd_set_name("cond_1");
+
     /* test_signal */
-    mutex_lock(&mutex);
-    cond_wait(&cond1, &mutex, NULL);
-    mutex_unlock(&mutex);
+    mutex_lock(&mutex1);
+
+    if (data1 == 0) {
+        cond_wait(&cond1, &mutex1, NULL);
+    }
+
+    BTASSERTN(data1 == 1);
+    data1 = 0;
+    mutex_unlock(&mutex1);
 
     thrd_sleep_ms(1);
 
-    mutex_lock(&mutex);
-    std_printf(OSTR("Signalling main thread.\r\n"));
+    mutex_lock(&mutex2);
+    std_printf(OSTR("Thread 1 signalling main thread.\r\n"));
+    data2 = 1;
     cond_signal(&cond2);
-    mutex_unlock(&mutex);
+    mutex_unlock(&mutex2);
 
     /* test_broadcast */
-    mutex_lock(&mutex);
-    cond_wait(&cond0, &mutex, NULL);
-    mutex_unlock(&mutex);
+    mutex_lock(&mutex0);
+
+    if (data0 == 0) {
+        cond_wait(&cond0, &mutex0, NULL);
+    }
+
+    BTASSERTN(data0 >= 0);
+    data0--;
+    mutex_unlock(&mutex0);
 
     thrd_sleep_ms(1);
 
-    mutex_lock(&mutex);
-    std_printf(OSTR("Signalling main thread.\r\n"));
+    mutex_lock(&mutex2);
+    std_printf(OSTR("Thread 1 signalling main thread.\r\n"));
+    data2 = 1;
     cond_signal(&cond2);
-    mutex_unlock(&mutex);
+    mutex_unlock(&mutex2);
 
     return (NULL);
 }
@@ -106,10 +146,17 @@ static int test_init(void)
     BTASSERT(cond_module_init() == 0);
     BTASSERT(cond_module_init() == 0);
 
-    BTASSERT(mutex_init(&mutex) == 0);
+    BTASSERT(mutex_init(&mutex0) == 0);
+    BTASSERT(mutex_init(&mutex1) == 0);
+    BTASSERT(mutex_init(&mutex2) == 0);
+
     BTASSERT(cond_init(&cond0) == 0);
     BTASSERT(cond_init(&cond1) == 0);
     BTASSERT(cond_init(&cond2) == 0);
+
+    data0 = 0;
+    data1 = 0;
+    data2 = 0;
 
     return (0);
 }
@@ -127,21 +174,21 @@ static int test_wait_timeout(void)
     timeout.seconds = 0;
     timeout.nanoseconds = 1;
 
-    mutex_lock(&mutex);
-    res = cond_wait(&cond0, &mutex, &timeout);
-    mutex_unlock(&mutex);
+    mutex_lock(&mutex0);
+    res = cond_wait(&cond0, &mutex0, &timeout);
+    mutex_unlock(&mutex0);
 
     BTASSERTI(res, ==, -ETIMEDOUT);
 
-    mutex_lock(&mutex);
-    res = cond_wait(&cond1, &mutex, &timeout);
-    mutex_unlock(&mutex);
+    mutex_lock(&mutex1);
+    res = cond_wait(&cond1, &mutex1, &timeout);
+    mutex_unlock(&mutex1);
 
     BTASSERTI(res, ==, -ETIMEDOUT);
 
-    mutex_lock(&mutex);
-    res = cond_wait(&cond2, &mutex, &timeout);
-    mutex_unlock(&mutex);
+    mutex_lock(&mutex2);
+    cond_wait(&cond2, &mutex2, &timeout);
+    mutex_unlock(&mutex2);
 
     BTASSERTI(res, ==, -ETIMEDOUT);
 
@@ -166,17 +213,24 @@ static int test_signal(void)
     thrd_sleep_ms(1);
 
     /* Signal thread 0. */
-    mutex_lock(&mutex);
+    mutex_lock(&mutex0);
     std_printf(OSTR("Signalling thread 0.\r\n"));
+    data0 = 1;
     res = cond_signal(&cond0);
-    mutex_unlock(&mutex);
+    mutex_unlock(&mutex0);
 
     BTASSERTI(res, ==, 1);
 
     /* Wait for signal from thread 1. */
-    mutex_lock(&mutex);
-    cond_wait(&cond2, &mutex, NULL);
-    mutex_unlock(&mutex);
+    mutex_lock(&mutex2);
+
+    if (data2 == 0) {
+        cond_wait(&cond2, &mutex2, NULL);
+    }
+
+    BTASSERT(data2 == 1);
+    data2 = 0;
+    mutex_unlock(&mutex2);
 
     return (0);
 }
@@ -188,16 +242,34 @@ static int test_broadcast(void)
     thrd_sleep_ms(1);
 
     /* Signal thread 0. */
-    mutex_lock(&mutex);
+    mutex_lock(&mutex0);
     std_printf(OSTR("Broadcasting from main thread.\r\n"));
+    data0 = 2;
     res = cond_broadcast(&cond0);
-    mutex_unlock(&mutex);
+    mutex_unlock(&mutex0);
     BTASSERTI(res, ==, 2);
 
     /* Wait for signal from thread 1. */
-    mutex_lock(&mutex);
-    cond_wait(&cond2, &mutex, NULL);
-    mutex_unlock(&mutex);
+    mutex_lock(&mutex1);
+
+    if (data1 == 0) {
+        cond_wait(&cond1, &mutex1, NULL);
+    }
+
+    BTASSERT(data1 == 1);
+    data1 = 0;
+    mutex_unlock(&mutex1);
+
+    /* Wait for signal from thread 2. */
+    mutex_lock(&mutex2);
+
+    if (data2 == 0) {
+        cond_wait(&cond2, &mutex2, NULL);
+    }
+
+    BTASSERT(data2 == 1);
+    data2 = 0;
+    mutex_unlock(&mutex2);
 
     return (0);
 }

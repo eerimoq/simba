@@ -40,7 +40,6 @@ int test_sha1(void)
         char *input_p;
         char *hash_p;
     } testdata[] = {
-
         {
             .name_p = "Empty",
             .input_p = "",
@@ -48,7 +47,6 @@ int test_sha1(void)
             "\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55"
             "\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09"
         },
-
         {
             .name_p = "Abc",
             .input_p = "abc",
@@ -56,7 +54,6 @@ int test_sha1(void)
             "\xa9\x99\x3e\x36\x47\x06\x81\x6a\xba\x3e"
             "\x25\x71\x78\x50\xc2\x6c\x9c\xd0\xd8\x9d"
         },
-
         {
             .name_p = "Dog",
             .input_p = "The quick brown fox jumps over the lazy dog",
@@ -64,7 +61,6 @@ int test_sha1(void)
             "\x2f\xd4\xe1\xc6\x7a\x2d\x28\xfc\xed\x84"
             "\x9e\xe1\xbb\x76\xe7\x39\x1b\x93\xeb\x12"
         },
-
         {
             .name_p = "Cog",
             .input_p = "The quick brown fox jumps over the lazy cog",
@@ -72,7 +68,6 @@ int test_sha1(void)
             "\xde\x9f\x2c\x7f\xd2\x5e\x1b\x3a\xfa\xd3"
             "\xe8\x5a\x0b\xd1\x7d\x9b\x10\x0d\xb4\xb3"
         },
-
         {
             .name_p = "60",
             .input_p =
@@ -81,7 +76,6 @@ int test_sha1(void)
             "\x13\xd9\x56\x03\x3d\x9a\xf4\x49\xbf\xe2"
             "\xc4\xef\x78\xc1\x7c\x20\x46\x9c\x4b\xf1"
         },
-
         {
             .name_p = "Long",
             .input_p =

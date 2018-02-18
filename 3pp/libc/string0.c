@@ -28,6 +28,58 @@
 
 #define likely(x) __builtin_expect((x), 1)
 
+#if !defined(_U)
+#    define _U  01
+#endif
+
+#if !defined(_L)
+#    define _L  02
+#endif
+
+#if !defined(_N)
+#    define _N  04
+#endif
+
+#if !defined(_S)
+#    define _S  010
+#endif
+
+#if !defined(_P)
+#    define _P  020
+#endif
+
+#if !defined(_C)
+#    define _C  040
+#endif
+
+#if !defined(_X)
+#    define _X  0100
+#endif
+
+#if !defined(_B)
+#    define _B  0200
+#endif
+
+#if defined(strcmp)
+#    undef strcmp
+#endif
+
+#if defined(strncmp)
+#    undef strncmp
+#endif
+
+#if defined(strchr)
+#    undef strchr
+#endif
+
+#if defined(isblank)
+#    undef isblank
+#endif
+
+#if defined(isalnum)
+#    undef isalnum
+#endif
+
 #define _CTYPE_DATA_0_127 \
         _C,	_C,	_C,	_C,	_C,	_C,	_C,	_C, \
         _C,	_C|_S, _C|_S, _C|_S,	_C|_S,	_C|_S,	_C,	_C, \
@@ -71,6 +123,11 @@ const char _ctype_[1 + 256] = {
 };
 
 const char * __ctype_ptr__ = _ctype_;
+
+const char * __locale_ctype_ptr(void)
+{
+    return (__ctype_ptr__);
+}
 
 void *memcpy(void *dst, const void *src, size_t n) {
     if (likely(!(((uintptr_t)dst) & 3) && !(((uintptr_t)src) & 3))) {
@@ -312,4 +369,30 @@ int snprintf(char *dst_p, size_t n, const char *fmt_p, ...)
     va_end(ap);
 
     return (res);
+}
+
+int isblank(int c)
+{
+    return ((c == ' ') || (c == '\t'));
+}
+
+int isalnum (int c)
+{
+    return (__ctype_ptr__[c + 1] & (_U | _L | _N));
+}
+
+int atoi(const char *str_p)
+{
+    long value;
+
+    if (std_strtol(str_p, &value) == NULL) {
+        value = 0;
+    }
+
+    return (value);
+}
+
+int vsprintf(char *s, const char *format, va_list arg)
+{
+    return (std_vsprintf(s, format, &arg));
 }

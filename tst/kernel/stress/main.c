@@ -34,9 +34,15 @@ static struct sem_t sem;
 static struct mutex_t mutex;
 static int sem_counter = 0;
 static int mutex_counter = 0;
+#if defined(ARCH_ARM64)
+static THRD_STACK(worker_0_stack, 2048);
+static THRD_STACK(worker_1_stack, 2048);
+static THRD_STACK(worker_2_stack, 2048);
+#else
 static THRD_STACK(worker_0_stack, 1024);
 static THRD_STACK(worker_1_stack, 1024);
 static THRD_STACK(worker_2_stack, 1024);
+#endif
 
 struct worker_t {
     int sem_counter;

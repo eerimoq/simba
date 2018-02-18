@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_CRC_TABLE_LOOKUP == 1
+
 static FAR const uint32_t crc32_tab[] = {
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
     0xe963a535, 0x9e6495a3, 0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988,
@@ -110,8 +112,6 @@ static FAR const uint16_t ccitt_tab[256] = {
     0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8,
     0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
 };
-
-#if CONFIG_CRC_TABLE_LOOKUP == 1
 
 uint32_t crc_32(uint32_t crc, const void *buf_p, size_t size)
 {

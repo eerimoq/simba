@@ -410,6 +410,8 @@ int gnss_get_date(struct gnss_driver_t *self_p,
     return (res);
 }
 
+#if CONFIG_FLOAT == 1
+
 int gnss_get_position(struct gnss_driver_t *self_p,
                       float *latitude_p,
                       float *longitude_p)
@@ -440,6 +442,8 @@ int gnss_get_speed(struct gnss_driver_t *self_p,
     return (res);
 }
 
+#endif
+
 int gnss_get_number_of_satellites(struct gnss_driver_t *self_p,
                                   int *number_of_satellites_p)
 {
@@ -453,6 +457,8 @@ int gnss_get_number_of_satellites(struct gnss_driver_t *self_p,
 
     return (res);
 }
+
+#if CONFIG_FLOAT == 1
 
 int gnss_get_altitude(struct gnss_driver_t *self_p,
                       float *altitude_p)
@@ -558,3 +564,5 @@ int gnss_print(struct gnss_driver_t *self_p,
 
     return (0);
 }
+
+#endif

@@ -89,6 +89,11 @@ static void *alloc_dynamic_size(struct heap_t *self_p,
     size_t left;
     char *next_p;
 
+#if CONFIG_ALIGNMENT != 0
+    size |= CONFIG_ALIGNMENT;
+    size &= (-1 & ~(CONFIG_ALIGNMENT - 1));
+#endif
+
     /* Allocate from the free list. */
     header_p = self_p->dynamic.free_p;
     prev_p = NULL;

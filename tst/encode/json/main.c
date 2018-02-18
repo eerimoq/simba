@@ -164,7 +164,7 @@ static int dumps(const char *r_p,
     char buf[512];
     struct json_tok_t t[128];
     struct json_t json;
-    
+
     va_start(ap, numtok);
 
     for (i = 0; i < numtok; i++) {
@@ -249,9 +249,9 @@ static int parse_no_check(const FAR char *s_p)
     struct json_t json;
 
     std_strcpy(buf, s_p);
-    
+
     json_init(&json, t, 128);
-    
+
     return (json_parse(&json, buf, strlen(buf)));
 }
 
@@ -618,7 +618,7 @@ static int test_dumps(void)
     struct json_tok_t tokens[32];
     char buf[128];
     struct json_t json;
-    
+
     /* Empty object. */
     json_token_object(&tokens[0], 0);
     memset(buf, -1, sizeof(buf));
@@ -747,7 +747,7 @@ static int test_dumps_fail(void)
     tokens[1].type = 99;
     BTASSERT(json_init(&json, tokens, 2) == 0);
     BTASSERT(json_dumps(&json, NULL, buf) == -1);
-    
+
     /* Bad token in object key. */
     json_token_object(&tokens[0], 1);
     json_token_string(&tokens[1], "\x01", 1);
@@ -788,7 +788,7 @@ static int test_get(void)
         "true:null,"
         "1:null"
         "}";
-    
+
     BTASSERT(json_init(&json, tokens, membersof(tokens)) == 0);
     BTASSERT(json_parse(&json, js_p, strlen(js_p)) == 13);
 
@@ -814,7 +814,7 @@ static int test_get(void)
 
     fie_p = json_object_get(&json, "fie", json_array_get(&json, 1, foo_p));
     BTASSERT(fie_p != &tokens[7]);
-    
+
     /* Get outside the array should fail. */
     BTASSERT(json_array_get(&json, 2, foo_p) == NULL);
 
@@ -825,11 +825,11 @@ static int test_get(void)
     /* Using the object get function on a non-object token should
        fail. */
     BTASSERT(json_object_get(&json, "foo", ten_p) == NULL);
-    
+
     /* Using the array get function on a non-array token should
        fail. */
     BTASSERT(json_array_get(&json, 0, json_root(&json)) == NULL);
-    
+
     return (0);
 }
 

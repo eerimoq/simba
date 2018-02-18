@@ -42,6 +42,8 @@ int science_module_init()
     return (0);
 }
 
+#if CONFIG_FLOAT == 1
+
 float science_pressure_to_altitude(float pressure,
                                    float pressure_at_sea_level)
 {
@@ -109,3 +111,5 @@ float science_mps_from_mph(float speed)
 {
     return (speed / 2.23694);
 }
+
+#endif

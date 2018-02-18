@@ -180,7 +180,6 @@ static int test_sleep(void)
 static int test_add(void)
 {
     struct time_t *left_p, *right_p, res;
-    float fleft, fright, fres;
     int i;
 
     /* left, right, res. */
@@ -203,9 +202,12 @@ static int test_add(void)
 
         time_add(&res, left_p, right_p);
 
-        fleft = (left_p->seconds + left_p->nanoseconds / 1000000000.0);
-        fright = (right_p->seconds + right_p->nanoseconds / 1000000000.0);
-        fres = (fleft - fright);
+#if CONFIG_FLOAT == 1
+        float f_left, f_right, f_res;
+
+        f_left = (left_p->seconds + left_p->nanoseconds / 1000000000.0);
+        f_right = (right_p->seconds + right_p->nanoseconds / 1000000000.0);
+        f_res = (f_left - f_right);
 
         std_printf(FSTR("%ld;%ld - %ld;%ld = %ld;%ld (%f - %f = %f)\r\n"),
                    (long)left_p->seconds,
@@ -214,9 +216,10 @@ static int test_add(void)
                    (long)right_p->nanoseconds / 100000000,
                    (long)res.seconds,
                    (long)res.nanoseconds / 100000000,
-                   fleft,
-                   fright,
-                   fres);
+                   f_left,
+                   f_right,
+                   f_res);
+#endif
 
         BTASSERT(res.seconds == times[i][2].seconds);
         BTASSERT(res.nanoseconds == times[i][2].nanoseconds);
@@ -228,7 +231,6 @@ static int test_add(void)
 static int test_subtract(void)
 {
     struct time_t *left_p, *right_p, res;
-    float fleft, fright, fres;
     int i;
 
     /* left, right, res. */
@@ -251,9 +253,12 @@ static int test_subtract(void)
 
         time_subtract(&res, left_p, right_p);
 
-        fleft = (left_p->seconds + left_p->nanoseconds / 1000000000.0);
-        fright = (right_p->seconds + right_p->nanoseconds / 1000000000.0);
-        fres = (fleft - fright);
+#if CONFIG_FLOAT == 1
+        float f_left, f_right, f_res;
+
+        f_left = (left_p->seconds + left_p->nanoseconds / 1000000000.0);
+        f_right = (right_p->seconds + right_p->nanoseconds / 1000000000.0);
+        f_res = (f_left - f_right);
 
         std_printf(FSTR("%ld;%ld - %ld;%ld = %ld;%ld (%f - %f = %f)\r\n"),
                    (long)left_p->seconds,
@@ -262,9 +267,10 @@ static int test_subtract(void)
                    (long)right_p->nanoseconds / 100000000,
                    (long)res.seconds,
                    (long)res.nanoseconds / 100000000,
-                   fleft,
-                   fright,
-                   fres);
+                   f_left,
+                   f_right,
+                   f_res);
+#endif
 
         BTASSERT(res.seconds == times[i][2].seconds);
         BTASSERT(res.nanoseconds == times[i][2].nanoseconds);

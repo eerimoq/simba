@@ -38,6 +38,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/sensors/hx711`
 - :doc:`../library-reference/drivers/network/i2c`
 - :doc:`../library-reference/drivers/network/i2c_soft`
+- :doc:`../library-reference/drivers/network/jtag_soft`
 - :doc:`../library-reference/drivers/network/mcp2515`
 - :doc:`../library-reference/drivers/network/nrf24l01`
 - :doc:`../library-reference/drivers/network/owi`
@@ -81,9 +82,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |      1712 |       263 |
+| minimal-configuration    |      1730 |       281 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     73374 |      4128 |
+| default-configuration    |     71950 |      3752 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -96,6 +97,8 @@ Default Standard Library configuration.
 +========================================================+=====================================================+
 |  CONFIG_ADC_                                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_ALIGNMENT_                                     |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_ANALOG_INPUT_PIN_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_ANALOG_OUTPUT_PIN_                             |  1                                                  |
@@ -103,6 +106,8 @@ Default Standard Library configuration.
 |  CONFIG_ASSERT_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_ASSERT_FORCE_FATAL_                            |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_ASSERT_FORCE_PANIC_                            |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_BMP280_                                        |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -198,11 +203,17 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HARNESS_BACKTRACE_DEPTH_MAX_                   |  8                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_HARNESS_DEBUG_                                 |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_HARNESS_EARLY_EXIT_                            |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HARNESS_EXPECT_BUFFER_SIZE_                    |  512                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_HARNESS_HEAP_MAX_                              |  4096                                               |
+|  CONFIG_HARNESS_MOCK_ENTRIES_MAX_                      |  64                                                 |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HARNESS_SLEEP_MS_                              |  300                                                |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_HARNESS_WRITE_BACKTRACE_DEPTH_MAX_             |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE_               |  128                                                |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -219,6 +230,8 @@ Default Standard Library configuration.
 |  CONFIG_I2C_FS_COMMAND_WRITE_                          |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_I2C_SOFT_                                      |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_JTAG_SOFT_                                     |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_LED_7SEG_HT16K33_                              |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -484,6 +497,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_MEASURE_INTERRUPT_LOAD_                    |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_SYS_PANIC_BACKTRACE_DEPTH_                     |  24                                                 |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_PANIC_KICK_WATCHDOG_                       |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_SYS_RESET_CAUSE_                               |  1                                                  |
@@ -568,6 +583,8 @@ Mcu
 
 .. _CONFIG_ADC: ../user-guide/configuration.html#c.CONFIG_ADC
 
+.. _CONFIG_ALIGNMENT: ../user-guide/configuration.html#c.CONFIG_ALIGNMENT
+
 .. _CONFIG_ANALOG_INPUT_PIN: ../user-guide/configuration.html#c.CONFIG_ANALOG_INPUT_PIN
 
 .. _CONFIG_ANALOG_OUTPUT_PIN: ../user-guide/configuration.html#c.CONFIG_ANALOG_OUTPUT_PIN
@@ -575,6 +592,8 @@ Mcu
 .. _CONFIG_ASSERT: ../user-guide/configuration.html#c.CONFIG_ASSERT
 
 .. _CONFIG_ASSERT_FORCE_FATAL: ../user-guide/configuration.html#c.CONFIG_ASSERT_FORCE_FATAL
+
+.. _CONFIG_ASSERT_FORCE_PANIC: ../user-guide/configuration.html#c.CONFIG_ASSERT_FORCE_PANIC
 
 .. _CONFIG_BMP280: ../user-guide/configuration.html#c.CONFIG_BMP280
 
@@ -670,11 +689,17 @@ Mcu
 
 .. _CONFIG_HARNESS_BACKTRACE_DEPTH_MAX: ../user-guide/configuration.html#c.CONFIG_HARNESS_BACKTRACE_DEPTH_MAX
 
+.. _CONFIG_HARNESS_DEBUG: ../user-guide/configuration.html#c.CONFIG_HARNESS_DEBUG
+
+.. _CONFIG_HARNESS_EARLY_EXIT: ../user-guide/configuration.html#c.CONFIG_HARNESS_EARLY_EXIT
+
 .. _CONFIG_HARNESS_EXPECT_BUFFER_SIZE: ../user-guide/configuration.html#c.CONFIG_HARNESS_EXPECT_BUFFER_SIZE
 
-.. _CONFIG_HARNESS_HEAP_MAX: ../user-guide/configuration.html#c.CONFIG_HARNESS_HEAP_MAX
+.. _CONFIG_HARNESS_MOCK_ENTRIES_MAX: ../user-guide/configuration.html#c.CONFIG_HARNESS_MOCK_ENTRIES_MAX
 
 .. _CONFIG_HARNESS_SLEEP_MS: ../user-guide/configuration.html#c.CONFIG_HARNESS_SLEEP_MS
+
+.. _CONFIG_HARNESS_WRITE_BACKTRACE_DEPTH_MAX: ../user-guide/configuration.html#c.CONFIG_HARNESS_WRITE_BACKTRACE_DEPTH_MAX
 
 .. _CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE: ../user-guide/configuration.html#c.CONFIG_HTTP_SERVER_REQUEST_BUFFER_SIZE
 
@@ -691,6 +716,8 @@ Mcu
 .. _CONFIG_I2C_FS_COMMAND_WRITE: ../user-guide/configuration.html#c.CONFIG_I2C_FS_COMMAND_WRITE
 
 .. _CONFIG_I2C_SOFT: ../user-guide/configuration.html#c.CONFIG_I2C_SOFT
+
+.. _CONFIG_JTAG_SOFT: ../user-guide/configuration.html#c.CONFIG_JTAG_SOFT
 
 .. _CONFIG_LED_7SEG_HT16K33: ../user-guide/configuration.html#c.CONFIG_LED_7SEG_HT16K33
 
@@ -955,6 +982,8 @@ Mcu
 .. _CONFIG_SYS_LOG_MASK: ../user-guide/configuration.html#c.CONFIG_SYS_LOG_MASK
 
 .. _CONFIG_SYS_MEASURE_INTERRUPT_LOAD: ../user-guide/configuration.html#c.CONFIG_SYS_MEASURE_INTERRUPT_LOAD
+
+.. _CONFIG_SYS_PANIC_BACKTRACE_DEPTH: ../user-guide/configuration.html#c.CONFIG_SYS_PANIC_BACKTRACE_DEPTH
 
 .. _CONFIG_SYS_PANIC_KICK_WATCHDOG: ../user-guide/configuration.html#c.CONFIG_SYS_PANIC_KICK_WATCHDOG
 

@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_FLOAT == 1
+
 /* Timeout of 2 s. */
 #define READY_TIMEOUT_S 2
 
@@ -209,3 +211,5 @@ int hx711_set_offset(struct hx711_driver_t *self_p,
 
     return (0);
 }
+
+#endif

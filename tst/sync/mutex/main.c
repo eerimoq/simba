@@ -41,6 +41,9 @@ static int is_locked = 0;
 #if defined(ARCH_ESP32) || defined(ARCH_PPC)
 static THRD_STACK(t0_stack, 512);
 static THRD_STACK(t1_stack, 512);
+#elif defined(ARCH_ARM64)
+static THRD_STACK(t0_stack, 1024);
+static THRD_STACK(t1_stack, 1024);
 #else
 static THRD_STACK(t0_stack, 224);
 static THRD_STACK(t1_stack, 224);

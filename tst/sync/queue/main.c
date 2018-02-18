@@ -35,8 +35,13 @@ static struct queue_t buffered_queue;
 static char buffer[8];
 static struct event_t event;
 
+#if defined(ARCH_ARM64)
+static THRD_STACK(t0_stack, 1024);
+static THRD_STACK(t1_stack, 1024);
+#else
 static THRD_STACK(t0_stack, 512);
 static THRD_STACK(t1_stack, 512);
+#endif
 
 static void *t0_main(void *arg_p)
 {

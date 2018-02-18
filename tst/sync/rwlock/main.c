@@ -30,11 +30,20 @@
 
 #include "simba.h"
 
+#if defined(ARCH_ARM64)
+static THRD_STACK(writer_0_stack, 1024);
+static THRD_STACK(writer_1_stack, 1024);
+static THRD_STACK(writer_2_stack, 1024);
+static THRD_STACK(reader_0_stack, 1024);
+static THRD_STACK(reader_1_stack, 1024);
+#else
 static THRD_STACK(writer_0_stack, 512);
 static THRD_STACK(writer_1_stack, 512);
 static THRD_STACK(writer_2_stack, 512);
 static THRD_STACK(reader_0_stack, 512);
 static THRD_STACK(reader_1_stack, 512);
+#endif
+
 
 static volatile int count;
 struct rwlock_t count_lock;

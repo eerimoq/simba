@@ -7,3 +7,6 @@
 [submodule "3pp/atto"]
 	path = 3pp/atto
 	url = https://github.com/eerimoq/atto
+[submodule "3pp/xvisor"]
+	path = 3pp/xvisor
+	url = https://github.com/eerimoq/xvisor.git

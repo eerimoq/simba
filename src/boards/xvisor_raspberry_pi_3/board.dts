@@ -1,0 +1,28 @@
+/dts-v1/;
+
+/include/ "bcm2837-rpi-3-b.dtsi"
+
+/ {
+        vmm {
+                net {
+                        br0 {
+                                device_type = "netswitch";
+                                compatible = "bridge";
+                        };
+                };
+        };
+
+    chosen {
+        console = &SERIAL_MU;
+        bootcmd =
+            "vfs mount initrd /",
+            "vfs fdt_load /guests simba /images/mcu.dtb mem0,physical_size,physsize,0x02000000",
+            "devtree attr set /guests/simba/aspace/gic_dist compatible string virt,gic",
+            "devtree attr set /guests/simba/aspace/gic_dist physical_size physsize 0x20000",
+            "devtree node del /guests/simba/aspace/gic_cpu",
+            "guest create simba",
+            "vfs guest_load_list simba /images/nor_flash.list",
+            "guest kick simba",
+            "vserial bind simba/uart0";
+    };
+};

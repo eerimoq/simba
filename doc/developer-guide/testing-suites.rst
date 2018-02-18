@@ -134,6 +134,7 @@ Linux
 - :github-blob:`collections/circular_buffer<tst/collections/circular_buffer/main.c>`
 - :github-blob:`collections/fifo<tst/collections/fifo/main.c>`
 - :github-blob:`collections/hash_map<tst/collections/hash_map/main.c>`
+- :github-blob:`collections/list<tst/collections/list/main.c>`
 - :github-blob:`alloc/circular_heap<tst/alloc/circular_heap/main.c>`
 - :github-blob:`alloc/heap<tst/alloc/heap/main.c>`
 - :github-blob:`text/configfile<tst/text/configfile/main.c>`
@@ -170,11 +171,13 @@ Linux
 - :github-blob:`inet/ssl<tst/inet/ssl/main.c>`
 - :github-blob:`inet/tftp_server<tst/inet/tftp_server/main.c>`
 - :github-blob:`multimedia/midi<tst/multimedia/midi/main.c>`
-- :github-blob:`drivers/software/sensors/bmp280<tst/drivers/software/sensors/bmp280/main.c>`
-- :github-blob:`drivers/software/various/gnss<tst/drivers/software/various/gnss/main.c>`
-- :github-blob:`drivers/software/sensors/hx711<tst/drivers/software/sensors/hx711/main.c>`
+- :github-blob:`drivers/software/network/jtag_soft<tst/drivers/software/network/jtag_soft/main.c>`
 - :github-blob:`drivers/software/network/xbee<tst/drivers/software/network/xbee/main.c>`
 - :github-blob:`drivers/software/network/xbee_client<tst/drivers/software/network/xbee_client/main.c>`
+- :github-blob:`drivers/software/sensors/bmp280<tst/drivers/software/sensors/bmp280/main.c>`
+- :github-blob:`drivers/software/sensors/hx711<tst/drivers/software/sensors/hx711/main.c>`
+- :github-blob:`drivers/software/storage/eeprom_soft<tst/drivers/software/storage/eeprom_soft/main.c>`
+- :github-blob:`drivers/software/various/gnss<tst/drivers/software/various/gnss/main.c>`
 - :github-blob:`science/math<tst/science/math/main.c>`
 - :github-blob:`science/science<tst/science/science/main.c>`
 
@@ -352,4 +355,25 @@ STM32VLDISCOVERY
 WEMOS D1 mini
 -------------
 
+
+Xvisor Raspberry Pi 3
+---------------------
+
+- :github-blob:`kernel/sys<tst/kernel/sys/main.c>`
+- :github-blob:`kernel/thrd<tst/kernel/thrd/main.c>`
+- :github-blob:`kernel/time<tst/kernel/time/main.c>`
+- :github-blob:`kernel/timer<tst/kernel/timer/main.c>`
+- :github-blob:`sync/cond<tst/sync/cond/main.c>`
+- :github-blob:`sync/event<tst/sync/event/main.c>`
+- :github-blob:`sync/mutex<tst/sync/mutex/main.c>`
+- :github-blob:`sync/queue<tst/sync/queue/main.c>`
+- :github-blob:`alloc/heap<tst/alloc/heap/main.c>`
+- :github-blob:`alloc/circular_heap<tst/alloc/circular_heap/main.c>`
+- :github-blob:`debug/log<tst/debug/log/main.c>`
+- :github-blob:`encode/base64<tst/encode/base64/main.c>`
+- :github-blob:`encode/json<tst/encode/json/main.c>`
+- :github-blob:`hash/crc<tst/hash/crc/main.c>`
+- :github-blob:`hash/sha1<tst/hash/sha1/main.c>`
+- :github-blob:`text/std<tst/text/std/main.c>`
+- :github-blob:`text/emacs<tst/text/emacs/main.c>`
 

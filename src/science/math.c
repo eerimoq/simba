@@ -37,6 +37,8 @@
 /* Inverse log base 2 of 10. */
 #define INV_LOG2_10_Q1DOT31 UINT64_C(0x268826a1)
 
+#if CONFIG_FLOAT == 1
+
 float math_radians_to_degrees(float value)
 {
     return (value * 180.0f / MATH_PI);
@@ -46,6 +48,8 @@ float math_degrees_to_radians(float value)
 {
     return (value * MATH_PI / 180.0f);
 }
+
+#endif
 
 /* This implementation is based on Clay. S. Turner's fast binary
    logarithm algorithm[1], and Dan Moulding's C implementation found

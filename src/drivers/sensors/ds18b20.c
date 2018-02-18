@@ -188,6 +188,8 @@ int ds18b20_convert(struct ds18b20_driver_t *self_p)
     return (0);
 }
 
+#if CONFIG_FLOAT == 1
+
 int ds18b20_read(struct ds18b20_driver_t *self_p,
                  const uint8_t *id_p,
                  float *temperature_p)
@@ -209,6 +211,8 @@ int ds18b20_read(struct ds18b20_driver_t *self_p,
     
     return (res);
 }
+
+#endif
 
 int ds18b20_read_fixed_point(struct ds18b20_driver_t *self_p,
                              const uint8_t *id_p,

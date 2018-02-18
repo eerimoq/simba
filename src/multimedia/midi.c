@@ -30,6 +30,8 @@
 
 #include "simba.h"
 
+#if CONFIG_FLOAT == 1
+
 /* MIDI note number to frequency. */
 static float note_to_frequency_table[MIDI_NOTE_MAX] = {
     /* C-1. */
@@ -93,3 +95,5 @@ float midi_note_to_frequency(int note)
 
     return (note_to_frequency_table[note]);
 }
+
+#endif

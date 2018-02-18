@@ -177,6 +177,7 @@ static int hal_init(void)
 
 static int32_t hal_read(struct spiffs_t *fs_p,
                         uint32_t addr,
+
                         uint32_t size,
                         uint8_t *dst_p)
 {
@@ -307,7 +308,9 @@ static int test_read_write_performance(void)
     size_t i;
     static char buf[CHUNK_SIZE_MAX];
     struct time_t start, done, diff;
+#if CONFIG_FLOAT == 1
     float seconds;
+#endif
     size_t written;
     uint32_t total, used;
 
@@ -349,12 +352,14 @@ static int test_read_write_performance(void)
 
             time_get(&done);
             time_subtract(&diff, &done, &start);
+#if CONFIG_FLOAT == 1
             seconds = (diff.seconds + diff.nanoseconds / 1000000000.0);
             std_printf(FSTR("  Wrote %lu bytes in %f seconds "
                             "(%d bytes/s).\r\n"),
                        written,
                        seconds,
                        (int)((float)written / seconds));
+#endif
 
             /* Close it. */
             BTASSERT(spiffs_close(&fs, fd) == 0);

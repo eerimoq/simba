@@ -488,9 +488,7 @@ int harness_run(struct harness_testcase_t *testcases_p)
     module.skipped = 0;
     testcase_p = testcases_p;
 
-#if !defined(ARCH_LINUX)
     thrd_sleep_ms(CONFIG_HARNESS_SLEEP_MS);
-#endif
 
     /* Print a header. */
     std_printf(OSTR("\r\n"));
@@ -518,7 +516,7 @@ int harness_run(struct harness_testcase_t *testcases_p)
         std_printf(OSTR("\r\nenter: %s\r\n"), testcase_p->name_p);
 
         err = testcase_p->callback();
-
+ 
         do {
             entry_p = (struct mock_entry_t *)list_remove_head(&module.mock.list);
 

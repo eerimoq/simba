@@ -38,7 +38,11 @@
 static struct event_t tester_event_tx;
 static struct event_t tester_event_rx;
 
+#if defined(ARCH_ARM64)
+static THRD_STACK(tester_stack, 1024);
+#else
 static THRD_STACK(tester_stack, 512);
+#endif
 
 static void *tester_main(void *arg_p)
 {

@@ -12,7 +12,7 @@ import subprocess
 import glob
 
 
-BOARD_FMT = """{desc}
+BOARD_RST_FMT = """{desc}
 {desc_underline}
 
 Pinout
@@ -167,39 +167,45 @@ def boards_generate(database):
 
         try:
             for application in applications:
-                subprocess.check_call(['make',
-                                       '-s',
-                                       '-C', os.path.join('examples', application),
-                                       'BOARD=' + board,
-                                       'all'])
-                sizes_json = subprocess.check_output(['make',
-                                                      '-s',
-                                                      '-C', os.path.join('examples', application),
-                                                      'BOARD=' + board,
-                                                      'size-json'])
+                subprocess.check_call([
+                    'make',
+                    '-s',
+                    '-C', os.path.join('examples', application),
+                    'BOARD=' + board,
+                    'all'
+                ])
+                sizes_json = subprocess.check_output([
+                    'make',
+                    '-s',
+                    '-C', os.path.join('examples', application),
+                    'BOARD=' + board,
+                    'size-json'
+                ])
                 sizes = json.loads(sizes_json)
-                memory_usage.append('| {application:24} | {program:9} | {data:9} |'.format(
-                    application=application,
-                    program=sizes['program'],
-                    data=sizes['data']))
+                memory_usage.append(
+                    '| {application:24} | {program:9} | {data:9} |'.format(
+                        application=application,
+                        program=sizes['program'],
+                        data=sizes['data']))
         except subprocess.CalledProcessError:
             print('Failed to generate memory footprint data for board {}. '
                   'Skipping board.'.format(board))
             continue
 
-        rst = BOARD_FMT.format(name=board,
-                               desc=data["board_desc"],
-                               desc_underline="=" * len(data["board_desc"]),
-                               homepage=data["board_homepage"],
-                               pinout=data["board_pinout"],
-                               major_features='\n'.join(major_features),
-                               mcu=data["mcu"].replace("/", ""),
-                               drivers='\n'.join(drivers),
-                               default_configuration=default_configuration,
-                               include_extra=include_extra,
-                               targets='\n\n'.join(targets),
-                               memory_usage='\n+-{}-+-----------+-----------+\n'.format(
-                                   24 * '-').join(memory_usage))
+        rst = BOARD_RST_FMT.format(
+            name=board,
+            desc=data["board_desc"],
+            desc_underline="=" * len(data["board_desc"]),
+            homepage=data["board_homepage"],
+            pinout=data["board_pinout"],
+            major_features='\n'.join(major_features),
+            mcu=data["mcu"].replace("/", ""),
+            drivers='\n'.join(drivers),
+            default_configuration=default_configuration,
+            include_extra=include_extra,
+            targets='\n\n'.join(targets),
+            memory_usage='\n+-{}-+-----------+-----------+\n'.format(
+                24 * '-').join(memory_usage))
 
         rst_path = os.path.join("doc", "boards", board + ".rst")
         print("Writing to ", rst_path)

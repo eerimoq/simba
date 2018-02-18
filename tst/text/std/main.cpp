@@ -186,6 +186,8 @@ static int test_vfprintf(void)
     return (0);
 }
 
+#if CONFIG_FLOAT == 1
+
 static int test_sprintf_double(void)
 {
     char buf[128];
@@ -249,6 +251,15 @@ static int test_sprintf_double(void)
 
     return (0);
 }
+
+#else
+
+static int test_sprintf_double(void)
+{
+    return (1);
+}
+
+#endif
 
 static int test_sprintf_unsigned(void)
 {
@@ -503,6 +514,8 @@ static int test_libc(void)
     return (0);
 }
 
+#if CONFIG_FLOAT == 1
+
 static int strtod_test(const char *str_p,
                        int expected_end_offset,
                        double expected_min,
@@ -669,6 +682,20 @@ static int test_strtodfp(void)
 
     return (0);
 }
+
+#else
+
+static int test_strtod(void)
+{
+    return (1);
+}
+
+static int test_strtodfp(void)
+{
+    return (1);
+}
+
+#endif
 
 static int test_hexdump(void)
 {

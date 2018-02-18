@@ -79,7 +79,11 @@ static QUEUE_INIT_DECL(qin, qinbuf, sizeof(qinbuf));
 static char qoutbuf[256];
 static QUEUE_INIT_DECL(qout, qoutbuf, sizeof(qoutbuf));
 
+#if defined(ARCH_ARM64)
+static THRD_STACK(shell_stack, 2048);
+#else
 static THRD_STACK(shell_stack, 1024);
+#endif
 static struct shell_t shell;
 
 #define BUFFER_SIZE 512
@@ -204,7 +208,7 @@ static int test_auto_completion(void)
     BTASSERT(harness_expect(&qout,
                             "\r\n"
                             "bar\r\n"
-#if !defined(ARCH_LINUX) && !defined(ARCH_PPC) && !defined(ARCH_AVR)
+#if !defined(ARCH_LINUX) && !defined(ARCH_PPC) && !defined(ARCH_AVR) && !defined(ARCH_ARM64)
                             "drivers/\r\n"
 #endif
                             "fie\r\n"
