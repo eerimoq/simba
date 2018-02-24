@@ -260,10 +260,12 @@ def testing_generate(database):
         boards = database["boards"].keys()
         boards.sort()
         for board in boards:
-            suites = subprocess.check_output(['make',
-                                              '-s',
-                                              'BOARD=' + board,
-                                              'print-TESTS'])
+            suites = subprocess.check_output([
+                'make',
+                '-s',
+                'BOARD=' + board,
+                'print-TESTS'
+            ])
             print(database["boards"][board]["board_desc"], file=fout)
             print('-' * len(board), file=fout)
             print(file=fout)

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #
 
+from __future__ import print_function
+
 import os
 import subprocess
 import glob
@@ -117,10 +119,14 @@ def main():
 
         # Get board sources.
         src = get_make_variable(board, "SRC").split()
-        src = [s
-               for s in src
-               if s not in ["main.c",
-                            os.path.join("build", board, "settings.c")]]
+        src = [
+            s
+            for s in src
+            if s not in [
+                    "main.c",
+                    os.path.join("build", board, "settings.c")
+            ]
+        ]
         src = [s.replace(simba_root, "") for s in src]
         database["boards"][board]["src"] = src
 
@@ -170,7 +176,7 @@ def main():
                 value = get_make_variable(board, variable)
                 database["mcus"][mcu][variable.lower()] = value.strip()
 
-    print json.dumps(database, indent=4)
+    print(json.dumps(database, indent=4))
 
 
 if __name__ == "__main__":

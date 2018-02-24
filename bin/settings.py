@@ -57,7 +57,9 @@ class Settings(object):
 
         for name in self.settings.keys():
             if len(name) > 40:
-                sys.exit("error: {}: setting name over 40 characters".format(name))
+                sys.exit(
+                    "error: {}: setting name over 40 characters".format(
+                        name))
 
             if name not in sizes:
                 sys.exit("error: {}: no size found for setting".format(name))
