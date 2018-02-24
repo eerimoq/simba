@@ -30,6 +30,7 @@
 
 #include "config.h"
 #include "config_default.h"
+#include "kernel/asm.h"
 
 #define INTC_IACKR                       0xfff48010
 #define INTC_EOIR                        0xfff48018
@@ -56,11 +57,7 @@ _rchw:
  * Entry point of the application. Initializes the CPU and calls the
  * application main function.
  */
-        .globl    _start
-        .type     _start,@function
-        .align    2
-        .size     _start, .L_start_end - _start
-_start:
+ASM_FUNC_BEGIN _start, 2
         se_bl     _ecc_init
 #if CONFIG_SPC5_RELOCATE_INIT == 1
         se_bl     _relocate_init
@@ -86,15 +83,15 @@ _start:
         /* Call the application main function! */
         e_bl      main
 
-.L_start_end:
-        se_b .L_start_end
+.L_start_loop:
+        se_b .L_start_loop
+ASM_FUNC_END _start
 
 /**
  * SRAM ECC initialization by writing zero to all addresses. This
  * implicitly clears the zero segment.
  */
-        .type     _ecc_init,@function
-_ecc_init:
+ASM_FUNC_LOCAL_BEGIN _ecc_init, 2
 #    if CONFIG_SPC5_RAM_CLEAR_ALL == 1
         e_lis     %r3, __ram_begin@h
         e_or2i    %r3, __ram_begin@l
@@ -117,14 +114,14 @@ _ecc_init:
         e_bdnz    .L_ecc_init_loop
 
         se_blr
+ASM_FUNC_END _ecc_init
 
 #if CONFIG_SPC5_RELOCATE_INIT == 1
 
 /**
  * Initialize the relocate segment.
  */
-        .type     _relocate_init,@function
-_relocate_init:
+ASM_FUNC_LOCAL_BEGIN _relocate_init, 2
         e_lis     %r3, __text_end@h
         e_or2i    %r3, __text_end@l
         e_lis     %r4, __relocate_begin@h
@@ -134,7 +131,7 @@ _relocate_init:
 
         /* Skip if the relocate segment empty. */
         cmplw     %r4, %r5
-        e_bge     .L_relocate_init_end
+        e_bge     .L__relocate_init_end
 
         not       %r6, %r4
         add       %r6, %r6, %r5
@@ -149,8 +146,8 @@ _relocate_init:
         e_addi    %r6, %r6, 4
         e_bdnz    .L_relocate_init_loop
 
-.L_relocate_init_end:
         se_blr
+ASM_FUNC_END _relocate_init
 
 #endif
 
@@ -159,8 +156,7 @@ _relocate_init:
 /**
  * Setup interrput handling.
  */
-        .type     _interrupt_init,@function
-_interrupt_init:
+ASM_FUNC_LOCAL_BEGIN _interrupt_init, 2
         /* Interrupt vector prefix register. The base address of the
            interrupt vector.
 
@@ -173,16 +169,14 @@ _interrupt_init:
         mtivpr    %r3
 
         se_blr
-
+ASM_FUNC_END _interrupt_init
+        
 /**
  * External interrupt handler.
  */
 .section .text
 
-        .type     isr_external_input,@function
-        .weak     isr_external_input
-        .size     isr_external_input, .L_isr_external_input_end - isr_external_input
-isr_external_input:
+ASM_FUNC_WEAK_BEGIN isr_external_input, 2
 #if CONFIG_SYSTEM_INTERRUPT_STACK_SIZE == 0
         /* Store registers on the stack to allow an interrupt handler
            written in C. */
@@ -273,18 +267,14 @@ isr_external_input:
 #endif
 
         se_rfi
-.L_isr_external_input_end:
+ASM_FUNC_END isr_external_input
 
 .section .ivor
 
 /**
  * Interrupt vector. Must be aligned to 4096 bytes.
  */
-        .globl    ivor
-        .type     ivor,@object
-        .align    12                              /* 2 ^ 12 = 4096 */
-        .size     ivor, .L_ivor_end - ivor
-ivor:
+ASM_OBJ_BEGIN ivor, 12
         .align    4
         e_b       isr_critical_input
         .align    4
@@ -317,7 +307,7 @@ ivor:
         e_b       isr_instruction_tlb_error
         .align    4
         e_b       isr_debug
-.L_ivor_end:
+ASM_OBJ_END ivor
 
 /**
  * Interrupt debug strings.
@@ -397,214 +387,139 @@ isr_debug_string:
  */
 .section .ivor
 
-        .globl    isr_critical_input
-        .type     isr_critical_input,@function
-        .weak     isr_critical_input
-        .align    4
-        .size     isr_critical_input, .L_isr_critical_input_end - isr_critical_input
-isr_critical_input:
+ASM_FUNC_WEAK_BEGIN isr_critical_input, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_critical_input_string@h
         e_add16i  %r3, %r3, isr_critical_input_string@l
         e_bl      sys_panic
-.L_isr_critical_input_end:
+ASM_FUNC_END isr_critical_input
 
-        .globl    isr_machine_check
-        .type     isr_machine_check,@function
-        .weak     isr_machine_check
-        .align    4
-        .size     isr_machine_check, .L_isr_machine_check_end - isr_machine_check
-isr_machine_check:
+ASM_FUNC_WEAK_BEGIN isr_machine_check, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_machine_check_string@h
         e_add16i  %r3, %r3, isr_machine_check_string@l
         e_bl      sys_panic
-.L_isr_machine_check_end:
+ASM_FUNC_END isr_machine_check
 
-        .globl    isr_data_storage
-        .type     isr_data_storage,@function
-        .weak     isr_data_storage
-        .align    4
-        .size     isr_data_storage, .L_isr_data_storage_end - isr_data_storage
-isr_data_storage:
+ASM_FUNC_WEAK_BEGIN isr_data_storage, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_data_storage_string@h
         e_add16i  %r3, %r3, isr_data_storage_string@l
         e_bl      sys_panic
-.L_isr_data_storage_end:
+ASM_FUNC_END isr_data_storage
 
-        .globl    isr_instruction_storage
-        .type     isr_instruction_storage,@function
-        .weak     isr_instruction_storage
-        .align    4
-        .size     isr_instruction_storage, .L_isr_instruction_storage_end - isr_instruction_storage
-isr_instruction_storage:
+ASM_FUNC_WEAK_BEGIN isr_instruction_storage, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_instruction_storage_string@h
         e_add16i  %r3, %r3, isr_instruction_storage_string@l
         e_bl      sys_panic
-.L_isr_instruction_storage_end:
+ASM_FUNC_END isr_instruction_storage
 
-        .globl    isr_alignment
-        .type     isr_alignment,@function
-        .weak     isr_alignment
-        .align    4
-        .size     isr_alignment, .L_isr_alignment_end - isr_alignment
-isr_alignment:
+ASM_FUNC_WEAK_BEGIN isr_alignment, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_alignment_string@h
         e_add16i  %r3, %r3, isr_alignment_string@l
         e_bl      sys_panic
-.L_isr_alignment_end:
+ASM_FUNC_END isr_alignment
 
-        .globl    isr_program
-        .type     isr_program,@function
-        .weak     isr_program
-        .align    4
-        .size     isr_program, .L_isr_program_end - isr_program
-isr_program:
+ASM_FUNC_WEAK_BEGIN isr_program, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_program_string@h
         e_add16i  %r3, %r3, isr_program_string@l
         e_bl      sys_panic
-.L_isr_program_end:
+ASM_FUNC_END isr_program
 
-        .globl    isr_reserved
-        .type     isr_reserved,@function
-        .weak     isr_reserved
-        .align    4
-        .size     isr_reserved, .L_isr_reserved_end - isr_reserved
-isr_reserved:
+ASM_FUNC_WEAK_BEGIN isr_reserved, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_reserved_string@h
         e_add16i  %r3, %r3, isr_reserved_string@l
         e_bl      sys_panic
-.L_isr_reserved_end:
+ASM_FUNC_END isr_reserved
 
-        .globl    isr_system_call
-        .type     isr_system_call,@function
-        .weak     isr_system_call
-        .align    4
-        .size     isr_system_call, .L_isr_system_call_end - isr_system_call
-isr_system_call:
+ASM_FUNC_WEAK_BEGIN isr_system_call, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_system_call_string@h
         e_add16i  %r3, %r3, isr_system_call_string@l
         e_bl      sys_panic
-.L_isr_system_call_end:
+ASM_FUNC_END isr_system_call
 
-        .globl    isr_auxiliary_processor_unavailable
-        .type     isr_auxiliary_processor_unavailable,@function
-        .weak     isr_auxiliary_processor_unavailable
-        .align    4
-        .size     isr_auxiliary_processor_unavailable, .L_isr_auxiliary_processor_unavailable_end - isr_auxiliary_processor_unavailable
-isr_auxiliary_processor_unavailable:
+ASM_FUNC_WEAK_BEGIN isr_auxiliary_processor_unavailable, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_auxiliary_processor_unavailable_string@h
         e_add16i  %r3, %r3, isr_auxiliary_processor_unavailable_string@l
         e_bl      sys_panic
-.L_isr_auxiliary_processor_unavailable_end:
+ASM_FUNC_END isr_auxiliary_processor_unavailable
 
-        .globl    isr_decrementer
-        .type     isr_decrementer,@function
-        .weak     isr_decrementer
-        .align    4
-        .size     isr_decrementer, .L_isr_decrementer_end - isr_decrementer
-isr_decrementer:
+ASM_FUNC_WEAK_BEGIN isr_decrementer, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_decrementer_string@h
         e_add16i  %r3, %r3, isr_decrementer_string@l
         e_bl      sys_panic
-.L_isr_decrementer_end:
+ASM_FUNC_END isr_decrementer
 
-        .globl    isr_fixed_interval_timer_interrupt
-        .type     isr_fixed_interval_timer_interrupt,@function
-        .weak     isr_fixed_interval_timer_interrupt
-        .align    4
-        .size     isr_fixed_interval_timer_interrupt, .L_isr_fixed_interval_timer_interrupt_end - isr_fixed_interval_timer_interrupt
-isr_fixed_interval_timer_interrupt:
+ASM_FUNC_WEAK_BEGIN isr_fixed_interval_timer_interrupt, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_fixed_interval_timer_interrupt_string@h
         e_add16i  %r3, %r3, isr_fixed_interval_timer_interrupt_string@l
         e_bl      sys_panic
-.L_isr_fixed_interval_timer_interrupt_end:
+ASM_FUNC_END isr_fixed_interval_timer_interrupt
 
-        .globl    isr_watchdog_timer_interrupt
-        .type     isr_watchdog_timer_interrupt,@function
-        .weak     isr_watchdog_timer_interrupt
-        .align    4
-        .size     isr_watchdog_timer_interrupt, .L_isr_watchdog_timer_interrupt_end - isr_watchdog_timer_interrupt
-isr_watchdog_timer_interrupt:
+ASM_FUNC_WEAK_BEGIN isr_watchdog_timer_interrupt, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_watchdog_timer_interrupt_string@h
         e_add16i  %r3, %r3, isr_watchdog_timer_interrupt_string@l
         e_bl      sys_panic
-.L_isr_watchdog_timer_interrupt_end:
+ASM_FUNC_END isr_watchdog_timer_interrupt
 
-        .globl    isr_data_tlb_error
-        .type     isr_data_tlb_error,@function
-        .weak     isr_data_tlb_error
-        .align    4
-        .size     isr_data_tlb_error, .L_isr_data_tlb_error_end - isr_data_tlb_error
-isr_data_tlb_error:
+ASM_FUNC_WEAK_BEGIN isr_data_tlb_error, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_data_tlb_error_string@h
         e_add16i  %r3, %r3, isr_data_tlb_error_string@l
         e_bl      sys_panic
-.L_isr_data_tlb_error_end:
+ASM_FUNC_END isr_data_tlb_error
 
-        .globl    isr_instruction_tlb_error
-        .type     isr_instruction_tlb_error,@function
-        .weak     isr_instruction_tlb_error
-        .align    4
-        .size     isr_instruction_tlb_error, .L_isr_instruction_tlb_error_end - isr_instruction_tlb_error
-isr_instruction_tlb_error:
+ASM_FUNC_WEAK_BEGIN isr_instruction_tlb_error, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_instruction_tlb_error_string@h
         e_add16i  %r3, %r3, isr_instruction_tlb_error_string@l
         e_bl      sys_panic
-.L_isr_instruction_tlb_error_end:
+ASM_FUNC_END isr_instruction_tlb_error
 
-        .globl    isr_debug
-        .type     isr_debug,@function
-        .weak     isr_debug
-        .align    4
-        .size     isr_debug, .L_isr_debug_end - isr_debug
-isr_debug:
+ASM_FUNC_WEAK_BEGIN isr_debug, 4
         e_stwu    %r1, -8(%r1)
         mfsrr0    %r0
         se_stw    %r0, 12(%r1)
         e_lis     %r3, isr_debug_string@h
         e_add16i  %r3, %r3, isr_debug_string@l
         e_bl      sys_panic
-.L_isr_debug_end:
+ASM_FUNC_END isr_debug
 
 #endif

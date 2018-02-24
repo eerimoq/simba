@@ -43,10 +43,7 @@
  * @param[in] c_esr C exception service routine to call.
  */
 .macro C_ESR_WRAPPER, esr, c_esr
-        .globl  \esr
-        .weak   \esr
-        .type   \esr,@function
-\esr:
+ASM_FUNC_WEAK_BEGIN \esr, 4
         /* Store the context. */
         sub     sp, sp, 256
 
@@ -92,6 +89,7 @@
 
         /* Return from the exception. */
         eret
+ASM_FUNC_END \esr
 .endm
 
 /**
@@ -108,7 +106,7 @@
 /**
  * The application entry point.
  */
-ASM_FUNC_BEGIN app_entry
+ASM_FUNC_BEGIN app_entry, 4
         ldr     x0, main_stack_end
         mov     sp, x0
 
@@ -156,7 +154,6 @@ ASM_FUNC_BEGIN app_entry
 .app_entry_end_loop:
         b       .app_entry_end_loop
         nop
-
 ASM_FUNC_END app_entry
 
 /* Linker script definitions. */
@@ -181,8 +178,7 @@ zero_end:
 /**
  * The vector table with one entry for each exception.
  */
-        .align  12
-vector_table:
+ASM_OBJ_BEGIN vector_table, 12
         /* Current EL with SP0. */
         VECTOR_TABLE_ENTRY esr_none
         VECTOR_TABLE_ENTRY esr_none
@@ -203,6 +199,7 @@ vector_table:
         VECTOR_TABLE_ENTRY esr_none
         VECTOR_TABLE_ENTRY esr_none
         VECTOR_TABLE_ENTRY esr_none
+ASM_OBJ_END vector_table
 
 /* C exception service routine wrappers. Use ESR() in the C code to
    override. */

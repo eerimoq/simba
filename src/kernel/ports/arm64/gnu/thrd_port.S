@@ -86,7 +86,6 @@ ASM_FUNC_BEGIN thrd_port_swap
         add	sp, sp, 256
 
         ret
-
 ASM_FUNC_END thrd_port_swap
 
 /**
@@ -97,5 +96,4 @@ ASM_FUNC_BEGIN thrd_port_main
         blr     x1
         bl      terminate
         nop
-
 ASM_FUNC_END thrd_port_main

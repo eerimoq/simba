@@ -28,6 +28,8 @@
  * This file is part of the Simba project.
  */
 
+#include "kernel/asm.h"
+        
 /**
  * Perform a thread context switch.
  *
@@ -36,11 +38,7 @@
  * @param[in] r3 Thread to swap in.
  * @param[in] r4 Thread to swap out.
  */
-        .globl    thrd_port_swap
-        .type     thrd_port_swap,@function
-        .align    4
-        .size     thrd_port_swap, .L_thrd_port_swap_end - thrd_port_swap
-thrd_port_swap:
+ASM_FUNC_BEGIN thrd_port_swap, 4
         /* Store registers on the stack. lr is the return address. */
         e_add16i  %r1, %r1, -84
 
@@ -73,16 +71,12 @@ thrd_port_swap:
         e_add16i  %r1, %r1, 84
 
         se_blr
-.L_thrd_port_swap_end:
+ASM_FUNC_END thrd_port_swap
 
 /**
  * Thread entry function wrapper.
  */
-        .globl    thrd_port_main
-        .type     thrd_port_main,@function
-        .align    4
-        .size     thrd_port_main, .L_thrd_port_main_end - thrd_port_main
-thrd_port_main:
+ASM_FUNC_BEGIN thrd_port_main, 4
         /* Enable interrupts. */
         wrteei    1
 
@@ -93,4 +87,4 @@ thrd_port_main:
 
         /* Call termination function. */
         e_bl      terminate
-.L_thrd_port_main_end:
+ASM_FUNC_END thrd_port_main
