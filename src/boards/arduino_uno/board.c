@@ -36,19 +36,19 @@ int board_pin_string_to_device_index(const char *str_p)
 
     if (tolower((int)str_p[0]) == 'd') {
         if (std_strtol(&str_p[1], &pin) == NULL) {
-            return (-1);
+            return (-ENODEV);
         }
         
         if ((pin < 2) || (pin > 13)) {
-            return (-1);
+            return (-ENODEV);
         }
     } else if (tolower((int)str_p[0]) == 'a') {
         if (std_strtol(&str_p[1], &pin) == NULL) {
-            return (-1);
+            return (-ENODEV);
         }
         
         if ((pin < 0) || (pin > 5)) {
-            return (-1);
+            return (-ENODEV);
         }
         
         pin += 14;
@@ -59,7 +59,7 @@ int board_pin_string_to_device_index(const char *str_p)
     } else if (strcmp(str_p, "tx") == 0) {
         pin = 1;
     } else {
-        return (-1);
+        return (-ENODEV);
     }
 
     return (pin);

@@ -35,11 +35,11 @@ int board_pin_string_to_device_index(const char *str_p)
     long pin;
 
     if (std_strtol(&str_p[0], &pin) == NULL) {
-        return (-1);
+        return (-ENODEV);
     }
 
     if ((pin < 0) || (pin >= PIN_DEVICE_MAX)) {
-        return (-1);
+        return (-ENODEV);
     }
 
     return (pin);

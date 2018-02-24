@@ -38,27 +38,27 @@ int board_pin_string_to_device_index(const char *str_p)
 
     /* Get gpio and bit. */
     if (str_p[0] != 'p') {
-        return (-1);
+        return (-ENODEV);
     }
 
     port = tolower((int)str_p[1]);
 
     if ((port < 'a') || (port > 'd')) {
-        return (-1);
+        return (-ENODEV);
     }
 
     gpio = (port - 'a');
 
     if (std_strtol(&str_p[2], &bit) == NULL) {
-        return (-1);
+        return (-ENODEV);
     }
 
     if (bit < 0) {
-        return (-1);
+        return (-ENODEV);
     }
 
     if ((gpio == 'd' && bit > 3) || (bit > 15)) {
-        return (-1);
+        return (-ENODEV);
     }
 
     return (16 * gpio + bit);

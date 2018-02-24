@@ -37,7 +37,7 @@ int board_pin_string_to_device_index(const char *str_p)
     int pin;
     long value;
 
-    pin = -1;
+    pin = -ENODEV;
 
     if (strcmp(str_p, "led") == 0) {
         pin = 17;

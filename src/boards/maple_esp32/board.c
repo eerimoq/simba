@@ -36,7 +36,7 @@ int board_pin_string_to_device_index(const char *str_p)
 
     if (strncmp(&str_p[0], "gpio", 4) == 0) {
         if (std_strtol(&str_p[4], &pin) == NULL) {
-            return (-1);
+            return (-ENODEV);
         }
 
         if ((pin >= 0) && (pin <= 27)) {
@@ -46,12 +46,12 @@ int board_pin_string_to_device_index(const char *str_p)
         } else if (pin == 39) {
             pin -= 4;
         } else {
-            return (-1);
+            return (-ENODEV);
         }
     } else if (strcmp(str_p, "led") == 0) {
         pin = 16;
     } else {
-        return (-1);
+        return (-ENODEV);
     }
 
     return (pin);

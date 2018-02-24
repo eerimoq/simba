@@ -70,10 +70,10 @@ static int cmd_set_mode_cb(int argc,
     /* Get pin. */
     pin = board_pin_string_to_device_index(argv[1]);
 
-    if (pin == -1) {
+    if (pin < 0) {
         std_fprintf(out_p, OSTR("%s: bad pin\r\n"), argv[1]);
 
-        return (-ENODEV);
+        return (pin);
     }
 
     /* Get mode. */
@@ -123,10 +123,10 @@ static int cmd_read_cb(int argc,
     /* Get pin. */
     pin = board_pin_string_to_device_index(argv[1]);
 
-    if (pin == -1) {
+    if (pin < 0) {
         std_fprintf(out_p, OSTR("%s: bad pin\r\n"), argv[1]);
 
-        return (-ENODEV);
+        return (pin);
     }
 
     value = pin_device_read(&pin_device[pin]);
@@ -162,10 +162,10 @@ static int cmd_write_cb(int argc,
     /* Get pin. */
     pin = board_pin_string_to_device_index(argv[1]);
 
-    if (pin == -1) {
+    if (pin < 0) {
         std_fprintf(out_p, OSTR("%s: bad pin\r\n"), argv[1]);
 
-        return (-ENODEV);
+        return (pin);
     }
 
     /* Get mode. */

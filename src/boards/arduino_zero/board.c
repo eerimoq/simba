@@ -36,7 +36,7 @@ int board_pin_string_to_device_index(const char *str_p)
 
     if (tolower((int)str_p[0]) == 'd') {
         if (std_strtol(&str_p[1], &pin) == NULL) {
-            return (-1);
+            return (-ENODEV);
         }
 
         switch (pin) {
@@ -96,11 +96,11 @@ int board_pin_string_to_device_index(const char *str_p)
         case 51: pin = (SAM_PC + 12); break;
         case 52: pin = (SAM_PB + 21); break;
         case 53: pin = (SAM_PB + 14); break;
-        default: return (-1);
+        default: return (-ENODEV);
         }
     } else if (tolower((int)str_p[0]) == 'a') {
         if (std_strtol(&str_p[1], &pin) == NULL) {
-            return (-1);
+            return (-ENODEV);
         }
 
         switch (pin) {
@@ -119,12 +119,12 @@ int board_pin_string_to_device_index(const char *str_p)
             pin = (SAM_PB + 17 - 8 + pin);
             break;
         default:
-            return (-1);
+            return (-ENODEV);
         }
     } else if (strcmp(str_p, "led") == 0) {
         pin = (SAM_PB + 27);
     } else {
-        return (-1);
+        return (-ENODEV);
     }
 
     return (pin);

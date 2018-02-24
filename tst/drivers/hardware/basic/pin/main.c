@@ -337,7 +337,10 @@ int main()
         { test_input_pull_down, "test_input_pull_down" },
         { test_device_output, "test_device_output" },
         { test_device_output_open_drain, "test_device_output_open_drain" },
-        { test_device_output_open_drain_pull_up, "test_device_output_open_drain_pull_up" },
+        {
+            test_device_output_open_drain_pull_up,
+            "test_device_output_open_drain_pull_up"
+        },
         { test_device_input, "test_device_input" },
         { test_device_input_pull_up, "test_device_input_pull_up" },
         { test_device_input_pull_down, "test_device_input_pull_down" },

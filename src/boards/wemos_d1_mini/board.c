@@ -51,7 +51,7 @@ int board_pin_string_to_device_index(const char *str_p)
 
     if (strncmp(&str_p[0], "gpio", 4) == 0) {
         if (std_strtol(&str_p[4], &pin) == NULL) {
-            return (-1);
+            return (-ENODEV);
         }
 
         switch (pin) {
@@ -68,22 +68,22 @@ int board_pin_string_to_device_index(const char *str_p)
             break;
 
         default:
-            return (-1);
+            return (-ENODEV);
         }
     } else if ((str_p[0] == 'd') || (str_p[0] == 'D')) {
         if (std_strtol(&str_p[1], &pin) == NULL) {
-            return (-1);
+            return (-ENODEV);
         }
 
         if ((pin < 0) || (pin >= membersof(digital_pin_map))) {
-            return (-1);
+            return (-ENODEV);
         }
 
         pin = digital_pin_map[pin];
     } else if (strcmp(str_p, "led") == 0) {
         pin = 2;
     } else {
-        return (-1);
+        return (-ENODEV);
     }
 
     return (pin);
