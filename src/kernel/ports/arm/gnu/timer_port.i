@@ -35,7 +35,8 @@ static int timer_port_module_init(void)
 
 static int timer_port_high_resolution_init(
     struct timer_t *self_p,
-    const struct time_t *timeout_p)
+    const struct time_t *timeout_p,
+    int flags)
 {
     return (-ENOSYS);
 }

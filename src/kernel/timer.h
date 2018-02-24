@@ -42,12 +42,6 @@
  */
 #define TIMER_PERIODIC        (1 << 0)
 
-/**
- * High resolution timer, if supported by selected port. May not be
- * combined with TIMER_PERIODIC.
- */
-#define TIMER_HIGH_RESOLUTION (1 << 1)
-
 /** Timer callback prototype. */
 typedef void (*timer_callback_t)(void *arg_p);
 
@@ -77,8 +71,8 @@ int timer_module_init(void);
  * callback. The timer resolution directly depends on the system tick
  * frequency and is rounded up to the closest possible value. This
  * applies to both single shot and periodic timers. Some ports support
- * high resolution single shot timers, which often have higher
- * resolution than the system tick.
+ * high resolution timers, which often have higher resolution than the
+ * system tick.
  *
  * @param[in] self_p Timer object to initialize with given parameters.
  * @param[in] timeout_p The timer timeout value.
@@ -86,9 +80,7 @@ int timer_module_init(void);
  *                     from interrupt context.
  * @param[in] arg_p Function callback argument. Passed to the callback
  *                  when the timer expires.
- * @param[in] flags Set TIMER_PERIODIC for periodic timer. Set
- *                  TIMER_HIGH_RESOLUTION for high resolution timer. A
- *                  high resolution timer cannot be periodic.
+ * @param[in] flags Set TIMER_PERIODIC for periodic timer.
  *
  * @return zero(0) or negative error code.
  */

@@ -30,6 +30,11 @@
 
 #include "simba.h"
 
+/**
+ * High resolution timer.
+ */
+#define TIMER_HIGH_RESOLUTION (1 << 1)
+
 #include "timer_port.i"
 
 struct timer_list_t {
@@ -212,25 +217,20 @@ int timer_init(struct timer_t *self_p,
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(timeout_p != NULL, EINVAL);
     ASSERTN(callback != NULL, EINVAL);
-    ASSERTN(!((flags & TIMER_HIGH_RESOLUTION)
-              && (flags & TIMER_PERIODIC)), EINVAL);
 
     int res;
 
-    self_p->timeout = t2st(timeout_p);
+    res = timer_port_high_resolution_init(self_p,
+                                          timeout_p,
+                                          flags);
 
-    if (self_p->timeout == 0) {
-        self_p->timeout = 1;
-    }
+    if (res == 0) {
+        flags |= TIMER_HIGH_RESOLUTION;
+    } else {
+        self_p->timeout = t2st(timeout_p);
 
-    if (flags & TIMER_HIGH_RESOLUTION) {
-        res = timer_port_high_resolution_init(self_p,
-                                              timeout_p);
-
-        if (res == 0) {
-            flags |= TIMER_HIGH_RESOLUTION;
-        } else {
-            flags &= ~TIMER_HIGH_RESOLUTION;
+        if (self_p->timeout == 0) {
+            self_p->timeout = 1;
         }
     }
 

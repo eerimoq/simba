@@ -864,7 +864,7 @@ int thrd_suspend_isr(const struct time_t *timeout_p)
                            timeout_p,
                            on_suspend_timer_expired,
                            thrd_p,
-                           TIMER_HIGH_RESOLUTION);
+                           0);
                 timer_start_isr(&timer);
             }
         }
