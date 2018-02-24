@@ -23,6 +23,7 @@ export PATH=$PATH:$(readlink -f ../dfu-util/src)
 # nrfjprog (nRF5)
 export PATH=$PATH:$(readlink -f ../nrf/nrfjprog)
 
+# The root of the simba repository.
 export SIMBA_ROOT=$(readlink -f .)
 
 export PYLINTRC=$(readlink -f environment/pylintrc)
@@ -38,12 +39,16 @@ if [ -f ~/.simbarc ]; then
     source ~/.simbarc
 fi
 
+# ESP IDF path.
 export IDF_PATH=${SIMBA_ROOT}/3pp/esp32/esp-idf
 
+# Xvisor root.
 export XVISOR_ROOT=${SIMBA_ROOT}/3pp/xvisor
 
+# ARM toolchains.
 export PATH=$PATH:$(readlink -f ../gcc-linaro-7.2.1-2017.11-x86_64_aarch64-elf/bin)
 export PATH=$PATH:$(readlink -f ../gcc-linaro-7.2.1-2017.11-x86_64_aarch64-linux-gnu/bin)
 
+# PowerPC toolchain.
 export FREESCALE_POWERPC_EABIVLE_ROOT=$(readlink -f ../../Freescale/S32_Power_v1.1/Cross_Tools/powerpc-eabivle-4_9)
 export PATH=${PATH}:${FREESCALE_POWERPC_EABIVLE_ROOT}/bin
