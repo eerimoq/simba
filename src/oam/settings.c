@@ -52,6 +52,24 @@ extern const FAR struct setting_t settings[];
 const FAR uint8_t settings_default[CONFIG_SETTINGS_AREA_SIZE]
 __attribute__ ((weak)) = { 0xff, };
 
+static const FAR struct setting_t *get_setting_by_name(
+    const char *name_p)
+{
+    const FAR struct setting_t *setting_p;
+
+    setting_p = &settings[0];
+
+    while (setting_p->name_p != NULL) {
+        if (std_strcmp(name_p, setting_p->name_p) == 0) {
+            return (setting_p);
+        }
+
+        setting_p++;
+    }
+
+    return (NULL);
+}
+
 #if CONFIG_SETTINGS_FS_COMMAND_LIST == 1
 
 static int cmd_list_cb(int argc,
@@ -144,7 +162,29 @@ static int cmd_reset_cb(int argc,
                         void *arg_p,
                         void *call_arg_p)
 {
-    return (settings_reset());
+    const FAR struct setting_t *setting_p;
+
+    if (argc > 2) {
+        std_fprintf(chout_p, OSTR("Usage: reset [<name>]\r\n"));
+
+        return (-EINVAL);
+    }
+
+    if (argc == 1) {
+        return (settings_reset_all());
+    } else {
+        setting_p = get_setting_by_name(argv[1]);
+
+        if (setting_p == NULL) {
+            std_fprintf(chout_p, OSTR("%s: setting not found\r\n"), argv[1]);
+
+            return (-EINVAL);
+        }
+
+        return (settings_reset(setting_p->address, setting_p->size));
+    }
+
+    return (-EINVAL);
 }
 
 #endif
@@ -169,63 +209,58 @@ static int cmd_read_cb(int argc,
         return (-EINVAL);
     }
 
-    /* Find the setting in the settings array. */
-    setting_p = &settings[0];
+    setting_p = get_setting_by_name(argv[1]);
 
-    while (setting_p->name_p != NULL) {
-        if (std_strcmp(argv[1], setting_p->name_p) == 0) {
-            switch (setting_p->type) {
+    if (setting_p == NULL) {
+        std_fprintf(chout_p, OSTR("%s: setting not found\r\n"), argv[1]);
 
-            case setting_type_int32_t:
-                int32 = 0;
-                settings_read(&int32, setting_p->address, setting_p->size);
-                std_fprintf(chout_p, OSTR("%ld\r\n"), (long)int32);
+        return (-EINVAL);
+    }
+
+    switch (setting_p->type) {
+
+    case setting_type_int32_t:
+        int32 = 0;
+        settings_read(&int32, setting_p->address, setting_p->size);
+        std_fprintf(chout_p, OSTR("%ld\r\n"), (long)int32);
+        break;
+
+    case setting_type_string_t:
+        for (i = 0; i < setting_p->size; i++) {
+            buf[0] = '\0';
+            settings_read(&buf[0], setting_p->address + i, 1);
+
+            if (buf[0] == '\0') {
                 break;
+            }
 
-            case setting_type_string_t:
-                for (i = 0; i < setting_p->size; i++) {
-                    buf[0] = '\0';
-                    settings_read(&buf[0], setting_p->address + i, 1);
+            std_fprintf(chout_p, OSTR("%c"), buf[0]);
+        }
 
-                    if (buf[0] == '\0') {
-                        break;
-                    }
-
-                    std_fprintf(chout_p, OSTR("%c"), buf[0]);
-                }
-
-                std_fprintf(chout_p, OSTR("\r\n"));
-                break;
+        std_fprintf(chout_p, OSTR("\r\n"));
+        break;
 
 #if CONFIG_SETTINGS_BLOB == 1
 
-            case setting_type_blob_t:
-                for (i = 0; i < setting_p->size; i++) {
-                    buf[0] = 0;
-                    settings_read(&buf[0], setting_p->address + i, 1);
-                    std_fprintf(chout_p, OSTR("%02x"), buf[0] & 0xff);
-                }
+    case setting_type_blob_t:
+        for (i = 0; i < setting_p->size; i++) {
+            buf[0] = 0;
+            settings_read(&buf[0], setting_p->address + i, 1);
+            std_fprintf(chout_p, OSTR("%02x"), buf[0] & 0xff);
+        }
 
-                std_fprintf(chout_p, OSTR("\r\n"));
-                break;
+        std_fprintf(chout_p, OSTR("\r\n"));
+        break;
 
 #endif
 
-            default:
-                std_fprintf(chout_p,
-                            OSTR("bad setting type %d\r\n"),
-                            setting_p->type);
-            }
-
-            return (0);
-        }
-
-        setting_p++;
+    default:
+        std_fprintf(chout_p,
+                    OSTR("bad setting type %d\r\n"),
+                    setting_p->type);
     }
 
-    std_fprintf(chout_p, OSTR("%s: setting not found\r\n"), argv[1]);
-
-    return (-EINVAL);
+    return (0);
 }
 
 #endif
@@ -253,104 +288,129 @@ static int cmd_write_cb(int argc,
         return (-EINVAL);
     }
 
-    /* Find the setting in the settings array. */
-    setting_p = &settings[0];
+    setting_p = get_setting_by_name(argv[1]);
 
-    while (setting_p->name_p != NULL) {
-        if (std_strcmp(argv[1], setting_p->name_p) == 0) {
-            switch (setting_p->type) {
+    if (setting_p == NULL) {
+        std_fprintf(chout_p, OSTR("%s: setting not found\r\n"), argv[1]);
 
-            case setting_type_int32_t:
-                if (std_strtol(argv[2], &value) == NULL) {
-                    return (-EINVAL);
-                }
+        return (-EINVAL);
+    }
 
-                /* Range check. */
-                if ((value > 2147483647) || (value < -2147483648)) {
-                    std_fprintf(chout_p,
-                                OSTR("%ld: value out of range\r\n"),
-                                value);
-                    return (-EINVAL);
-                }
+    switch (setting_p->type) {
 
-                int32 = (int32_t)value;
-                settings_write(setting_p->address, &int32, setting_p->size);
-                break;
+    case setting_type_int32_t:
+        if (std_strtol(argv[2], &value) == NULL) {
+            return (-EINVAL);
+        }
 
-            case setting_type_string_t:
-                /* Range check. */
-                if (strlen(argv[2]) >= setting_p->size) {
-                    std_fprintf(chout_p,
-                                OSTR("%s: string too long\r\n"),
-                                argv[2]);
-                    return (-EINVAL);
-                }
+        /* Range check. */
+        if ((value > 2147483647) || (value < -2147483648)) {
+            std_fprintf(chout_p,
+                        OSTR("%ld: value out of range\r\n"),
+                        value);
+            return (-EINVAL);
+        }
 
-                settings_write(setting_p->address, argv[2], setting_p->size);
-                break;
+        int32 = (int32_t)value;
+        settings_write(setting_p->address, &int32, setting_p->size);
+        break;
+
+    case setting_type_string_t:
+        /* Range check. */
+        if (strlen(argv[2]) >= setting_p->size) {
+            std_fprintf(chout_p,
+                        OSTR("%s: string too long\r\n"),
+                        argv[2]);
+            return (-EINVAL);
+        }
+
+        settings_write(setting_p->address, argv[2], setting_p->size);
+        break;
 
 #if CONFIG_SETTINGS_BLOB == 1
 
-            case setting_type_blob_t:
-                /* Range check. */
-                size = DIV_CEIL(strlen(argv[2]), 2);
+    case setting_type_blob_t:
+        /* Range check. */
+        size = DIV_CEIL(strlen(argv[2]), 2);
 
-                if (size != setting_p->size) {
-                    std_fprintf(chout_p,
-                                OSTR("%u: bad blob data length\r\n"),
-                                size);
-                    return (-EINVAL);
-                }
+        if (size != setting_p->size) {
+            std_fprintf(chout_p,
+                        OSTR("%u: bad blob data length\r\n"),
+                        size);
+            return (-EINVAL);
+        }
 
-                /* For odd number of bytes the check will fail since
-                   the null termination is not a hexadecimal digit. */
-                for (i = 0; i < 2 * size; i += 2) {
-                    if (!(isxdigit((int)argv[2][i])
-                          && isxdigit((int)argv[2][i + 1]))) {
-                        std_fprintf(chout_p,
-                                    OSTR("%s: bad blob data\r\n"),
-                                    argv[2]);
-                        return (-EINVAL);
-                    }
-                }
+        /* For odd number of bytes the check will fail since
+           the null termination is not a hexadecimal digit. */
+        for (i = 0; i < 2 * size; i += 2) {
+            if (!(isxdigit((int)argv[2][i])
+                  && isxdigit((int)argv[2][i + 1]))) {
+                std_fprintf(chout_p,
+                            OSTR("%s: bad blob data\r\n"),
+                            argv[2]);
+                return (-EINVAL);
+            }
+        }
 
-                /* For std_strtol(). */
-                buf[0] = '0';
-                buf[1] = 'x';
-                buf[4] = '\0';
+        /* For std_strtol(). */
+        buf[0] = '0';
+        buf[1] = 'x';
+        buf[4] = '\0';
 
-                /* argv pointers shall not be const in the furute. */
-                buf_p = (char *)argv[2];
+        /* argv pointers shall not be const in the furute. */
+        buf_p = (char *)argv[2];
 
-                for (i = 0; i < size; i++) {
-                    memcpy(&buf[2], &argv[2][2 * i], 2);
-                    (void)std_strtol(&buf[0], &value);
-                    *buf_p++ = value;
-                }
+        for (i = 0; i < size; i++) {
+            memcpy(&buf[2], &argv[2][2 * i], 2);
+            (void)std_strtol(&buf[0], &value);
+            *buf_p++ = value;
+        }
 
-                settings_write(setting_p->address, argv[2], size);
-                break;
+        settings_write(setting_p->address, argv[2], size);
+        break;
 
 #endif
 
-            default:
-                std_fprintf(chout_p,
-                            OSTR("bad setting type %d\r\n"),
-                            setting_p->type);
-            }
-
-            return (0);
-        }
-
-        setting_p++;
+    default:
+        std_fprintf(chout_p,
+                    OSTR("bad setting type %d\r\n"),
+                    setting_p->type);
     }
 
-    std_fprintf(chout_p, OSTR("%s: setting not found\r\n"), argv[1]);
-
-    return (-EINVAL);
+    return (0);
 }
 
 #endif
+
+static int reset(size_t address, size_t size)
+{
+    size_t i;
+    size_t left;
+    uint8_t buf[128];
+
+    left = size;
+
+    while (left > 0) {
+        if (left < sizeof(buf)) {
+            size = left;
+        } else {
+            size = sizeof(buf);
+        }
+
+        for (i = 0; i < size; i++) {
+            buf[i] = settings_default[address + i];
+        }
+
+        if (nvm_write(address, &buf[0], size) != size) {
+            return (-1);
+        }
+
+        address += size;
+        left -= size;
+    }
+
+    return (0);
+}
 
 int settings_module_init(void)
 {
@@ -412,6 +472,14 @@ ssize_t settings_write(size_t dst, const void *src_p, size_t size)
     return (nvm_write(dst, src_p, size));
 }
 
+int settings_reset(size_t address, size_t size)
+{
+    ASSERTN(address < sizeof(settings_default), EINVAL);
+    ASSERTN((address + size) <= sizeof(settings_default), EINVAL);
+
+    return (reset(address, size));
+}
+
 ssize_t settings_read_by_name(const char *name_p,
                               void *dst_p,
                               size_t size)
@@ -422,22 +490,17 @@ ssize_t settings_read_by_name(const char *name_p,
 
     const FAR struct setting_t *setting_p;
 
-    /* Find the setting in the settings array. */
-    setting_p = &settings[0];
+    setting_p = get_setting_by_name(name_p);
 
-    while (setting_p->name_p != NULL) {
-        if (std_strcmp(name_p, setting_p->name_p) == 0) {
-            if (size > setting_p->size) {
-                return (-1);
-            }
-
-            return (settings_read(dst_p, setting_p->address, size));
-        }
-
-        setting_p++;
+    if (setting_p == NULL) {
+        return (-EINVAL);
     }
 
-    return (-1);
+    if (size > setting_p->size) {
+        return (-EINVAL);
+    }
+
+    return (settings_read(dst_p, setting_p->address, size));
 }
 
 ssize_t settings_write_by_name(const char *name_p,
@@ -450,53 +513,40 @@ ssize_t settings_write_by_name(const char *name_p,
 
     const FAR struct setting_t *setting_p;
 
-    /* Find the setting in the settings array. */
-    setting_p = &settings[0];
+    setting_p = get_setting_by_name(name_p);
 
-    while (setting_p->name_p != NULL) {
-        if (std_strcmp(name_p, setting_p->name_p) == 0) {
-            if (size > setting_p->size) {
-                return (-1);
-            }
-
-            return (settings_write(setting_p->address, src_p, size));
-        }
-
-        setting_p++;
+    if (setting_p == NULL) {
+        return (-EINVAL);
     }
 
-    return (-1);
+    if (size > setting_p->size) {
+        return (-EINVAL);
+    }
+
+    return (settings_write(setting_p->address, src_p, size));
 }
 
-int settings_reset()
+int settings_reset_by_name(const char *name_p,
+                           size_t size)
 {
-    size_t i;
-    size_t size;
-    size_t offset;
-    size_t left;
-    uint8_t buf[128];
+    ASSERTN(name_p != NULL, EINVAL);
 
-    offset = 0;
-    left = sizeof(settings_default);
+    const FAR struct setting_t *setting_p;
 
-    while (left > 0) {
-        if (left < sizeof(buf)) {
-            size = left;
-        } else {
-            size = sizeof(buf);
-        }
+    setting_p = get_setting_by_name(name_p);
 
-        for (i = 0; i < size; i++) {
-            buf[i] = settings_default[offset + i];
-        }
-
-        if (nvm_write(offset, &buf[0], size) != size) {
-            return (-1);
-        }
-
-        offset += size;
-        left -= size;
+    if (setting_p == NULL) {
+        return (-EINVAL);
     }
 
-    return (0);
+    if (size > setting_p->size) {
+        return (-EINVAL);
+    }
+
+    return (reset(setting_p->address, size));
+}
+
+int settings_reset_all()
+{
+    return (reset(0, sizeof(settings_default)));
 }

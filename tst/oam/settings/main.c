@@ -35,7 +35,15 @@ static struct queue_t queue;
 
 static int test_reset(void)
 {
-    BTASSERTI(settings_reset(), ==, 0);
+    BTASSERTI(settings_reset(SETTING_INT32_ADDR,
+                             SETTING_INT32_SIZE), ==, 0);
+    BTASSERTI(settings_reset_by_name("int32",
+                                     SETTING_INT32_SIZE), ==, 0);
+    BTASSERTI(settings_reset_by_name("int33",
+                                     SETTING_INT32_SIZE), ==, -EINVAL);
+    BTASSERTI(settings_reset_by_name("int32",
+                                     SETTING_INT32_SIZE + 1), ==, -EINVAL);
+    BTASSERTI(settings_reset_all(), ==, 0);
 
     return (0);
 }
@@ -212,11 +220,16 @@ static int test_cmd_reset(void)
 #if CONFIG_SETTINGS_FS_COMMAND_RESET == 1
     char buf[64];
 
-    /* Call the list command and validate the output. */
+    /* Reset the blob value by name value and validate it. */
+    strcpy(buf, "oam/settings/reset blob");
+    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, 0);
+    strcpy(buf, "oam/settings/read blob");
+    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, 0);
+    BTASSERTI(harness_expect(&queue, "1112\r\n", NULL), ==, 6);
+
+    /* Reset all settings and validate the output. */
     strcpy(buf, "oam/settings/reset");
     BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, 0);
-
-    /* Check the list output. */
     strcpy(buf, "oam/settings/list");
     BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, 0);
     BTASSERTI(harness_expect(
@@ -230,6 +243,20 @@ static int test_cmd_reset(void)
                   "string_space                              string_t     4     \r\n"
                   "string_escape                             string_t     8  \"\n\t\r\\\r\n",
                   NULL), ==, 508);
+
+    /* Bad number of arguments. */
+    std_sprintf(buf, FSTR("oam/settings/reset 1 2"));
+    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -EINVAL);
+    BTASSERTI(harness_expect(&queue,
+                             "Usage: reset [<name>]\r\n",
+                             NULL), ==, 23);
+
+    /* Bad setting name. */
+    strcpy(buf, "oam/settings/reset missing");
+    BTASSERTI(fs_call(buf, NULL, &queue, NULL), ==, -22);
+    BTASSERTI(harness_expect(&queue,
+                             "missing: setting not found\r\n",
+                             NULL), ==, 28);
 
     return (0);
 #else

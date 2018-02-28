@@ -85,6 +85,16 @@ ssize_t settings_read(void *dst_p, size_t src, size_t size);
 ssize_t settings_write(size_t dst, const void *src_p, size_t size);
 
 /**
+ * Reset given setting to its default value.
+ *
+ * @param[in] address Setting address.
+ * @param[in] size Number of bytes to reset.
+ *
+ * @return zero(0) or negative error code.
+ */
+int settings_reset(size_t address, size_t size);
+
+/**
  * Read the value of given setting by name.
  *
  * @param[in] name_p Setting name.
@@ -111,10 +121,21 @@ ssize_t settings_write_by_name(const char *name_p,
                                size_t size);
 
 /**
- * Overwrite all settings with their default values.
+ * Reset given setting to its default value.
+ *
+ * @param[in] name_p Setting name.
+ * @param[in] size Number of bytes to reset.
  *
  * @return zero(0) or negative error code.
  */
-int settings_reset(void);
+int settings_reset_by_name(const char *name_p,
+                           size_t size);
+
+/**
+ * Reset all settings to their default values.
+ *
+ * @return zero(0) or negative error code.
+ */
+int settings_reset_all(void);
 
 #endif
