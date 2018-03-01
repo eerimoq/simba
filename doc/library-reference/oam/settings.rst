@@ -40,7 +40,7 @@ directory ``oam/settings/``.
 +===============================+=================================================================+
 |  ``list``                     | Print a list of the current settings.                           |
 +-------------------------------+-----------------------------------------------------------------+
-|  ``reset``                    | Overwrite the current settings values with their default |br|   |
+|  ``reset [<name>]``           | Reset one or all settings to their default |br|                 |
 |                               | values (the values defined in the ini-file values).             |
 +-------------------------------+-----------------------------------------------------------------+
 |  ``read <name>``              | Read the value of setting ``<name>``.                           |
@@ -66,6 +66,11 @@ Example output from the shell:
    OK
    $ oam/settings/read value_1
    -5
+   OK
+   $ oam/settings/reset value_1
+   OK
+   $ oam/settings/read value_1
+   24567
    OK
    $ oam/settings/reset
    OK
