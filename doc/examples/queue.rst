@@ -6,6 +6,9 @@ About
 
 Use a queue to communicate between two threads.
 
+See the :doc:`Queue Library Reference
+<../library-reference/sync/queue>` for more details.
+
 Source code
 -----------
 

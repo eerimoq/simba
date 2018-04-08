@@ -6,6 +6,9 @@ About
 
 Use the serial port to monitor and control the application.
 
+See the :doc:`Debug shell Library Reference
+<../library-reference/oam/shell>` for more details.
+
 Source code
 -----------
 

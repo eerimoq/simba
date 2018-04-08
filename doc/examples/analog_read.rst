@@ -13,6 +13,10 @@ print the read value to standard output.
    </br>
    </br>
 
+See the :doc:`Analog input pin Library Reference
+<../library-reference/drivers/basic/analog_input_pin>` for more
+details.
+
 Source code
 -----------
 

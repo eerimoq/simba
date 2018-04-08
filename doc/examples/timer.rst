@@ -8,6 +8,9 @@ Start a periodic timer that writes an event to the main thread. The
 main thread reads the event and prints "timeout" to the standard
 output.
 
+See the :doc:`Timer Library Reference
+<../library-reference/kernel/timer>` for more details.
+
 Source code
 -----------
 

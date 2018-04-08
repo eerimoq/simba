@@ -8,6 +8,10 @@ Write analog values to an analog output pin to form a sawtooth
 wave. Connect a LED to the analog output pin and watch the brightness
 of the LED change.
 
+See the :doc:`Analog output pin Library Reference
+<../library-reference/drivers/basic/analog_output_pin>` for more
+details.
+
 Source code
 -----------
 
