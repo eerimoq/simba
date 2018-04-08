@@ -7,6 +7,9 @@ About
 Create the file ``counter.txt`` and write ``0`` to it. Everytime the
 application is restarted the counter is incremented by one.
 
+See the :doc:`Debug and virtual file system Library Reference
+<../library-reference/filesystems/fs>` for more details.
+
 Source code
 -----------
 

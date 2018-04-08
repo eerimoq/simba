@@ -13,6 +13,9 @@ illustrates how to use digital pins and sleep a thread.
    </br>
    </br>
 
+See the :doc:`Digital pin Library Reference
+<../library-reference/drivers/basic/pin>` for more details.
+
 Source code
 -----------
 

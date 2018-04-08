@@ -12,6 +12,9 @@ This application prints "Hello world!" to standard output.
    </br>
    </br>
 
+See the :doc:`Standard functions Library Reference
+<../library-reference/text/std>` for more details.
+
 Source code
 -----------
 

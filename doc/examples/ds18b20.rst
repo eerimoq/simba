@@ -13,6 +13,9 @@ sensors.
    </br>
    </br>
 
+See the :doc:`One-wire temperature sensor Library Reference
+<../library-reference/drivers/sensors/ds18b20>` for more details.
+
 Source code
 -----------
 
