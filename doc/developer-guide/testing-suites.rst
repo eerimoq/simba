@@ -250,6 +250,7 @@ NodeMCU
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
 - :github-blob:`drivers/hardware/basic/pin<tst/drivers/hardware/basic/pin/main.c>`
 - :github-blob:`drivers/hardware/basic/random<tst/drivers/hardware/basic/random/main.c>`
+- :github-blob:`drivers/hardware/basic/power<tst/drivers/hardware/basic/power/main.c>`
 - :github-blob:`filesystems/fs<tst/filesystems/fs/main.c>`
 - :github-blob:`filesystems/spiffs<tst/filesystems/spiffs/main.c>`
 

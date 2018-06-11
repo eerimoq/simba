@@ -33,8 +33,20 @@
 
 #include "simba.h"
 
+/**
+ * Initialize the power module. This function must be called before
+ * calling any other function in this module.
+ *
+ * The module will only be initialized once even if this function is
+ * called multiple times.
+ *
+ * @return zero(0) or negative error code.
+ */
 int power_module_init(void);
 
-void power_deep_sleep(uint32 delay);
+/**
+ * Put board into deep sleep mode for time_in_ms microseconds.
+ */
+void power_deep_sleep(uint32 time_in_ms);
 
 #endif
