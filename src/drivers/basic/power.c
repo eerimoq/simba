@@ -37,9 +37,11 @@ int power_module_init()
     return (0);
 }
 
-void power_deep_sleep(long microseconds)
+int power_deep_sleep(long microseconds)
 {
     power_port_deep_sleep(microseconds);
+
+    return (0);
 }
 
 #endif
