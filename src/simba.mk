@@ -119,6 +119,7 @@ DRIVERS_SRC ?= \
 	basic/pin.c \
 	basic/pwm.c \
 	basic/pwm_soft.c \
+	basic/power.c \
 	basic/random.c \
 	basic/watchdog.c \
 	displays/hd44780.c \

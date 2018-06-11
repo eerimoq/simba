@@ -156,6 +156,9 @@ typedef intptr_t longptr_t;
 #ifdef PORT_HAS_PWM_SOFT
 #    include "drivers/basic/pwm_soft.h"
 #endif
+#ifdef PORT_HAS_POWER
+#    include "drivers/basic/power.h"
+#endif
 #ifdef PORT_HAS_ADC
 #    include "drivers/basic/adc.h"
 #endif
