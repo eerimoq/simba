@@ -271,7 +271,8 @@ ifeq ($(BOARD), nodemcu)
 	ping)
     TESTS += $(addprefix tst/drivers/hardware/, \
 	basic/pin \
-	basic/random)
+	basic/random \
+	basic/power)
     TESTS += $(addprefix tst/filesystems/, \
 	fs \
 	spiffs)

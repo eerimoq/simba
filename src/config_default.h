@@ -116,6 +116,7 @@
 #    define PORT_HAS_RANDOM
 #    define PORT_HAS_SPI
 #    define PORT_HAS_UART_SOFT
+#    define PORT_HAS_POWER
 #endif
 
 #if defined(FAMILY_ESP32)

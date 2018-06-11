@@ -44,6 +44,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/displays/led_7seg_ht16k33`
 - :doc:`../library-reference/drivers/network/owi`
 - :doc:`../library-reference/drivers/basic/pin`
+- :doc:`../library-reference/drivers/basic/power`
 - :doc:`../library-reference/drivers/basic/pwm_soft`
 - :doc:`../library-reference/drivers/basic/random`
 - :doc:`../library-reference/drivers/sensors/sht3xd`
@@ -80,9 +81,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    277836 |     35716 |
+| minimal-configuration    |    277828 |     35716 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    325576 |     49428 |
+| default-configuration    |    325684 |     49444 |
 +--------------------------+-----------+-----------+
 
 Default configuration
