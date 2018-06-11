@@ -47,6 +47,7 @@ int power_module_init(void);
  * Put board into deep sleep mode for requested time.
  * 
  * @param[in] microseconds Time to sleep.
+ * 
  * @return zero(0) or negative error code.
  */
 int power_deep_sleep(long microseconds);

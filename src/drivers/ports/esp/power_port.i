@@ -28,7 +28,9 @@
 
 #include "esp_system.h"
 
-void power_port_deep_sleep(long microseconds)
+int power_port_deep_sleep(long microseconds)
 {
     system_deep_sleep(microseconds);
+
+    return (0);
 }
