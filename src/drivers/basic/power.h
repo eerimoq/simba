@@ -32,6 +32,7 @@
 #define __DRIVERS_POWER_H__
 
 #include "simba.h"
+#include "power_port.h"
 
 /**
  * Initialize the power module. This function must be called before
@@ -45,7 +46,9 @@
 int power_module_init(void);
 
 /**
- * Put board into deep sleep mode for time_in_ms microseconds.
+ * Put board into deep sleep mode for requested time.
+ * 
+ * @param[in] time_in_ms Time to sleep in microseconds.
  */
 void power_deep_sleep(uint32 time_in_ms);
 
