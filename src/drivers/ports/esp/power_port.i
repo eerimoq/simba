@@ -30,7 +30,7 @@
 
 #include "esp_system.h"
 
-void power_port_deep_sleep(uint32 time_in_us)
+void power_port_deep_sleep(long microseconds)
 {
-    system_deep_sleep(time_in_us);
+    system_deep_sleep(microseconds);
 }

@@ -1,5 +1,5 @@
 :mod:`power` --- Power control
-=====================================
+==============================
 
 .. module:: power
    :synopsis: Power control.
