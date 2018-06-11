@@ -1,6 +1,4 @@
-/**
- * @section License
- *
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Dan Moulding (logarithms)

@@ -1,6 +1,4 @@
-/**
- * @section License
- *
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2014-2018, Erik Moqvist
