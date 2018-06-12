@@ -76,7 +76,7 @@ LDFLAGS += -u call_user_start \
 
 RUNARGS = $(BIN)
 
-ESPTOOL = $(SIMBA_ROOT)/3pp/esptool/esptool
+ESPTOOL ?= $(SIMBA_ROOT)/3pp/esptool/esptool
 EBOOT_ELF = $(SIMBA_ROOT)/3pp/esp8266Arduino/2.3.0/bootloaders/eboot/eboot.elf
 
 build: $(BIN)
