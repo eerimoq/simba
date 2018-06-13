@@ -42,7 +42,6 @@ int main()
         {NULL, NULL}};
 
     sys_start();
-    power_module_init();
 
     harness_run(testcases);
 
