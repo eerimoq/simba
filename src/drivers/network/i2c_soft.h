@@ -76,7 +76,7 @@ int i2c_soft_init(struct i2c_soft_driver_t *self_p,
 
 /**
  * Start given driver object. Enables data reception and transmission,
- * but does not start any transmission. Data tarnsfers are started by
+ * but does not start any transmission. Data transfers are started by
  * calling the `i2c_soft_read()` and `i2c_soft_write()`.
  *
  * @param[in] self_p Driver object to initialize.

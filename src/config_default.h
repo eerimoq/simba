@@ -350,6 +350,17 @@
 #endif
 
 /**
+ * Enable the power driver.
+ */
+#ifndef CONFIG_POWER
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_POWER)
+#        define CONFIG_POWER                                0
+#    else
+#        define CONFIG_POWER                                1
+#    endif
+#endif
+
+/**
  * Enable the can driver.
  */
 #ifndef CONFIG_CAN
