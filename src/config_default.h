@@ -1220,6 +1220,17 @@
 #endif
 
 /**
+ * Initialize the power driver module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_POWER
+#    if CONFIG_POWER == 1
+#        define CONFIG_MODULE_INIT_POWER                    1
+#    else
+#        define CONFIG_MODULE_INIT_POWER                    0
+#    endif
+#endif
+
+/**
  * Initialize the pwm driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_PWM
