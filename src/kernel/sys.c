@@ -211,6 +211,10 @@ static void init_drivers(void)
     pin_module_init();
 #endif
 
+#if CONFIG_MODULE_INIT_POWER == 1
+    power_module_init();
+#endif
+
 #if CONFIG_MODULE_INIT_PWM == 1
     pwm_module_init();
 #endif
