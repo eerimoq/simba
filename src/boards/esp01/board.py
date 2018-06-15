@@ -6,6 +6,7 @@ import sys
 import subprocess
 import argparse
 import os
+import time
 
 
 def subcommand_upload(args):
@@ -40,8 +41,10 @@ def subcommand_upload(args):
             ])
 
             break
-        except:
+        except Exception, ex:
+            print(ex)
             attempt += 1
+            time.sleep(1)
     else:
         sys.exit(1)
 

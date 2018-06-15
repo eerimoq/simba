@@ -18,7 +18,7 @@ def subcommand_upload(args):
     esptool_path = os.path.join(os.environ["SIMBA_ROOT"],
                                 "3pp",
                                 "esptool",
-                                "esptool")
+                                "esptool.py")
 
     attempt = 1
     attempts_max = 5
@@ -28,17 +28,18 @@ def subcommand_upload(args):
 
         try:
             subprocess.check_call([
-                esptool_path,
-                "-cd", "nodemcu",
-                "-cb", "230400",
-                "-cp", args.port,
-                "-cf", args.binary,
-                "-cr"
+                "python", "-u", esptool_path,
+                "--port", args.port,
+                "--baud", "230400",
+                "write_flash",
+                "0x00000", args.binary
             ])
 
             break
-        except:
+        except Exception, ex:
+            print(ex)
             attempt += 1
+            time.sleep(1)
     else:
         sys.exit(1)
 
