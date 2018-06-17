@@ -10,3 +10,6 @@
 [submodule "3pp/xvisor"]
 	path = 3pp/xvisor
 	url = https://github.com/eerimoq/xvisor.git
+[submodule "3pp/esptool"]
+	path = 3pp/esptool
+	url = https://github.com/espressif/esptool
