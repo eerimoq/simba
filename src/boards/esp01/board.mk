@@ -32,7 +32,7 @@ INC += $(SIMBA_ROOT)/src/boards/esp01
 SRC += $(SIMBA_ROOT)/src/boards/esp01/board.c
 
 LINKER_SCRIPT ?= simba.flash.512k.ld
-ESP_FLASH_SIZE = 512K
+ESP_FLASH_SIZE = 512KB
 
 BOARD_HOMEPAGE = "http://espressif.com"
 BOARD_PINOUT = "esp01-pinout.png"

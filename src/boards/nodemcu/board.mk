@@ -32,7 +32,7 @@ INC += $(SIMBA_ROOT)/src/boards/nodemcu
 SRC += $(SIMBA_ROOT)/src/boards/nodemcu/board.c
 
 LINKER_SCRIPT ?= simba.flash.4m.ld
-ESP_FLASH_SIZE = 4M
+ESP_FLASH_SIZE = 4MB
 
 BOARD_HOMEPAGE = "http://www.nodemcu.com"
 BOARD_PINOUT = "nodemcu-pinout.png"

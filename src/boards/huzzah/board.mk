@@ -32,7 +32,7 @@ INC += $(SIMBA_ROOT)/src/boards/huzzah
 SRC += $(SIMBA_ROOT)/src/boards/huzzah/board.c
 
 LINKER_SCRIPT ?= simba.flash.4m.ld
-ESP_FLASH_SIZE = 4M
+ESP_FLASH_SIZE = 4MB
 
 BOARD_HOMEPAGE = "https://www.adafruit.com/product/2471"
 BOARD_PINOUT = "huzzah-pinout.jpg"
