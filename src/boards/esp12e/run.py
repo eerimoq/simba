@@ -28,12 +28,12 @@ def main():
                                baudrate=args.baudrate,
                                timeout=1.0)
     # Boot from Flash.
-    dev_serial.rts = 0
+    dev_serial.dtr = 0
     # Hold the chip in reset.
-    dev_serial.dtr = 1
+    dev_serial.rts = 1
     time.sleep(0.5)
     # Let go of the reset.
-    dev_serial.dtr = 0
+    dev_serial.rts = 0
     dev = expect.Handler(dev_serial,
                          break_conditions=[])
 
