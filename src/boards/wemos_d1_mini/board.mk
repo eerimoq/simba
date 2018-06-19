@@ -40,14 +40,14 @@ BOARD_DESC = "WEMOS D1 mini"
 
 MCU = esp8266
 SERIAL_PORT ?= /dev/arduino
-BOARD_PY = $(SIMBA_ROOT)/src/boards/wemos_d1_mini/board.py
-RUN_PY ?= $(SIMBA_ROOT)/src/boards/wemos_d1_mini/run.py
+BOARD_PY = $(SIMBA_ROOT)/src/mcus/$(MCU)/board.py
+RUN_PY ?= $(SIMBA_ROOT)/make/run.py
 CONSOLE_RESET_TYPE ?= -1
 TIMEOUT ?= 10
 BAUDRATE ?= 76800
 
 upload:
-	@echo "Uploading $(EXE)"
+	@echo "Uploading $(BIN)"
 	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(BIN)
 
 rerun:
@@ -55,7 +55,8 @@ rerun:
 	python -u $(RUN_PY) --port $(SERIAL_PORT) \
 			    --timeout $(TIMEOUT) \
 			    --baudrate $(BAUDRATE) \
-			    --pattern $(RUN_END_PATTERN)\
+			    --reset-mode rts \
+			    --pattern $(RUN_END_PATTERN) \
 			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
 			    | python3 -u $(BACKTRACE_PY) $(EXE) $(CROSS_COMPILE) \
 			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0

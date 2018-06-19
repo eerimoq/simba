@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import sys
+import argparse
+import time
+import re
 import serial
 import expect
-import re
-import argparse
 
 
 def main():
@@ -15,38 +18,58 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", default="/dev/arduino")
     parser.add_argument("--baudrate", type=int, default=38400)
+    parser.add_argument("--reset-mode", type=str, choices=["rts", "dtr", "none"], default="none")
     parser.add_argument("--timeout", type=int, default=10)
     parser.add_argument("--pattern")
     parser.add_argument("--pattern-success")
-    parser.add_argument("--dtr", type=int, default=0)
-    parser.add_argument("--rts", type=int, default=0)
+
     args = parser.parse_args()
 
     dev_serial = serial.Serial(args.port,
                                baudrate=args.baudrate,
                                timeout=1.0)
-    dev_serial.dtr = args.dtr
-    dev_serial.rts = args.rts
+    if args.reset_mode == "rts":
+        print("Reset via RTS");
+        # Boot from Flash.
+        dev_serial.dtr = 0
+        # Hold the chip in reset.
+        dev_serial.rts = 1
+        time.sleep(0.5)
+        # Let go of the reset.
+        dev_serial.rts = 0
+    elif args.reset_mode == "dtr":
+        print("Reset via DTR");
+        # Boot from Flash.
+        dev_serial.rts = 0
+        # Hold the chip in reset.
+        dev_serial.dtr = 1
+        time.sleep(0.5)
+        # Let go of the reset.
+        dev_serial.dtr = 0
+    else:
+        dev_serial.dtr = 0
+        dev_serial.rts = 0
+
     dev = expect.Handler(dev_serial,
                          break_conditions=[])
 
     status = 0
 
-    print
-    print "INFO: TIMEOUT = {}".format(args.timeout)
+    print()
+    print("INFO: TIMEOUT = {}".format(args.timeout))
 
     try:
-        print
+        print()
         report = dev.expect(args.pattern, timeout=args.timeout)
-        print
+        print()
     except:
-        print
+        print()
         status = 1
     else:
-        if not re.match(args.pattern_success, report):
+        if args.pattern_success != None and not re.match(args.pattern_success, report):
             status = 1
 
-    print
+    print()
     sys.exit(status)
 
 

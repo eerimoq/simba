@@ -155,7 +155,7 @@ upload: all
 
 # Check that the executable exists.
 exe-exists:
-	if [ ! -e $(EXE) ] ; then \
+	@if [ ! -e $(EXE) ] ; then \
 	    echo "The executable $(EXE) does not exist. Please build it before running it." ; \
 	    exit 1 ; \
 	fi
