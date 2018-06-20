@@ -76,14 +76,11 @@ LDFLAGS += -u call_user_start \
 
 RUNARGS = $(BIN)
 
-ESPTOOL ?= $(SIMBA_ROOT)/3pp/esptool/esptool
+ESPTOOL ?= $(SIMBA_ROOT)/3pp/esptool/esptool.py
 EBOOT_ELF = $(SIMBA_ROOT)/3pp/esp8266Arduino/2.3.0/bootloaders/eboot/eboot.elf
 
 build: $(BIN)
 $(BIN): $(EXE)
-	$(ESPTOOL) -eo $(EBOOT_ELF) -bo $@ -bm dio -bf 40 -bz \
-		$(ESP_FLASH_SIZE) -bs .text -bp 4096 -ec \
-		-eo $^ -bs .irom0.text -bs .text -bs .data -bs \
-		.rodata -bc -ec
+	$(ESPTOOL) elf2image --flash_size $(ESP_FLASH_SIZE) --version=2 $^ --output $@
 
 include $(SIMBA_ROOT)/make/gnu.mk
