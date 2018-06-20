@@ -18,7 +18,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", default="/dev/arduino")
     parser.add_argument("--baudrate", type=int, default=38400)
-    parser.add_argument("--reset-mode", type=str, choices=["rts", "dtr", "none"], default="none")
+    parser.add_argument("--reset-mode",
+                        type=str,
+                        choices=["rts", "dtr", "none"],
+                        default="none")
     parser.add_argument("--timeout", type=int, default=10)
     parser.add_argument("--pattern")
     parser.add_argument("--pattern-success")
@@ -29,7 +32,7 @@ def main():
                                baudrate=args.baudrate,
                                timeout=1.0)
     if args.reset_mode == "rts":
-        print("Reset via RTS");
+        print("Reset via RTS")
         # Boot from Flash.
         dev_serial.dtr = 0
         # Hold the chip in reset.
@@ -38,7 +41,7 @@ def main():
         # Let go of the reset.
         dev_serial.rts = 0
     elif args.reset_mode == "dtr":
-        print("Reset via DTR");
+        print("Reset via DTR")
         # Boot from Flash.
         dev_serial.rts = 0
         # Hold the chip in reset.
@@ -66,7 +69,8 @@ def main():
         print()
         status = 1
     else:
-        if args.pattern_success != None and not re.match(args.pattern_success, report):
+        if args.pattern_success is not None and \
+                not re.match(args.pattern_success, report):
             status = 1
 
     print()
