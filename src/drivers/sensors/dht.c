@@ -153,15 +153,15 @@ static int read_isr(struct dht_driver_t *self_p, uint8_t *buf_p)
     }
 
     /* Read temperature, humidty and parity. */
-    for (i = DATA_SIZE * 8 - 1; i >= 0; i--) {
+    for (i = 0; i < DATA_SIZE * 8; i++) {
         res = read_bit(self_p, &value);
 
         if (res != 0) {
             break;
         }
 
-        buf_p[i / 8] |= value;
         buf_p[i / 8] <<= 1;
+        buf_p[i / 8] |= value;
     }
 
     return (res);
