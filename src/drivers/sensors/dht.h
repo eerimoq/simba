@@ -64,7 +64,7 @@ int dht_init(struct dht_driver_t *self_p,
              struct pin_device_t *pin_p);
 
 /**
- * Read temperature and humidity from the device.
+ * Read temperature and humidity from the DHT21/22 device.
  *
  * CAUTION: This function disables interrupts for up to 5 ms, which
  *          may cause problems for other timing critical
@@ -80,4 +80,20 @@ int dht_read(struct dht_driver_t *self_p,
              float *temperature_p,
              float *humidty_p);
 
+/**
+ * Read temperature and humidity from the DHT11 device.
+ *
+ * CAUTION: This function disables interrupts for up to 5 ms, which
+ *          may cause problems for other timing critical
+ *          functionality.
+ *
+ * @param[in] self_p Driver object.
+ * @param[out] temperature_p Temperature in degrees Celsius, or NULL.
+ * @param[out] humidity_p Humidity in relative humidty %RH, or NULL.
+ *
+ * @return zero(0) or negative error code.
+ */
+int dht_read11(struct dht_driver_t *self_p,
+               float *temperature_p,
+               float *humidty_p);
 #endif

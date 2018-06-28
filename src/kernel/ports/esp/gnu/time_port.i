@@ -27,6 +27,7 @@
  */
 
 #include "esp_misc.h"
+#include "esp_system.h"
 
 static void time_port_busy_wait_us(int microseconds)
 {
@@ -35,7 +36,7 @@ static void time_port_busy_wait_us(int microseconds)
 
 static int time_port_micros(void)
 {
-    return (-ENOSYS);
+    return (system_get_time());
 }
 
 static int time_port_micros_maximum(void)
