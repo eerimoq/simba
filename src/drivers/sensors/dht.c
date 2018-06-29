@@ -188,7 +188,7 @@ int dht_init(struct dht_driver_t *self_p,
     return (0);
 }
 
-int dht_read_sensor(struct dht_driver_t *self_p, uint8_t *buf_p)
+static int dht_read_sensor(struct dht_driver_t *self_p, uint8_t *buf_p)
 {
     int res;
 
