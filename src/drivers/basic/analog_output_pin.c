@@ -46,10 +46,12 @@ int analog_output_pin_init(struct analog_output_pin_t *self_p,
         return (-1);
     }
     
-    return (pwm_init(&self_p->pwm,
-                     pwm_p,
-                     pwm_frequency(10000),
-                     pwm_duty_cycle(0)));
+    pwm_init(&self_p->pwm,
+             pwm_p,
+             pwm_frequency(10000),
+             pwm_duty_cycle(0));
+
+    return (pwm_start(&self_p->pwm));
 }
 
 int analog_output_pin_write(struct analog_output_pin_t *self_p,
