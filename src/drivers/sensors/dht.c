@@ -188,15 +188,11 @@ int dht_init(struct dht_driver_t *self_p,
     return (0);
 }
 
-int dht_read(struct dht_driver_t *self_p,
-             float *temperature_p,
-             float *humidty_p)
+static int read_sensor(struct dht_driver_t *self_p, uint8_t *buf_p)
 {
     int res;
-    int negative;
-    uint8_t buf[DATA_SIZE];
 
-    memset(&buf[0], 0, sizeof(buf));
+    memset(&buf_p[0], 0, DATA_SIZE);
 
     /* Device communication. Start start signal by setting the pin
        low. */
@@ -204,7 +200,7 @@ int dht_read(struct dht_driver_t *self_p,
     thrd_sleep_ms(1);
 
     sys_lock();
-    res = read_isr(self_p, &buf[0]);
+    res = read_isr(self_p, &buf_p[0]);
     sys_unlock();
 
     pin_device_set_mode(self_p->pin_p, PIN_OUTPUT);
@@ -215,8 +211,25 @@ int dht_read(struct dht_driver_t *self_p,
     }
 
     /* Check the parity bits. */
-    if (!is_valid(&buf[0])) {
+    if (!is_valid(&buf_p[0])) {
         return (-EPROTO);
+    }
+
+    return 0;
+}
+
+int dht_read(struct dht_driver_t *self_p,
+             float *temperature_p,
+             float *humidty_p)
+{
+    int res;
+    int negative;
+    uint8_t buf[DATA_SIZE];
+
+    res = read_sensor(self_p, &buf[0]);
+
+    if (res < 0) {
+        return (res);
     }
 
     /* Temperature and humidty unpacking and convertion. */
@@ -231,6 +244,26 @@ int dht_read(struct dht_driver_t *self_p,
 
     *humidty_p = ((buf[HUMID_MSB_INDEX] << 8) | buf[HUMID_LSB_INDEX]);
     *humidty_p /= 10.0f;
+
+    return (0);
+}
+
+int dht_11_read(struct dht_driver_t *self_p,
+               float *temperature_p,
+               float *humidty_p)
+{
+    int res;
+    uint8_t buf[DATA_SIZE];
+
+    res = read_sensor(self_p, &buf[0]);
+    
+    if (res < 0) {
+        return (res);
+    }
+
+    /* Temperature and humidty unpacking and convertion. */
+    *temperature_p = ((buf[TEMP_MSB_INDEX]) + buf[TEMP_LSB_INDEX] / 10.0f);
+    *humidty_p = buf[HUMID_MSB_INDEX];
 
     return (0);
 }
