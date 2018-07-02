@@ -188,7 +188,7 @@ int dht_init(struct dht_driver_t *self_p,
     return (0);
 }
 
-static int dht_read_sensor(struct dht_driver_t *self_p, uint8_t *buf_p)
+static int read_sensor(struct dht_driver_t *self_p, uint8_t *buf_p)
 {
     int res;
 
@@ -226,7 +226,8 @@ int dht_read(struct dht_driver_t *self_p,
     int negative;
     uint8_t buf[DATA_SIZE];
 
-    res = dht_read_sensor(self_p, &buf[0]);
+    res = read_sensor(self_p, &buf[0]);
+
     if (res < 0) {
         return (res);
     }
@@ -247,14 +248,15 @@ int dht_read(struct dht_driver_t *self_p,
     return (0);
 }
 
-int dht_read11(struct dht_driver_t *self_p,
+int dht_11_read(struct dht_driver_t *self_p,
                float *temperature_p,
                float *humidty_p)
 {
     int res;
     uint8_t buf[DATA_SIZE];
 
-    res = dht_read_sensor(self_p, &buf[0]);
+    res = read_sensor(self_p, &buf[0]);
+    
     if (res < 0) {
         return (res);
     }
