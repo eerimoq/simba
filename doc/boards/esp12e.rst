@@ -28,6 +28,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/basic/adc`
 - :doc:`../library-reference/drivers/basic/analog_input_pin`
 - :doc:`../library-reference/drivers/sensors/bmp280`
+- :doc:`../library-reference/drivers/sensors/dht`
 - :doc:`../library-reference/drivers/sensors/ds18b20`
 - :doc:`../library-reference/drivers/various/ds3231`
 - :doc:`../library-reference/drivers/storage/eeprom_i2c`
