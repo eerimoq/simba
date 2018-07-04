@@ -1,8 +1,6 @@
 .. code-block:: c
 
-   /**
-    * @section License
-    *
+   /*
     * The MIT License (MIT)
     *
     * Copyright (c) 2014-2018, Erik Moqvist
@@ -33,7 +31,7 @@
    #include "simba.h"
    
    /* The ip address of the host to ping. */
-   #define REMOTE_HOST_IP 216.58.211.142
+   #define REMOTE_HOST_IP 8.8.4.4
    
    int main()
    {

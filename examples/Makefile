@@ -35,6 +35,7 @@ EXAMPLES = \
 	upgrade/application \
 	upgrade/bootloader \
 	ds18b20 \
+	dht \
 	fat16 \
 	filesystem \
 	gnss \

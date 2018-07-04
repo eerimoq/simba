@@ -52,11 +52,11 @@ static int test_dht_read(void)
 
     mock_dht_response(60);
 
-    mock_read_byte(2);   // humidity MSB
-    mock_read_byte(143); // humidity LSB
-    mock_read_byte(1);   // temperature MSB
-    mock_read_byte(29);  // temperature LSB
-    mock_read_byte(175); // parity
+    mock_read_byte(2);   /* humidity MSB */
+    mock_read_byte(143); /* humidity LSB */
+    mock_read_byte(1);   /* temperature MSB */
+    mock_read_byte(29);  /* temperature LSB */
+    mock_read_byte(175); /* parity */
 
     BTASSERT(dht_read(&dht, &temperature, &humidity) == 0);
     BTASSERT(temperature == 28.5);
@@ -72,11 +72,11 @@ static int test_dht_11_read(void)
 
     mock_dht_response(60);
 
-    mock_read_byte(65); // humidity MSB
-    mock_read_byte(0);  // humidity LSB
-    mock_read_byte(28); // temperature MSB
-    mock_read_byte(5);  // temperature LSB
-    mock_read_byte(98); // parity
+    mock_read_byte(65); /* humidity MSB */
+    mock_read_byte(0);  /* humidity LSB */
+    mock_read_byte(28); /* temperature MSB */
+    mock_read_byte(5);  /* temperature LSB */
+    mock_read_byte(98); /* parity */
 
     BTASSERT(dht_11_read(&dht, &temperature, &humidity) == 0);
     BTASSERT(temperature == 28.5);
@@ -85,7 +85,7 @@ static int test_dht_11_read(void)
     return (0);
 }
 
-static void mock_pin_port_device_read(int value)
+static void mock_write_pin_port_device_read(int value)
 {
     harness_mock_write("pin_port_device_read(): return(value)",
                        &value,
@@ -102,7 +102,7 @@ int STUB(pin_port_device_read)(const struct pin_device_t *dev_p)
     return (value);
 }
 
-static void mock_time_micros_elapsed(int value)
+static void mock_write_time_micros_elapsed(int value)
 {
     harness_mock_write("time_micros_elapsed(): return(value)",
                        &value,
@@ -127,19 +127,22 @@ void STUB(sys_unlock)(void)
 {
 }
 
-static void mock_dht_response(int edge_time) {
-    mock_pin_port_device_read(1);
-    mock_time_micros_elapsed(edge_time);
+static void mock_dht_response(int edge_time)
+{
+    mock_write_pin_port_device_read(1);
+    mock_write_time_micros_elapsed(edge_time);
 
-    mock_pin_port_device_read(0);
-    mock_time_micros_elapsed(edge_time);
+    mock_write_pin_port_device_read(0);
+    mock_write_time_micros_elapsed(edge_time);
 }
 
-static void mock_read_bit(int value) {
+static void mock_read_bit(int value)
+{
     mock_dht_response(value > 0 ? 60 : 50);
 }
 
-static void mock_read_byte(int value) {
+static void mock_read_byte(int value)
+{
     int i;
 
     for (i = 7; i >= 0; i--) {

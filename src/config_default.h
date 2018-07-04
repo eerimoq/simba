@@ -57,6 +57,7 @@
 #    define PORT_HAS_RANDOM
 #    define PORT_HAS_SD
 #    define PORT_HAS_SPI
+#    define PORT_HAS_DHT
 #endif
 
 #if defined(FAMILY_AVR)
@@ -1096,6 +1097,17 @@
 #        define CONFIG_MODULE_INIT_DS18B20                  1
 #    else
 #        define CONFIG_MODULE_INIT_DS18B20                  0
+#    endif
+#endif
+
+/**
+ * Initialize the dht driver module at system startup.
+ */
+#ifndef CONFIG_MODULE_INIT_DHT
+#    if CONFIG_DHT == 1
+#        define CONFIG_MODULE_INIT_DHT                      1
+#    else
+#        define CONFIG_MODULE_INIT_DHT                      0
 #    endif
 #endif
 

@@ -174,6 +174,7 @@ Linux
 - :github-blob:`drivers/software/network/jtag_soft<tst/drivers/software/network/jtag_soft/main.c>`
 - :github-blob:`drivers/software/network/xbee<tst/drivers/software/network/xbee/main.c>`
 - :github-blob:`drivers/software/network/xbee_client<tst/drivers/software/network/xbee_client/main.c>`
+- :github-blob:`drivers/software/sensors/dht<tst/drivers/software/sensors/dht/main.c>`
 - :github-blob:`drivers/software/sensors/bmp280<tst/drivers/software/sensors/bmp280/main.c>`
 - :github-blob:`drivers/software/sensors/hx711<tst/drivers/software/sensors/hx711/main.c>`
 - :github-blob:`drivers/software/storage/eeprom_soft<tst/drivers/software/storage/eeprom_soft/main.c>`

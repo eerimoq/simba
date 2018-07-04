@@ -34,15 +34,13 @@ BOARD ?= linux
 
 CDEFS += \
 	CONFIG_DHT=1 \
-	CONFIG_PIN=1 \
-	PORT_HAS_DHT
+	CONFIG_PIN=1
 
 STUB = $(addprefix $(SIMBA_ROOT)/src/drivers/sensors/dht.c:, \
 	sys_lock \
 	sys_unlock \
 	pin_port_device_read \
-	time_micros_elapsed \
-	)
+	time_micros_elapsed)
 
 DRIVERS_SRC = sensors/dht.c basic/pin.c
 
