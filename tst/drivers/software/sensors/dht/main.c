@@ -99,6 +99,7 @@ int STUB(pin_port_device_read)(const struct pin_device_t *dev_p)
     harness_mock_read("pin_port_device_read(): return(value)",
                       &value,
                       sizeof(value));
+
     return (value);
 }
 
@@ -116,6 +117,7 @@ int STUB(time_micros_elapsed)(int start, int stop)
     harness_mock_read("time_micros_elapsed(): return(value)",
                       &value,
                       sizeof(value));
+
     return (value);
 }
 

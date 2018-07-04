@@ -256,13 +256,13 @@ int dht_11_read(struct dht_driver_t *self_p,
     uint8_t buf[DATA_SIZE];
 
     res = read_sensor(self_p, &buf[0]);
-    
+
     if (res < 0) {
         return (res);
     }
 
     /* Temperature and humidty unpacking and convertion. */
-    *temperature_p = ((buf[TEMP_MSB_INDEX]) + buf[TEMP_LSB_INDEX] / 10.0f);
+    *temperature_p = (buf[TEMP_MSB_INDEX] + (buf[TEMP_LSB_INDEX] / 10.0f));
     *humidty_p = buf[HUMID_MSB_INDEX];
 
     return (0);
