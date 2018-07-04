@@ -37,6 +37,10 @@
 #define pin_d1_dev pin_device[1]
 #define pin_d2_dev pin_device[2]
 
+/* External interrupt objects. */
+#define exti_d0_dev exti_device[0]
+#define exti_d2_dev exti_device[2]
+
 #define pin_led_dev pin_device[1]
 
 #define flash_0_dev flash_device[0]
