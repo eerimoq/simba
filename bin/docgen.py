@@ -223,6 +223,7 @@ def examples_generate(_):
         "analog_write",
         "blink",
         "ds18b20",
+        "dht",
         "filesystem",
         "hello_world",
         "http_client",

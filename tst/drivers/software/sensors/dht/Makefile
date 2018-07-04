@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2018, Erik Moqvist
+# Copyright (c) 2018, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -28,49 +28,20 @@
 # This file is part of the Simba project.
 #
 
-EXAMPLES = \
-	analog_read \
-	analog_write \
-	blink \
-	upgrade/application \
-	upgrade/bootloader \
-	ds18b20 \
-	dht \
-	fat16 \
-	filesystem \
-	gnss \
-	hc0x \
-	hello_world \
-	http_client \
-	http_server \
-	inet \
-	midi_player \
-	music_player \
-	nrf24l01 \
-	owi \
-	queue \
-	shell \
-	spi \
-	ssl_client \
-	ssl_server \
-	synthesizer \
-	timer \
-	usb \
-	xbee
+NAME = dht_suite
+TYPE = suite
+BOARD ?= linux
 
-all: $(EXAMPLES:%=%.all)
+CDEFS += \
+	CONFIG_DHT=1 \
+	CONFIG_PIN=1
 
-clean: $(EXAMPLES:%=%.clean)
+STUB = $(addprefix $(SIMBA_ROOT)/src/drivers/sensors/dht.c:, \
+	sys_lock \
+	sys_unlock \
+	pin_port_device_read \
+	time_micros_elapsed)
 
-$(EXAMPLES:%=%.all):
-	$(MAKE) -C $(basename $@) all
+DRIVERS_SRC = sensors/dht.c basic/pin.c
 
-$(EXAMPLES:%=%.clean):
-	$(MAKE) -C $(basename $@) clean
-
-help:
-	@echo "--------------------------------------------------------------------------------"
-	@echo "  target                      description"
-	@echo "--------------------------------------------------------------------------------"
-	@echo "  all                         compile and link the examples"
-	@echo
+include $(SIMBA_ROOT)/make/app.mk

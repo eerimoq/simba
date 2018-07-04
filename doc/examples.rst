@@ -10,6 +10,6 @@ the `Simba` modules.
 
 .. toctree::
    :maxdepth: 1
-   :glob:   
+   :glob:
 
    examples/*

@@ -174,6 +174,10 @@ static void init_drivers(void)
     ds18b20_module_init();
 #endif
 
+#if CONFIG_MODULE_INIT_DHT == 1
+    dht_module_init();
+#endif
+
 #if CONFIG_MODULE_INIT_DS3231 == 1
 #endif
 

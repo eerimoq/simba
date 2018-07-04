@@ -3,7 +3,7 @@
    /*
     * The MIT License (MIT)
     *
-    * Copyright (c) 2014-2018, Erik Moqvist
+    * Copyright (c) 2017-2018, Erik Moqvist
     *
     * Permission is hereby granted, free of charge, to any person
     * obtaining a copy of this software and associated documentation
@@ -32,25 +32,37 @@
    
    int main()
    {
-       int value;
-       struct analog_input_pin_t pin;
+       int res;
+       struct dht_driver_t dht;
+       float temperature;
+       float humidty;
    
        sys_start();
-       analog_input_pin_module_init();
    
-       /* Initialize the analog input pin. */
-       if (analog_input_pin_init(&pin, &pin_a0_dev) != 0) {
-           std_printf(FSTR("Failed to initialize the analog input pin.\r\n"));
-           return (-1);
-       }
+       dht_module_init();
+   
+       /* Initialize the DHT driver. */
+       dht_init(&dht, &pin_d2_dev);
    
        while (1) {
-           /* Read the analog pin value and print it. */
-           value = analog_input_pin_read(&pin);
-           std_printf(FSTR("value = %d\r\n"), value);
+           thrd_sleep(2.5);
    
-           /* Wait 100 ms. */
-           thrd_sleep_ms(100);
+           /* Read temperature and humidty from the device. */
+           res = dht_read(&dht, &temperature, &humidty);
+   
+           if (res != 0) {
+               std_printf(OSTR("Read failed with %d: %S.\r\n"),
+                          res,
+                          errno_as_string(res));
+               continue;
+           }
+   
+           /* Print the read temperature and humidty. */
+           std_printf(OSTR("Temperature: %f C\r\n"
+                           "Humidty:     %f %%RH\r\n"
+                           "\r\n"),
+                      temperature,
+                      humidty);
        }
    
        return (0);

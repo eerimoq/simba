@@ -28,6 +28,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/basic/adc`
 - :doc:`../library-reference/drivers/basic/analog_input_pin`
 - :doc:`../library-reference/drivers/sensors/bmp280`
+- :doc:`../library-reference/drivers/sensors/dht`
 - :doc:`../library-reference/drivers/sensors/ds18b20`
 - :doc:`../library-reference/drivers/various/ds3231`
 - :doc:`../library-reference/drivers/storage/eeprom_i2c`
@@ -83,7 +84,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |    277828 |     35716 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    324864 |     48932 |
+| default-configuration    |    324936 |     49044 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -126,7 +127,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_DEBUG_                                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_DHT_                                           |  0                                                  |
+|  CONFIG_DHT_                                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_DS18B20_                                       |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -288,6 +289,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_PING_                              |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_POWER_                             |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_PWM_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_PWM_SOFT_                          |  1                                                  |
@@ -371,6 +374,8 @@ Default Standard Library configuration.
 |  CONFIG_PIN_FS_COMMAND_SET_MODE_                       |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PIN_FS_COMMAND_WRITE_                          |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_POWER_                                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PREEMPTIVE_SCHEDULER_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -776,6 +781,8 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_PING: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PING
 
+.. _CONFIG_MODULE_INIT_POWER: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_POWER
+
 .. _CONFIG_MODULE_INIT_PWM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PWM
 
 .. _CONFIG_MODULE_INIT_PWM_SOFT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PWM_SOFT
@@ -859,6 +866,8 @@ Mcu
 .. _CONFIG_PIN_FS_COMMAND_SET_MODE: ../user-guide/configuration.html#c.CONFIG_PIN_FS_COMMAND_SET_MODE
 
 .. _CONFIG_PIN_FS_COMMAND_WRITE: ../user-guide/configuration.html#c.CONFIG_PIN_FS_COMMAND_WRITE
+
+.. _CONFIG_POWER: ../user-guide/configuration.html#c.CONFIG_POWER
 
 .. _CONFIG_PREEMPTIVE_SCHEDULER: ../user-guide/configuration.html#c.CONFIG_PREEMPTIVE_SCHEDULER
 
