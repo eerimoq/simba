@@ -3,7 +3,9 @@
 # in your shell to setup the environment.
 #
 
-if [ "${OSTYPE}" = "linux-gnu" ]; then
+if [ "${SIMBA_DOCKER}" = "yes" ]; then
+    source environment/setup_docker.sh
+elif [ "${OSTYPE}" = "linux-gnu" ]; then
     source environment/setup_linux.sh
 else
     echo "\$\{OSTYPE\} must be linux-gnu."
