@@ -258,8 +258,7 @@ def testing_generate(database):
     testing_suites_path = os.path.join("doc", "developer-guide", "testing-suites.rst")
 
     with open(testing_suites_path, "w") as fout:
-        boards = database["boards"].keys()
-        boards.sort()
+        boards = sorted(database["boards"].keys())
         for board in boards:
             suites = subprocess.check_output([
                 'make',
