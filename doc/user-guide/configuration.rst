@@ -41,6 +41,17 @@ Arduino IDE
 
 2. The default configuration file, :github-blob:`src/config_default.h`.
 
+Default Settings
+^^^^^^^^^^^^^^^^
+In this section you can find some important and widly used settings.
+
+Console UART
+""""""""""""
+
+The default configuration of the system console's UART can be found at the page
+of particular boards in the :doc:`../boards` in the Default Configuration
+section.
+
 Variables
 ^^^^^^^^^
 
