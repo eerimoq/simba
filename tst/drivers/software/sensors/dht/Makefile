@@ -34,7 +34,8 @@ BOARD ?= linux
 
 CDEFS += \
 	CONFIG_DHT=1 \
-	CONFIG_PIN=1
+	CONFIG_PIN=1 \
+	CONFIG_DHT_COMMAND_READ=1
 
 STUB = $(addprefix $(SIMBA_ROOT)/src/drivers/sensors/dht.c:, \
 	 sys_lock \
@@ -43,5 +44,6 @@ STUB = $(addprefix $(SIMBA_ROOT)/src/drivers/sensors/dht.c:, \
 	 time_micros_elapsed)
 
 DRIVERS_SRC = sensors/dht.c basic/pin.c
+KERNEL_SRC += errno.c
 
 include $(SIMBA_ROOT)/make/app.mk

@@ -47,6 +47,16 @@
 #define TEMP_LSB_INDEX                              3
 #define PARITY_INDEX                                4
 
+struct module_t {
+    int8_t initialized;
+#if CONFIG_DHT_COMMAND_READ == 1
+    struct fs_command_t cmd_read;
+    struct fs_command_t cmd_11_read;
+#endif
+};
+
+struct module_t module;
+
 /**
  * Check if given buffer contains valid data.
  */
@@ -164,24 +174,6 @@ static int read_isr(struct dht_driver_t *self_p, uint8_t *buf_p)
     return (res);
 }
 
-int dht_module_init()
-{
-    FATAL_ASSERT(time_micros_maximum() > TIMEOUT_US);
-
-    return (pin_module_init());
-}
-
-int dht_init(struct dht_driver_t *self_p,
-             struct pin_device_t *pin_p)
-{
-    ASSERTN(self_p != NULL, EINVAL);
-    ASSERTN(pin_p != NULL, EINVAL);
-
-    self_p->pin_p = pin_p;
-
-    return (0);
-}
-
 static int read_sensor(struct dht_driver_t *self_p, uint8_t *buf_p)
 {
     int res;
@@ -210,7 +202,111 @@ static int read_sensor(struct dht_driver_t *self_p, uint8_t *buf_p)
         return (-EPROTO);
     }
 
-    return 0;
+    return (0);
+}
+
+#if CONFIG_DHT_COMMAND_READ == 1
+
+static int cmd_read_sensor(int argc,
+                           const char *argv[],
+                           void *chout_p,
+                           int (*read_p)(struct dht_driver_t *, float *, float *),
+                           const char *fn_name_p)
+{
+    struct dht_driver_t dht;
+    int pin;
+    int res;
+    float temperature;
+    float humidity;
+
+    if (argc != 2) {
+        std_printf(OSTR("Usage: %s <pin name>\r\n"), fn_name_p);
+
+        return (-EINVAL);
+    }
+
+    pin = board_pin_string_to_device_index(argv[1]);
+
+    if (pin < 0) {
+        std_printf(OSTR("Invalid pin name: %s.\r\n"), argv[1]);
+
+        return (-EINVAL);
+    }
+
+    dht_init(&dht, &pin_device[pin]);
+    
+    res = read_p(&dht, &temperature, &humidity);
+
+    if (res == 0) {
+        std_fprintf(chout_p, OSTR("Temperature: %f, Humidity: %f\r\n"), temperature, humidity);
+    } else {
+        std_fprintf(chout_p, OSTR("Error: %d (%s)\r\n"), res, errno_as_string(res));
+    }
+
+    return (0);
+}
+
+static int cmd_read_cb(int argc,
+                       const char *argv[],
+                       void *chout_p,
+                       void *chin_p,
+                       void *arg_p,
+                       void *call_arg_p)
+{
+    return (cmd_read_sensor(argc, argv, chout_p, dht_read, "read"));
+}
+
+static int cmd_11_read_cb(int argc,
+                          const char *argv[],
+                          void *chout_p,
+                          void *chin_p,
+                          void *arg_p,
+                          void *call_arg_p)
+{
+    return (cmd_read_sensor(argc, argv, chout_p, dht_11_read, "read_11"));
+}
+
+#endif
+
+int dht_module_init()
+{
+    if (module.initialized == 1) {
+        return (0);
+    }
+
+    module.initialized = 1;
+
+    FATAL_ASSERT(time_micros_maximum() > TIMEOUT_US);
+
+#if CONFIG_DHT_COMMAND_READ == 1
+    fs_command_init(&module.cmd_read,
+                    CSTR("/drivers/dht/read"),
+                    cmd_read_cb,
+                    NULL);
+    fs_command_register(&module.cmd_read);
+
+    fs_command_init(&module.cmd_11_read,
+                    CSTR("/drivers/dht/read_11"),
+                    cmd_11_read_cb,
+                    NULL);
+    fs_command_register(&module.cmd_11_read);
+#endif
+
+    return (pin_module_init());
+}
+
+int dht_init(struct dht_driver_t *self_p,
+             struct pin_device_t *pin_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(pin_p != NULL, EINVAL);
+
+    self_p->pin_p = pin_p;
+
+    pin_device_set_mode(self_p->pin_p, PIN_OUTPUT);
+    pin_device_write_high(self_p->pin_p);
+
+    return (0);
 }
 
 int dht_read(struct dht_driver_t *self_p,

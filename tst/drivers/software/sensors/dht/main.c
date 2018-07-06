@@ -36,6 +36,21 @@ static void mock_dht_response(int edge_time);
 static void mock_read_bit(int value);
 static void mock_read_byte(int value);
 
+static void mock_prepare_data(uint8_t humidity_msb,
+                              uint8_t humidity_lsb,
+                              uint8_t temperature_msb,
+                              uint8_t temperature_lsb,
+                              uint8_t parity)
+{
+    mock_dht_response(60);
+
+    mock_read_byte(humidity_msb);
+    mock_read_byte(humidity_lsb);
+    mock_read_byte(temperature_msb);
+    mock_read_byte(temperature_lsb);
+    mock_read_byte(parity);
+}
+
 static int test_init(void)
 {
     BTASSERT(dht_module_init() == 0);
@@ -50,13 +65,7 @@ static int test_dht_read(void)
     float temperature;
     float humidity;
 
-    mock_dht_response(60);
-
-    mock_read_byte(2);   /* humidity MSB */
-    mock_read_byte(143); /* humidity LSB */
-    mock_read_byte(1);   /* temperature MSB */
-    mock_read_byte(29);  /* temperature LSB */
-    mock_read_byte(175); /* parity */
+    mock_prepare_data(2, 143, 1, 29, 175);
 
     BTASSERT(dht_read(&dht, &temperature, &humidity) == 0);
     BTASSERT(temperature == 28.5);
@@ -70,17 +79,51 @@ static int test_dht_11_read(void)
     float temperature;
     float humidity;
 
-    mock_dht_response(60);
-
-    mock_read_byte(65); /* humidity MSB */
-    mock_read_byte(0);  /* humidity LSB */
-    mock_read_byte(28); /* temperature MSB */
-    mock_read_byte(5);  /* temperature LSB */
-    mock_read_byte(98); /* parity */
+    mock_prepare_data(65, 0, 28, 5, 98);
 
     BTASSERT(dht_11_read(&dht, &temperature, &humidity) == 0);
     BTASSERT(temperature == 28.5);
     BTASSERT(humidity == 65);
+
+    return (0);
+}
+
+static int test_cmd_read(void)
+{
+    char buf[32];
+
+    mock_prepare_data(1, 124, 0, 25, 150);
+
+    strcpy(buf, OSTR("drivers/dht/read 1"));
+    BTASSERT(fs_call(buf, NULL, sys_get_stdout(), NULL) == 0);
+
+    /* Missing value */
+    strcpy(buf, OSTR("drivers/dht/read"));
+    BTASSERT(fs_call(buf, NULL, sys_get_stdout(), NULL) == -EINVAL);
+
+    /* Invalid value */
+    strcpy(buf, OSTR("drivers/dht/read xxx"));
+    BTASSERT(fs_call(buf, NULL, sys_get_stdout(), NULL) == -EINVAL);
+
+    return (0);
+}
+
+static int test_cmd_read_11(void)
+{
+    char buf[32];
+
+    mock_prepare_data(76, 0, 0, 250, 70);
+
+    strcpy(buf, OSTR("drivers/dht/read_11 1"));
+    BTASSERT(fs_call(buf, NULL, sys_get_stdout(), NULL) == 0);
+
+    /* Missing value */
+    strcpy(buf, OSTR("drivers/dht/read_11"));
+    BTASSERT(fs_call(buf, NULL, sys_get_stdout(), NULL) == -EINVAL);
+
+    /* Invalid value */
+    strcpy(buf, OSTR("drivers/dht/read_11 xxx"));
+    BTASSERT(fs_call(buf, NULL, sys_get_stdout(), NULL) == -EINVAL);
 
     return (0);
 }
@@ -158,6 +201,8 @@ int main()
         { test_init, "test_init" },
         { test_dht_read, "test_dht_read" },
         { test_dht_11_read, "test_dht_11_read" },
+        { test_cmd_read, "test_cmd_read"},
+        { test_cmd_read_11, "test_cmd_read_11"},
         { NULL, NULL }
     };
 

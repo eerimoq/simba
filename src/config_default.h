@@ -1123,6 +1123,17 @@
 #endif
 
 /**
+ * Debug file system command to read DHT sensor on the bus.
+ */
+#ifndef CONFIG_DHT_COMMAND_READ
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM)
+#        define CONFIG_DHT_COMMAND_READ                     0
+#    else
+#        define CONFIG_DHT_COMMAND_READ                     1
+#    endif
+#endif
+
+/**
  * Initialize the ds3231 driver module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_DS3231
