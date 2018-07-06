@@ -133,13 +133,10 @@ static int read_isr(struct dht_driver_t *self_p, uint8_t *buf_p)
     int res;
     int value;
 
-    pin_device_write_high(self_p->pin_p);
-    time_busy_wait_us(20);
     pin_device_set_mode(self_p->pin_p, PIN_INPUT);
+    time_busy_wait_us(20);
 
-    /* Wait for the response signal. */
-    time_busy_wait_us(10);
-
+    /* Read the response signal. */
     res = wait_for_edge(self_p, RISING);
 
     if (res < MINIMUM_RESPONSE_LOW_US) {
@@ -182,9 +179,6 @@ int dht_init(struct dht_driver_t *self_p,
 
     self_p->pin_p = pin_p;
 
-    pin_device_set_mode(self_p->pin_p, PIN_OUTPUT);
-    pin_device_write_high(self_p->pin_p);
-
     return (0);
 }
 
@@ -196,6 +190,7 @@ static int read_sensor(struct dht_driver_t *self_p, uint8_t *buf_p)
 
     /* Device communication. Start start signal by setting the pin
        low. */
+    pin_device_set_mode(self_p->pin_p, PIN_OUTPUT);
     pin_device_write_low(self_p->pin_p);
     thrd_sleep_ms(1);
 
