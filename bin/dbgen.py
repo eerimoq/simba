@@ -39,7 +39,8 @@ def get_make_variable(board, variable):
                                     "-s",
                                     "BOARD=" + board,
                                     "print-" + variable],
-                                   cwd="examples/default-configuration")
+                                   cwd="examples/default-configuration",
+                                   universal_newlines=True)
 
 
 def get_default_configuration(board):
@@ -51,7 +52,8 @@ def get_default_configuration(board):
                                     "-s",
                                     "BOARD=" + board,
                                     "default-configuration"],
-                                   cwd="examples/default-configuration")
+                                   cwd="examples/default-configuration",
+                                   universal_newlines=True)
 
 
 def get_port_has(board):
@@ -63,7 +65,8 @@ def get_port_has(board):
                                     "-s",
                                     "BOARD=" + board,
                                     "port-has"],
-                                   cwd="examples/default-configuration")
+                                   cwd="examples/default-configuration",
+                                   universal_newlines=True)
 
 
 def main():

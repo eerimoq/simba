@@ -180,7 +180,8 @@ def boards_generate(database):
                     '-C', os.path.join('examples', application),
                     'BOARD=' + board,
                     'size-json'
-                ])
+                ],
+                universal_newlines=True)
                 sizes = json.loads(sizes_json)
                 memory_usage.append(
                     '| {application:24} | {program:9} | {data:9} |'.format(
@@ -265,7 +266,8 @@ def testing_generate(database):
                 '-s',
                 'BOARD=' + board,
                 'print-TESTS'
-            ])
+            ],
+            universal_newlines=True)
             print(database["boards"][board]["board_desc"], file=fout)
             print('-' * len(board), file=fout)
             print(file=fout)
