@@ -72,6 +72,8 @@ Below is the memory usage of two applications:
 Default configuration
 ---------------------
 
+Default configuration of the UART: {features_params[console_br]}-8-N-1
+
 Default Standard Library configuration.
 
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -148,6 +150,7 @@ def boards_generate(database):
 
         # Enabled features.
         major_features = []
+        features_params = {}
         for [name, value] in data["default-configuration"]:
             if name == "CONFIG_START_NETWORK" and value == "1":
                 major_features.append("- Networking.")
@@ -157,6 +160,8 @@ def boards_generate(database):
                 major_features.append("- :doc:`Console.<../library-reference/oam/console>`")
             if name == "CONFIG_START_SHELL" and value == "1":
                 major_features.append("- :doc:`Debug shell.<../library-reference/oam/shell>`")
+            if name == "CONFIG_START_CONSOLE_UART_BAUDRATE":
+                features_params["console_br"] = value
 
         # Memory usage.
         applications = [
@@ -206,7 +211,8 @@ def boards_generate(database):
             include_extra=include_extra,
             targets='\n\n'.join(targets),
             memory_usage='\n+-{}-+-----------+-----------+\n'.format(
-                24 * '-').join(memory_usage))
+                24 * '-').join(memory_usage),
+            features_params=features_params)
 
         rst_path = os.path.join("doc", "boards", board + ".rst")
         print("Writing to ", rst_path)
