@@ -188,9 +188,9 @@ def boards_generate(database):
                         program=sizes['program'],
                         data=sizes['data']))
         except subprocess.CalledProcessError:
-            print('Failed to generate memory footprint data for board {}. '
-                  'Skipping board.'.format(board))
-            continue
+            print(
+                'Failed to generate memory footprint data for board {}.'.format(
+                    board))
 
         rst = BOARD_RST_FMT.format(
             name=board,
