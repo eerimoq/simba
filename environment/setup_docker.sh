@@ -27,3 +27,7 @@ export IDF_PATH=${SIMBA_ROOT}/3pp/esp32/esp-idf
 
 # Xvisor root.
 export XVISOR_ROOT=${SIMBA_ROOT}/3pp/xvisor
+
+# ARM toolchains.
+export PATH=$PATH:/opt/gcc-linaro-7.2.1-2017.11-x86_64_aarch64-elf/bin
+export PATH=$PATH:/opt/gcc-linaro-7.2.1-2017.11-x86_64_aarch64-linux-gnu/bin
