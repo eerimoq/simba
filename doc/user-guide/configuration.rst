@@ -43,6 +43,7 @@ Arduino IDE
 
 Default Settings
 ^^^^^^^^^^^^^^^^
+
 In this section you can find some important and widly used settings.
 
 Console UART
