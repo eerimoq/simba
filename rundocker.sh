@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SIMBA_DOCKER_VERSION=0.4.0
+SIMBA_DOCKER_VERSION=0.5.0
 SIMBA_ROOT=$(pwd)
 
 docker run \
@@ -11,7 +11,11 @@ docker run \
        -w /home/$USER \
        -v /etc/passwd:/etc/passwd:ro \
        -v /etc/group:/etc/group:ro \
-       -u $(id -u):$(id -g) \
+       -v /dev:/dev \
+       --user $(id -u):$(id -g) \
+       --group-add dialout \
+       --privileged \
+       --network host \
        eerimoq/simba:$SIMBA_DOCKER_VERSION \
        /bin/bash -c \
        "cd $SIMBA_ROOT \

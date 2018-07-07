@@ -7,6 +7,7 @@ RUN \
     automake \
     avrdude \
     avr-libc \
+    bash-completion \
     binutils-avr \
     bison \
     bossa-cli \
@@ -24,7 +25,9 @@ RUN \
     gcc-arm-none-eabi \
     gcc-avr \
     gdb-avr \
+    genext2fs \
     git \
+    gitk \
     gperf \
     help2man \
     lcov \
@@ -42,6 +45,7 @@ RUN \
     python-pyelftools \
     sed \
     texinfo \
+    u-boot-tools \
     unrar \
     unzip \
     valgrind \
@@ -83,5 +87,17 @@ USER root
 RUN \
     mv /tmp2/esp-open-sdk/xtensa-lx106-elf /opt && \
     rm -rf tmp2
+
+RUN \
+    cd /opt && \
+    wget https://releases.linaro.org/components/toolchain/binaries/7.2-2017.11/aarch64-elf/gcc-linaro-7.2.1-2017.11-x86_64_aarch64-elf.tar.xz && \
+    tar xf gcc-linaro-7.2.1-2017.11-x86_64_aarch64-elf.tar.xz && \
+    rm gcc-linaro-7.2.1-2017.11-x86_64_aarch64-elf.tar.xz
+
+RUN \
+    cd /opt && \
+    wget https://releases.linaro.org/components/toolchain/binaries/7.2-2017.11/aarch64-linux-gnu/gcc-linaro-7.2.1-2017.11-x86_64_aarch64-linux-gnu.tar.xz && \
+    tar xf gcc-linaro-7.2.1-2017.11-x86_64_aarch64-linux-gnu.tar.xz && \
+    rm gcc-linaro-7.2.1-2017.11-x86_64_aarch64-linux-gnu.tar.xz
 
 ENV SIMBA_DOCKER=yes
