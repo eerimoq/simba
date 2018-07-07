@@ -84,7 +84,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |    277828 |     35716 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    325720 |     49572 |
+| default-configuration    |    325724 |     49592 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -256,6 +256,8 @@ Default Standard Library configuration.
 |  CONFIG_MODULE_INIT_CHIPID_                            |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_DAC_                               |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_DHT_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_DS18B20_                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -748,6 +750,8 @@ Mcu
 .. _CONFIG_MODULE_INIT_CHIPID: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_CHIPID
 
 .. _CONFIG_MODULE_INIT_DAC: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DAC
+
+.. _CONFIG_MODULE_INIT_DHT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DHT
 
 .. _CONFIG_MODULE_INIT_DS18B20: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DS18B20
 

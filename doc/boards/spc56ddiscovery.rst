@@ -74,7 +74,7 @@ Below is the memory usage of two applications:
 +==========================+===========+===========+
 | minimal-configuration    |     13884 |       947 |
 +--------------------------+-----------+-----------+
-| default-configuration    |     86572 |      5821 |
+| default-configuration    |     87004 |      5821 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -247,6 +247,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_DAC_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_DHT_                               |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_DS18B20_                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_DS3231_                            |  1                                                  |
@@ -278,6 +280,8 @@ Default Standard Library configuration.
 |  CONFIG_MODULE_INIT_PIN_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_PING_                              |  0                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_POWER_                             |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_PWM_                               |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -362,6 +366,8 @@ Default Standard Library configuration.
 |  CONFIG_PIN_FS_COMMAND_SET_MODE_                       |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PIN_FS_COMMAND_WRITE_                          |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_POWER_                                         |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PREEMPTIVE_SCHEDULER_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -735,6 +741,8 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_DAC: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DAC
 
+.. _CONFIG_MODULE_INIT_DHT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DHT
+
 .. _CONFIG_MODULE_INIT_DS18B20: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DS18B20
 
 .. _CONFIG_MODULE_INIT_DS3231: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DS3231
@@ -766,6 +774,8 @@ Mcu
 .. _CONFIG_MODULE_INIT_PIN: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PIN
 
 .. _CONFIG_MODULE_INIT_PING: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PING
+
+.. _CONFIG_MODULE_INIT_POWER: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_POWER
 
 .. _CONFIG_MODULE_INIT_PWM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PWM
 
@@ -850,6 +860,8 @@ Mcu
 .. _CONFIG_PIN_FS_COMMAND_SET_MODE: ../user-guide/configuration.html#c.CONFIG_PIN_FS_COMMAND_SET_MODE
 
 .. _CONFIG_PIN_FS_COMMAND_WRITE: ../user-guide/configuration.html#c.CONFIG_PIN_FS_COMMAND_WRITE
+
+.. _CONFIG_POWER: ../user-guide/configuration.html#c.CONFIG_POWER
 
 .. _CONFIG_PREEMPTIVE_SCHEDULER: ../user-guide/configuration.html#c.CONFIG_PREEMPTIVE_SCHEDULER
 

@@ -31,6 +31,7 @@ Supported drivers for this board.
 - :doc:`../library-reference/drivers/sensors/bmp280`
 - :doc:`../library-reference/drivers/network/can`
 - :doc:`../library-reference/drivers/basic/dac`
+- :doc:`../library-reference/drivers/sensors/dht`
 - :doc:`../library-reference/drivers/sensors/ds18b20`
 - :doc:`../library-reference/drivers/various/ds3231`
 - :doc:`../library-reference/drivers/storage/eeprom_i2c`
@@ -82,9 +83,9 @@ Below is the memory usage of two applications:
 +--------------------------+-----------+-----------+
 | Application              | Flash     | RAM       |
 +==========================+===========+===========+
-| minimal-configuration    |    337973 |    351136 |
+| minimal-configuration    |    156712 |    351120 |
 +--------------------------+-----------+-----------+
-| default-configuration    |    630052 |    519680 |
+| default-configuration    |    412207 |    521216 |
 +--------------------------+-----------+-----------+
 
 Default configuration
@@ -127,7 +128,7 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_DEBUG_                                         |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
-|  CONFIG_DHT_                                           |  0                                                  |
+|  CONFIG_DHT_                                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_DS18B20_                                       |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -257,6 +258,8 @@ Default Standard Library configuration.
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_DAC_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_DHT_                               |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_DS18B20_                           |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_DS3231_                            |  1                                                  |
@@ -288,6 +291,8 @@ Default Standard Library configuration.
 |  CONFIG_MODULE_INIT_PIN_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_PING_                              |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_MODULE_INIT_POWER_                             |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_MODULE_INIT_PWM_                               |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -372,6 +377,8 @@ Default Standard Library configuration.
 |  CONFIG_PIN_FS_COMMAND_SET_MODE_                       |  1                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PIN_FS_COMMAND_WRITE_                          |  1                                                  |
++--------------------------------------------------------+-----------------------------------------------------+
+|  CONFIG_POWER_                                         |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
 |  CONFIG_PREEMPTIVE_SCHEDULER_                          |  0                                                  |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -743,6 +750,8 @@ Mcu
 
 .. _CONFIG_MODULE_INIT_DAC: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DAC
 
+.. _CONFIG_MODULE_INIT_DHT: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DHT
+
 .. _CONFIG_MODULE_INIT_DS18B20: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DS18B20
 
 .. _CONFIG_MODULE_INIT_DS3231: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_DS3231
@@ -774,6 +783,8 @@ Mcu
 .. _CONFIG_MODULE_INIT_PIN: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PIN
 
 .. _CONFIG_MODULE_INIT_PING: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PING
+
+.. _CONFIG_MODULE_INIT_POWER: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_POWER
 
 .. _CONFIG_MODULE_INIT_PWM: ../user-guide/configuration.html#c.CONFIG_MODULE_INIT_PWM
 
@@ -858,6 +869,8 @@ Mcu
 .. _CONFIG_PIN_FS_COMMAND_SET_MODE: ../user-guide/configuration.html#c.CONFIG_PIN_FS_COMMAND_SET_MODE
 
 .. _CONFIG_PIN_FS_COMMAND_WRITE: ../user-guide/configuration.html#c.CONFIG_PIN_FS_COMMAND_WRITE
+
+.. _CONFIG_POWER: ../user-guide/configuration.html#c.CONFIG_POWER
 
 .. _CONFIG_PREEMPTIVE_SCHEDULER: ../user-guide/configuration.html#c.CONFIG_PREEMPTIVE_SCHEDULER
 
