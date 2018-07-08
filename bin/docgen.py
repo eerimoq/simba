@@ -26,6 +26,11 @@ SOURCE_CODE_FMT = '''.. code-block:: c
 '''
 
 
+def run(command):
+    return subprocess.check_output(command,
+                                   universal_newlines=True)
+
+
 def write_to_file(path, data):
     print('Writing to {}... '.format(path), end='')
 
@@ -105,21 +110,20 @@ def generate_memory_usage(board):
 
     try:
         for application in applications:
-            subprocess.check_call([
+            run([
                 'make',
                 '-s',
                 '-C', os.path.join('examples', application),
                 'BOARD=' + board,
                 'all'
             ])
-            sizes_json = subprocess.check_output([
+            sizes_json = run([
                 'make',
                 '-s',
                 '-C', os.path.join('examples', application),
                 'BOARD=' + board,
                 'size-json'
-            ],
-            universal_newlines=True)
+            ])
             sizes = json.loads(sizes_json)
             fmt = '| {application:24} | {program:9} | {data:9} |'
             memory_usage.append(fmt.format(application=application,
@@ -229,18 +233,19 @@ def generate_testing(database):
                                        'testing-suites.rst')
 
     with open(testing_suites_path, 'w') as fout:
-        boards = sorted(database['boards'].keys())
+        boards = sorted(database['boards'])
 
         for board in boards:
-            suites = subprocess.check_output([
+            suites = run([
                 'make',
                 '-s',
                 'BOARD=' + board,
                 'print-TESTS'
-            ],
-            universal_newlines=True)
-            print(database['boards'][board]['board_desc'], file=fout)
-            print('-' * len(board), file=fout)
+            ])
+
+            board_desc = database['boards'][board]['board_desc']
+            print(board_desc, file=fout)
+            print('-' * len(board_desc), file=fout)
             print(file=fout)
 
             for suite in suites.split(' '):
