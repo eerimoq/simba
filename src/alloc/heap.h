@@ -63,6 +63,7 @@ struct heap_t {
  * @param[in] self_p Heap to initialize.
  * @param[in] buf_p Heap memory buffer.
  * @param[in] size Size of the heap memory buffer.
+ * @param[in] sizes Fixed buffer sizes configuration.
  *
  * @return zero(0) or negative error code.
  */

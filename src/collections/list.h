@@ -62,7 +62,7 @@ struct list_iter_t {
  *
  * An element can only be part of one list at a time.
  *
- * @param[in] list_p List object to initialize.
+ * @param[in] self_p List object to initialize.
  *
  * @return zero(0) or negative error code.
  */
@@ -71,7 +71,7 @@ int list_init(struct list_t *self_p);
 /**
  * Peek at the first element in the list.
  *
- * @param[in] list_p List object.
+ * @param[in] self_p List object.
  *
  * @return First element of the list, or NULL if the list is empty.
  */
@@ -80,7 +80,7 @@ void *list_peek_head(struct list_t *self_p);
 /**
  * Add given element to the beginning of given list.
  *
- * @param[in] list_p List object.
+ * @param[in] self_p List object.
  * @param[in] elem_p Element to add.
  *
  * @return zero(0) or negative error code.
@@ -91,7 +91,7 @@ int list_add_head(struct list_t *self_p,
 /**
  * Add given element to the end of given list.
  *
- * @param[in] list_p List object.
+ * @param[in] self_p List object.
  * @param[in] elem_p Element to add.
  *
  * @return zero(0) or negative error code.
@@ -103,7 +103,7 @@ int list_add_tail(struct list_t *self_p,
  * Get the first element of given list and then remove it from given
  * list.
  *
- * @param[in] list_p List object.
+ * @param[in] self_p List object.
  *
  * @return Removed element, or NULL if the list was empty.
  */
@@ -112,7 +112,7 @@ void *list_remove_head(struct list_t *self_p);
 /**
  * Remove given element from given list.
  *
- * @param[in] list_p List object.
+ * @param[in] self_p List object.
  * @param[in] elem_p Element to remove.
  *
  * @return Removed element, or NULL if the element was not found.
@@ -123,7 +123,7 @@ void *list_remove(struct list_t *self_p,
 /**
  * Initialize given iterator object.
  *
- * @param[in] iterator_p Iterator to initialize.
+ * @param[in] self_p Iterator to initialize.
  * @param[in] list_p List object to iterate over.
  *
  * @return zero(0) or negative error code.
@@ -134,7 +134,7 @@ int list_iter_init(struct list_iter_t *self_p,
 /**
  * Get the next element from given iterator object.
  *
- * @param[in] iterator_p Iterator object.
+ * @param[in] self_p Iterator object.
  *
  * @return Next element, or NULL on end of list.
  */

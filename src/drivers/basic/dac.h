@@ -66,7 +66,7 @@ int dac_init(struct dac_driver_t *self_p,
  * Start an asynchronous convertion of samples to an analog signal.
  *
  * @param[in] self_p Driver object.
- * @param[in] samples Samples to convert to an analog signal.
+ * @param[in] samples_p Samples to convert to an analog signal.
  * @param[in] length Length of samples array.
  *
  * @return zero(0) or negative error code.
@@ -88,7 +88,7 @@ int dac_async_wait(struct dac_driver_t *self_p);
  * Start synchronous convertion of samples to an analog signal.
  *
  * @param[in] self_p Driver object.
- * @param[out] samples Converted samlpes.
+ * @param[out] samples_p Converted samlpes.
  * @param[in] length Length of samples array.
  *
  * @return zero(0) or negative error code.

@@ -61,6 +61,14 @@ int hd44780_module_init(void);
  * single display.
  *
  * @param[out] self_p Driver object to initialize.
+ * @param[in] rs_p RS pin device.
+ * @param[in] enable_p RS pin device.
+ * @param[in] data_4_p Data 4 pin device.
+ * @param[in] data_5_p Data 5 pin device.
+ * @param[in] data_6_p Data 6 pin device.
+ * @param[in] data_7_p Data 7 pin device.
+ * @param[in] number_of_rows Number of rows.
+ * @param[in] number_of_columns Number of columns.
  *
  * @return zero(0) or negative error code.
  */
@@ -125,7 +133,7 @@ int hd44780_write(struct hd44780_driver_t *self_p,
 int hd44780_put(struct hd44780_driver_t *self_p, char character);
 
 /**
- * Clear the display. 
+ * Clear the display.
  *
  * @param[in] self_p Driver object.
  *
@@ -138,6 +146,8 @@ int hd44780_clear(struct hd44780_driver_t *self_p);
  * left-hand corner of the screen, which is (0, 0).
  *
  * @param[in] self_p Driver object.
+ * @param[in] row Row to move to.
+ * @param[in] column Colum to move to.
  *
  * @return zero(0) or negative error code.
  */

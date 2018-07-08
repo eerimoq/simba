@@ -154,7 +154,7 @@ int pin_set_mode(struct pin_driver_t *self_p, int mode);
  * This function may be called from interrupt context and with the
  * system lock taken.
  *
- * @param[in] self_p Pin device.
+ * @param[in] dev_p Pin device.
  * @param[in] mode Pin mode. One of the ``PIN_OUTPUT*`` and
  *                 ``PIN_INPUT*`` defines.
  *
@@ -172,7 +172,7 @@ static inline int pin_device_set_mode(const struct pin_device_t *dev_p,
  * This function may be called from interrupt context and with the
  * system lock taken.
  *
- * @param[in] self_p Pin device.
+ * @param[in] dev_p Pin device.
  *
  * @return ``1`` for high and ``0`` for low input, otherwise negative
  *         error code.
@@ -188,7 +188,7 @@ static inline int pin_device_read(const struct pin_device_t *dev_p)
  * This function may be called from interrupt context and with the
  * system lock taken.
  *
- * @param[in] self_p Pin device.
+ * @param[in] dev_p Pin device.
  * @param[in] value Non-zero for high and ``0`` for low output.
  *
  * @return zero(0) or negative error code.
@@ -202,7 +202,7 @@ int pin_device_write(const struct pin_device_t *dev_p,
  * This function may be called from interrupt context and with the
  * system lock taken.
  *
- * @param[in] self_p Pin device.
+ * @param[in] dev_p Pin device.
  *
  * @return zero(0) or negative error code.
  */
@@ -217,7 +217,7 @@ static inline int pin_device_write_high(const struct pin_device_t *dev_p)
  * This function may be called from interrupt context and with the
  * system lock taken.
  *
- * @param[in] self_p Pin device.
+ * @param[in] dev_p Pin device.
  *
  * @return zero(0) or negative error code.
  */
