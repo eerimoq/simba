@@ -13,88 +13,10 @@ import subprocess
 import glob
 
 
-BOARD_RST_FMT = """{desc}
-{desc_underline}
-
-Pinout
-------
-
-.. image:: ../images/boards/{pinout}
-   :width: 50%
-   :target: ../_images/{pinout}
-
-{include_extra}
-
-Default system features
------------------------
-
-The default configuration includes those major features. They are all
-initialized by ``sys_start()`` at the startup of the application.
-
-{major_features}
-
-Drivers
--------
-
-Supported drivers for this board.
-
-{drivers}
-
-Library Reference
------------------
-
-Read more about board specific functionality in the :doc:`{desc}
-<../library-reference/boards/{name}>` module documentation in the
-Library Reference.
-
-Memory usage
-------------
-
-Below is the memory usage of two applications:
-
-- The
-  :github-tree:`minimal-configuration<examples/minimal-configuration>`
-  application is configured to only include the bare minimum of
-  functionality for the low level kernel to run. That is, the
-  thread scheduler and system tick.
-
-- The
-  :github-tree:`default-configuration<examples/default-configuration>`
-  application is built with the default configuration, including a lot
-  more functionality. See the list of `Default system features`_ above
-  for a summary.
-
-+--------------------------+-----------+-----------+
-| Application              | Flash     | RAM       |
-+==========================+===========+===========+
-{memory_usage}
-+--------------------------+-----------+-----------+
-
-Default configuration
----------------------
-
-The communication between the PC and the board is carried over **{console_params[channel]}{console_params[settings]}**.
-
-Default Standard Library configuration.
-
-+--------------------------------------------------------+-----------------------------------------------------+
-|  Name                                                  |  Value                                              |
-+========================================================+=====================================================+
-{default_configuration}
-
-Homepage
---------
-
-{homepage}
-
-Mcu
----
-
-:doc:`{mcu}<../library-reference/mcus/{mcu}>`
-
-{targets}
-"""
-
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+BOARD_TEMPLATE_RST_FMT = os.path.join(SCRIPT_DIR,
+                                      'docgen',
+                                      'board-template.rst')
 
 CONFIG_FMT = """|  {:53} |  {:50} |
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -234,6 +156,9 @@ def generate_boards(database):
 
     """
 
+    with open(BOARD_TEMPLATE_RST_FMT, 'r') as fin:
+        board_rst_fmt = fin.read()
+
     for board, data in database["boards"].items():
         config = data["default-configuration"]
         drivers = generate_drivers(data["drivers"])
@@ -243,7 +168,7 @@ def generate_boards(database):
         console_params = generate_console_params(config)
         memory_usage = generate_memory_usage(board)
 
-        rst = BOARD_RST_FMT.format(
+        rst = board_rst_fmt.format(
             name=board,
             desc=data["board_desc"],
             desc_underline="=" * len(data["board_desc"]),
