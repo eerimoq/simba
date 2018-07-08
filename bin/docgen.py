@@ -72,7 +72,7 @@ Below is the memory usage of two applications:
 Default configuration
 ---------------------
 
-Default configuration of the UART: {features_params[console_br]}-8-N-1
+The communication between the PC and the board is carried over **{features_params[comm_channel]}{features_params[channel_params]}**.
 
 Default Standard Library configuration.
 
@@ -160,8 +160,22 @@ def boards_generate(database):
                 major_features.append("- :doc:`Console.<../library-reference/oam/console>`")
             if name == "CONFIG_START_SHELL" and value == "1":
                 major_features.append("- :doc:`Debug shell.<../library-reference/oam/shell>`")
-            if name == "CONFIG_START_CONSOLE_UART_BAUDRATE":
-                features_params["console_br"] = value
+
+            # The system console's communication channel
+            if name == "CONFIG_START_CONSOLE":
+                if value == "CONFIG_START_CONSOLE_UART":
+                    features_params["comm_channel"] = "UART"
+                elif value == "CONFIG_START_CONSOLE_USB_CDC":
+                    features_params["comm_channel"] = "USB"
+                    features_params["channel_params"] = ""
+                else:
+                    features_params["comm_channel"] = "unknown"
+                    features_params["channel_params"] = ""
+
+            # The communication channel parameters (nothing for USB)
+            if name == "CONFIG_START_CONSOLE_UART_BAUDRATE" and \
+                    features_params["comm_channel"] == "UART":
+                features_params["channel_params"] = " {}-8-N-1".format(value)
 
         # Memory usage.
         applications = [
