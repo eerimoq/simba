@@ -673,7 +673,7 @@ clean-all-boards:
 	$(MAKE) clean-xvisor-raspberry-pi-3
 
 doc:
-	+bin/dbgen.py > database.json
+	+bin/dbgen.py database.json
 	+bin/docgen.py database.json
 	$(MAKE) -s -C doc
 

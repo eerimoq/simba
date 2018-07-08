@@ -26,40 +26,65 @@ SOURCE_CODE_FMT = '''.. code-block:: c
 '''
 
 
+def print_do(text):
+    print('  {}... '.format(text), end='', flush=True)
+
+    
+def print_done():
+    print('done.')
+
+
+def print_failed():
+    print('failed.')
+
+
 def run(command):
     return subprocess.check_output(command,
                                    universal_newlines=True)
 
 
 def write_to_file(path, data):
-    print('Writing to {}... '.format(path), end='')
+    print_do('Writing to {}'.format(path))
 
     with open(path, 'w') as fout:
         fout.write(data)
 
-    print('done.')
+    print_done()
 
 
 def generate_drivers(config):
     drivers = []
 
+    print_do('Drivers')
+    
     for driver in sorted(config):
         subsystem = glob.glob('src/drivers/*/' + driver + '.h')[0].split('/')[2]
         drivers.append('- :doc:`../library-reference/drivers/{}/{}`'.format(
             subsystem,
             driver))
 
-    return '\n'.join(drivers)
+    drivers = '\n'.join(drivers)
+    print_done()
+        
+    return drivers
 
 
 def generate_include_extra(board):
+    print_do('Include extras')
+
     if os.path.exists(os.path.join('doc', 'boards', 'extra', board + '.rst')):
-        return '.. include:: extra/{}.rst'.format(board)
+        include_extra = '.. include:: extra/{}.rst'.format(board)
     else:
-        return ''
+        include_extra = ''
+
+    print_done()
+
+    return include_extra
 
 
 def generate_major_features(default_configuration):
+    print_do('Major features')
+
     major_features = []
 
     for name, value in default_configuration:
@@ -76,10 +101,15 @@ def generate_major_features(default_configuration):
             major_features.append(
                 '- :doc:`Debug shell.<../library-reference/oam/shell>`')
 
-    return '\n'.join(major_features)
+    major_features = '\n'.join(major_features)
+    print_done()
+
+    return major_features
 
 
 def generate_console_params(default_configuration):
+    print_do('Console parameters')
+
     console_params = {}
 
     for name, value in default_configuration:
@@ -98,6 +128,8 @@ def generate_console_params(default_configuration):
             and (console_params['channel'] == 'UART')):
             console_params['settings'] = ' {}-8-N-1'.format(value)
 
+    print_done()
+            
     return console_params
 
 
@@ -108,6 +140,8 @@ def generate_memory_usage(board):
     ]
     memory_usage = []
 
+    print_do('Memory usage')
+    
     try:
         for application in applications:
             run([
@@ -129,10 +163,10 @@ def generate_memory_usage(board):
             memory_usage.append(fmt.format(application=application,
                                            program=sizes['program'],
                                            data=sizes['data']))
+
+        print_done()
     except subprocess.CalledProcessError:
-        print(
-            'Failed to generate memory footprint data for board {}.'.format(
-                board))
+        print_failed()
 
     separator = '\n+-{}-+-----------+-----------+\n'.format(24 * '-')
 
@@ -140,6 +174,8 @@ def generate_memory_usage(board):
 
 
 def generate_default_configuration(config):
+    print_do('Default configuration')
+
     default_configuration = []
     targets = []
 
@@ -149,7 +185,11 @@ def generate_default_configuration(config):
             name=name)
         targets.append(target)
 
-    return ''.join(default_configuration), '\n\n'.join(targets)
+    default_configuration = ''.join(default_configuration)
+    targets = '\n\n'.join(targets)
+    print_done()
+        
+    return default_configuration, targets
 
 
 def generate_boards(database):
@@ -161,6 +201,8 @@ def generate_boards(database):
         board_rst_fmt = fin.read()
 
     for board, data in database['boards'].items():
+        print('Generating documentation for {}...'.format(board))
+        
         config = data['default-configuration']
         drivers = generate_drivers(data['drivers'])
         include_extra = generate_include_extra(board)
@@ -185,9 +227,9 @@ def generate_boards(database):
             console_params=console_params)
 
         rst_path = os.path.join('doc', 'boards', board + '.rst')
-
         write_to_file(rst_path, rst)
-
+        print()
+        
 
 def generate_examples():
     """Generate the examples.
