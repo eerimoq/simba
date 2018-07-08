@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 
 from __future__ import print_function
@@ -90,6 +90,7 @@ def main():
             "SETTING_SIZE",
             "ENDIANESS"
         ]
+
         for variable in variables:
             value = get_make_variable(board, variable)
             database["boards"][board][variable.lower()] = value.strip()
@@ -100,9 +101,11 @@ def main():
         # Get the board default configuration.
         re_default_config = re.compile(r"#define (\w+) (.*)")
         default_config = []
+
         for line in get_default_configuration(board).splitlines():
             mo = re_default_config.match(line)
             default_config.append((mo.group(1), mo.group(2)))
+
         default_config.sort()
         database["boards"][board]["default-configuration"] = default_config
 
@@ -112,6 +115,7 @@ def main():
         for line in get_port_has(board).splitlines():
             mo = re_port_has.match(line)
             drivers.append(mo.group(1).lower())
+
         database["boards"][board]["drivers"] = drivers
 
         # Get board include paths.
@@ -174,6 +178,7 @@ def main():
 
         if mcu not in database["mcus"]:
             database["mcus"][mcu] = {}
+
             # Get the descriptive name and homepage
             for variable in ["MCU_NAME", "MCU_HOMEPAGE", "ARCH", "FAMILY", "MCU_DESC"]:
                 value = get_make_variable(board, variable)
