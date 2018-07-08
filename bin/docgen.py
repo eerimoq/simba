@@ -72,6 +72,8 @@ Below is the memory usage of two applications:
 Default configuration
 ---------------------
 
+The communication between the PC and the board is carried over **{features_params[comm_channel]}{features_params[channel_params]}**.
+
 Default Standard Library configuration.
 
 +--------------------------------------------------------+-----------------------------------------------------+
@@ -148,6 +150,7 @@ def boards_generate(database):
 
         # Enabled features.
         major_features = []
+        features_params = {}
         for [name, value] in data["default-configuration"]:
             if name == "CONFIG_START_NETWORK" and value == "1":
                 major_features.append("- Networking.")
@@ -157,6 +160,22 @@ def boards_generate(database):
                 major_features.append("- :doc:`Console.<../library-reference/oam/console>`")
             if name == "CONFIG_START_SHELL" and value == "1":
                 major_features.append("- :doc:`Debug shell.<../library-reference/oam/shell>`")
+
+            # The system console's communication channel
+            if name == "CONFIG_START_CONSOLE":
+                if value == "CONFIG_START_CONSOLE_UART":
+                    features_params["comm_channel"] = "UART"
+                elif value == "CONFIG_START_CONSOLE_USB_CDC":
+                    features_params["comm_channel"] = "USB"
+                    features_params["channel_params"] = ""
+                else:
+                    features_params["comm_channel"] = "unknown"
+                    features_params["channel_params"] = ""
+
+            # The communication channel parameters (nothing for USB)
+            if name == "CONFIG_START_CONSOLE_UART_BAUDRATE" and \
+                    features_params["comm_channel"] == "UART":
+                features_params["channel_params"] = " {}-8-N-1".format(value)
 
         # Memory usage.
         applications = [
@@ -180,7 +199,8 @@ def boards_generate(database):
                     '-C', os.path.join('examples', application),
                     'BOARD=' + board,
                     'size-json'
-                ])
+                ],
+                universal_newlines=True)
                 sizes = json.loads(sizes_json)
                 memory_usage.append(
                     '| {application:24} | {program:9} | {data:9} |'.format(
@@ -205,7 +225,8 @@ def boards_generate(database):
             include_extra=include_extra,
             targets='\n\n'.join(targets),
             memory_usage='\n+-{}-+-----------+-----------+\n'.format(
-                24 * '-').join(memory_usage))
+                24 * '-').join(memory_usage),
+            features_params=features_params)
 
         rst_path = os.path.join("doc", "boards", board + ".rst")
         print("Writing to ", rst_path)
@@ -258,15 +279,15 @@ def testing_generate(database):
     testing_suites_path = os.path.join("doc", "developer-guide", "testing-suites.rst")
 
     with open(testing_suites_path, "w") as fout:
-        boards = database["boards"].keys()
-        boards.sort()
+        boards = sorted(database["boards"].keys())
         for board in boards:
             suites = subprocess.check_output([
                 'make',
                 '-s',
                 'BOARD=' + board,
                 'print-TESTS'
-            ])
+            ],
+            universal_newlines=True)
             print(database["boards"][board]["board_desc"], file=fout)
             print('-' * len(board), file=fout)
             print(file=fout)
