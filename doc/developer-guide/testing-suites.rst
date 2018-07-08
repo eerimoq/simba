@@ -96,11 +96,11 @@ Arduino Zero
 
 
 ESP-01
------
+------
 
 
 ESP-12E Development Board
-------
+-------------------------
 
 - :github-blob:`kernel/sys<tst/kernel/sys/main.c>`
 - :github-blob:`kernel/thrd<tst/kernel/thrd/main.c>`
@@ -111,7 +111,7 @@ ESP32-DevKitC
 
 
 Adafruit HUZZAH ESP8266 breakout
-------
+--------------------------------
 
 
 Linux
@@ -260,7 +260,7 @@ nRF52840-PDK
 
 
 Particle IO Photon
-------
+------------------
 
 - :github-blob:`kernel/sys<tst/kernel/sys/main.c>`
 - :github-blob:`kernel/thrd<tst/kernel/thrd/main.c>`
@@ -291,7 +291,7 @@ Particle IO Photon
 - :github-blob:`inet/ping<tst/inet/ping/main.c>`
 
 SPC56D Discovery
----------------
+----------------
 
 - :github-blob:`kernel/sys<tst/kernel/sys/main.c>`
 - :github-blob:`kernel/thrd<tst/kernel/thrd/main.c>`
