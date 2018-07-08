@@ -7,6 +7,12 @@ import json
 import re
 
 
+def run(command):
+    return subprocess.check_output(command,
+                                   cwd="examples/default-configuration",
+                                   universal_newlines=True)
+
+
 def get_boards():
     """Get a list of all boards.
 
@@ -32,12 +38,13 @@ def get_make_variable(board, variable):
 
     """
 
-    return subprocess.check_output(["make",
-                                    "-s",
-                                    "BOARD=" + board,
-                                    "print-" + variable],
-                                   cwd="examples/default-configuration",
-                                   universal_newlines=True)
+    return run(
+        [
+            "make",
+            "-s",
+            "BOARD=" + board,
+            "print-" + variable
+        ])
 
 
 def get_default_configuration(board):
@@ -45,12 +52,13 @@ def get_default_configuration(board):
 
     """
 
-    return subprocess.check_output(["make",
-                                    "-s",
-                                    "BOARD=" + board,
-                                    "default-configuration"],
-                                   cwd="examples/default-configuration",
-                                   universal_newlines=True)
+    return run(
+        [
+            "make",
+            "-s",
+            "BOARD=" + board,
+            "default-configuration"
+        ])
 
 
 def get_port_has(board):
@@ -58,12 +66,13 @@ def get_port_has(board):
 
     """
 
-    return subprocess.check_output(["make",
-                                    "-s",
-                                    "BOARD=" + board,
-                                    "port-has"],
-                                   cwd="examples/default-configuration",
-                                   universal_newlines=True)
+    return run(
+        [
+            "make",
+            "-s",
+            "BOARD=" + board,
+            "port-has"
+        ])
 
 
 def main():
