@@ -4,8 +4,6 @@
 
 """
 
-from __future__ import print_function
-
 import os
 import argparse
 import json
@@ -18,24 +16,23 @@ BOARD_TEMPLATE_RST_FMT = os.path.join(SCRIPT_DIR,
                                       'docgen',
                                       'board-template.rst')
 
-CONFIG_FMT = """|  {:53} |  {:50} |
+CONFIG_FMT = '''|  {:53} |  {:50} |
 +--------------------------------------------------------+-----------------------------------------------------+
-"""
+'''
 
-
-SOURCE_CODE_FMT = """.. code-block:: c
+SOURCE_CODE_FMT = '''.. code-block:: c
 
 {source}
-"""
+'''
 
 
 def write_to_file(path, data):
-    print("Writing to {}... ".format(path), end='')
+    print('Writing to {}... '.format(path), end='')
 
-    with open(path, "w") as fout:
+    with open(path, 'w') as fout:
         fout.write(data)
 
-    print("done.")
+    print('done.')
 
 
 def generate_drivers(config):
@@ -43,7 +40,7 @@ def generate_drivers(config):
 
     for driver in sorted(config):
         subsystem = glob.glob('src/drivers/*/' + driver + '.h')[0].split('/')[2]
-        drivers.append("- :doc:`../library-reference/drivers/{}/{}`".format(
+        drivers.append('- :doc:`../library-reference/drivers/{}/{}`'.format(
             subsystem,
             driver))
 
@@ -51,28 +48,28 @@ def generate_drivers(config):
 
 
 def generate_include_extra(board):
-    if os.path.exists(os.path.join("doc", "boards", "extra", board + ".rst")):
-        return ".. include:: extra/{}.rst".format(board)
+    if os.path.exists(os.path.join('doc', 'boards', 'extra', board + '.rst')):
+        return '.. include:: extra/{}.rst'.format(board)
     else:
-        return ""
+        return ''
 
 
 def generate_major_features(default_configuration):
     major_features = []
 
     for name, value in default_configuration:
-        if name == "CONFIG_START_NETWORK" and value == "1":
-            major_features.append("- Networking.")
+        if name == 'CONFIG_START_NETWORK' and value == '1':
+            major_features.append('- Networking.')
 
-        if name == "CONFIG_START_FILESYSTEM" and value == "1":
-            major_features.append("- File system.")
+        if name == 'CONFIG_START_FILESYSTEM' and value == '1':
+            major_features.append('- File system.')
 
-        if name == "CONFIG_START_CONSOLE" and value != "CONFIG_START_CONSOLE_NONE":
-            major_features.append("- :doc:`Console.<../library-reference/oam/console>`")
+        if name == 'CONFIG_START_CONSOLE' and value != 'CONFIG_START_CONSOLE_NONE':
+            major_features.append('- :doc:`Console.<../library-reference/oam/console>`')
 
-        if name == "CONFIG_START_SHELL" and value == "1":
+        if name == 'CONFIG_START_SHELL' and value == '1':
             major_features.append(
-                "- :doc:`Debug shell.<../library-reference/oam/shell>`")
+                '- :doc:`Debug shell.<../library-reference/oam/shell>`')
 
     return '\n'.join(major_features)
 
@@ -81,28 +78,28 @@ def generate_console_params(default_configuration):
     console_params = {}
 
     for name, value in default_configuration:
-        if name == "CONFIG_START_CONSOLE":
-            if value == "CONFIG_START_CONSOLE_UART":
-                console_params["channel"] = "UART"
-            elif value == "CONFIG_START_CONSOLE_USB_CDC":
-                console_params["channel"] = "USB"
-                console_params["settings"] = ""
+        if name == 'CONFIG_START_CONSOLE':
+            if value == 'CONFIG_START_CONSOLE_UART':
+                console_params['channel'] = 'UART'
+            elif value == 'CONFIG_START_CONSOLE_USB_CDC':
+                console_params['channel'] = 'USB'
+                console_params['settings'] = ''
             else:
-                console_params["channel"] = "unknown"
-                console_params["settings"] = ""
+                console_params['channel'] = 'unknown'
+                console_params['settings'] = ''
 
         # The communication channel parameters (nothing for USB).
-        if ((name == "CONFIG_START_CONSOLE_UART_BAUDRATE")
-            and (console_params["channel"] == "UART")):
-            console_params["settings"] = " {}-8-N-1".format(value)
+        if ((name == 'CONFIG_START_CONSOLE_UART_BAUDRATE')
+            and (console_params['channel'] == 'UART')):
+            console_params['settings'] = ' {}-8-N-1'.format(value)
 
     return console_params
 
 
 def generate_memory_usage(board):
     applications = [
-        "minimal-configuration",
-        "default-configuration"
+        'minimal-configuration',
+        'default-configuration'
     ]
     memory_usage = []
 
@@ -143,8 +140,8 @@ def generate_default_configuration(config):
     targets = []
 
     for name, value in config:
-        default_configuration.append(CONFIG_FMT.format(name + "_", value))
-        target = ".. _{name}: ../user-guide/configuration.html#c.{name}".format(
+        default_configuration.append(CONFIG_FMT.format(name + '_', value))
+        target = '.. _{name}: ../user-guide/configuration.html#c.{name}'.format(
             name=name)
         targets.append(target)
 
@@ -159,9 +156,9 @@ def generate_boards(database):
     with open(BOARD_TEMPLATE_RST_FMT, 'r') as fin:
         board_rst_fmt = fin.read()
 
-    for board, data in database["boards"].items():
-        config = data["default-configuration"]
-        drivers = generate_drivers(data["drivers"])
+    for board, data in database['boards'].items():
+        config = data['default-configuration']
+        drivers = generate_drivers(data['drivers'])
         include_extra = generate_include_extra(board)
         default_configuration, targets = generate_default_configuration(config)
         major_features = generate_major_features(config)
@@ -170,12 +167,12 @@ def generate_boards(database):
 
         rst = board_rst_fmt.format(
             name=board,
-            desc=data["board_desc"],
-            desc_underline="=" * len(data["board_desc"]),
-            homepage=data["board_homepage"],
-            pinout=data["board_pinout"],
+            desc=data['board_desc'],
+            desc_underline='=' * len(data['board_desc']),
+            homepage=data['board_homepage'],
+            pinout=data['board_pinout'],
             major_features=major_features,
-            mcu=data["mcu"].replace("/", ""),
+            mcu=data['mcu'].replace('/', ''),
             drivers=drivers,
             default_configuration=default_configuration,
             include_extra=include_extra,
@@ -183,7 +180,7 @@ def generate_boards(database):
             memory_usage=memory_usage,
             console_params=console_params)
 
-        rst_path = os.path.join("doc", "boards", board + ".rst")
+        rst_path = os.path.join('doc', 'boards', board + '.rst')
 
         write_to_file(rst_path, rst)
 
@@ -194,30 +191,30 @@ def generate_examples():
     """
 
     examples = [
-        "analog_read",
-        "analog_write",
-        "blink",
-        "ds18b20",
-        "dht",
-        "filesystem",
-        "hello_world",
-        "http_client",
-        "ping",
-        "queue",
-        "shell",
-        "timer"
+        'analog_read',
+        'analog_write',
+        'blink',
+        'ds18b20',
+        'dht',
+        'filesystem',
+        'hello_world',
+        'http_client',
+        'ping',
+        'queue',
+        'shell',
+        'timer'
     ]
 
     for example in examples:
-        c_path = os.path.join("examples", example, "main.c")
+        c_path = os.path.join('examples', example, 'main.c')
         source = []
 
         with open(c_path) as fin:
             for line in fin.readlines():
-                source.append("   " + line)
+                source.append('   ' + line)
 
         rst = SOURCE_CODE_FMT.format(source=''.join(source))
-        rst_path = os.path.join("doc", "examples", example, "source-code.rst")
+        rst_path = os.path.join('doc', 'examples', example, 'source-code.rst')
 
         write_to_file(rst_path, rst)
 
@@ -227,12 +224,12 @@ def generate_testing(database):
 
     """
 
-    testing_suites_path = os.path.join("doc",
-                                       "developer-guide",
-                                       "testing-suites.rst")
+    testing_suites_path = os.path.join('doc',
+                                       'developer-guide',
+                                       'testing-suites.rst')
 
-    with open(testing_suites_path, "w") as fout:
-        boards = sorted(database["boards"].keys())
+    with open(testing_suites_path, 'w') as fout:
+        boards = sorted(database['boards'].keys())
 
         for board in boards:
             suites = subprocess.check_output([
@@ -242,15 +239,15 @@ def generate_testing(database):
                 'print-TESTS'
             ],
             universal_newlines=True)
-            print(database["boards"][board]["board_desc"], file=fout)
+            print(database['boards'][board]['board_desc'], file=fout)
             print('-' * len(board), file=fout)
             print(file=fout)
 
-            for suite in suites.split(" "):
+            for suite in suites.split(' '):
                 suite = suite[4:].strip()
 
                 if suite:
-                    fmt = "- :github-blob:`{suite}<tst/{suite}/main.c>`"
+                    fmt = '- :github-blob:`{suite}<tst/{suite}/main.c>`'
                     print(fmt.format(suite=suite), file=fout)
 
             print(file=fout)
@@ -258,8 +255,8 @@ def generate_testing(database):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("database",
-                        help="JSON database.")
+    parser.add_argument('database',
+                        help='JSON database.')
     args = parser.parse_args()
 
     with open(args.database) as fin:
@@ -270,5 +267,5 @@ def main():
     generate_testing(database)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
