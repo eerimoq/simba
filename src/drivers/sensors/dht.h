@@ -93,7 +93,7 @@ int dht_read(struct dht_driver_t *self_p,
  *
  * @return zero(0) or negative error code.
  */
-int dht_11_read(struct dht_driver_t *self_p,
+int dht_read_11(struct dht_driver_t *self_p,
                 float *temperature_p,
                 float *humidty_p);
 #endif

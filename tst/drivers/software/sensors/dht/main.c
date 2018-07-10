@@ -74,14 +74,14 @@ static int test_dht_read(void)
     return (0);
 }
 
-static int test_dht_11_read(void)
+static int test_dht_read_11(void)
 {
     float temperature;
     float humidity;
 
     mock_prepare_data(65, 0, 28, 5, 98);
 
-    BTASSERT(dht_11_read(&dht, &temperature, &humidity) == 0);
+    BTASSERT(dht_read_11(&dht, &temperature, &humidity) == 0);
     BTASSERT(temperature == 28.5);
     BTASSERT(humidity == 65);
 
@@ -200,7 +200,7 @@ int main()
     struct harness_testcase_t testcases[] = {
         { test_init, "test_init" },
         { test_dht_read, "test_dht_read" },
-        { test_dht_11_read, "test_dht_11_read" },
+        { test_dht_read_11, "test_dht_read_11" },
         { test_cmd_read, "test_cmd_read"},
         { test_cmd_read_11, "test_cmd_read_11"},
         { NULL, NULL }
