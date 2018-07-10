@@ -51,7 +51,7 @@ struct module_t {
     int8_t initialized;
 #if CONFIG_DHT_COMMAND_READ == 1
     struct fs_command_t cmd_read;
-    struct fs_command_t cmd_11_read;
+    struct fs_command_t cmd_read_11;
 #endif
 };
 
@@ -256,14 +256,14 @@ static int cmd_read_cb(int argc,
     return (cmd_read_sensor(argc, argv, chout_p, dht_read, "read"));
 }
 
-static int cmd_11_read_cb(int argc,
+static int cmd_read_11_cb(int argc,
                           const char *argv[],
                           void *chout_p,
                           void *chin_p,
                           void *arg_p,
                           void *call_arg_p)
 {
-    return (cmd_read_sensor(argc, argv, chout_p, dht_11_read, "read_11"));
+    return (cmd_read_sensor(argc, argv, chout_p, dht_read_11, "read_11"));
 }
 
 #endif
@@ -285,11 +285,11 @@ int dht_module_init()
                     NULL);
     fs_command_register(&module.cmd_read);
 
-    fs_command_init(&module.cmd_11_read,
+    fs_command_init(&module.cmd_read_11,
                     CSTR("/drivers/dht/read_11"),
-                    cmd_11_read_cb,
+                    cmd_read_11_cb,
                     NULL);
-    fs_command_register(&module.cmd_11_read);
+    fs_command_register(&module.cmd_read_11);
 #endif
 
     return (pin_module_init());
@@ -339,7 +339,7 @@ int dht_read(struct dht_driver_t *self_p,
     return (0);
 }
 
-int dht_11_read(struct dht_driver_t *self_p,
+int dht_read_11(struct dht_driver_t *self_p,
                float *temperature_p,
                float *humidty_p)
 {
