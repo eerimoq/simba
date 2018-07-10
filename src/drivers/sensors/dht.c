@@ -190,9 +190,6 @@ static int read_sensor(struct dht_driver_t *self_p, uint8_t *buf_p)
     res = read_isr(self_p, &buf_p[0]);
     sys_unlock();
 
-    pin_device_set_mode(self_p->pin_p, PIN_OUTPUT);
-    pin_device_write_high(self_p->pin_p);
-
     if (res != 0) {
         return (res < 0 ? res : -EPROTO);
     }
@@ -302,9 +299,6 @@ int dht_init(struct dht_driver_t *self_p,
     ASSERTN(pin_p != NULL, EINVAL);
 
     self_p->pin_p = pin_p;
-
-    pin_device_set_mode(self_p->pin_p, PIN_OUTPUT);
-    pin_device_write_high(self_p->pin_p);
 
     return (0);
 }
