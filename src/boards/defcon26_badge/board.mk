@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2018, Erik Moqvist
+# Copyright (c) 2018, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -28,30 +28,23 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/boards/arduino_due
-SRC += $(SIMBA_ROOT)/src/boards/arduino_due/board.c
+INC += $(SIMBA_ROOT)/src/boards/defcon26_badge
+SRC += $(SIMBA_ROOT)/src/boards/defcon26_badge/board.c
 
-BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardDue"
-BOARD_PINOUT = "arduino-due-pinout.png"
-BOARD_DESC = "Arduino Due"
+BOARD_HOMEPAGE = "https://www.defcon.org/html/defcon-26/dc-26-index.html"
+BOARD_PINOUT = ""
+BOARD_DESC = "DEF CON 26 Badge"
 
-MCU = sam3x8e
+MCU = pic32mm0256gpm048
 
 SERIAL_PORT ?= /dev/arduino
-BOARD_PY = $(SIMBA_ROOT)/src/boards/arduino_due/board.py
+BOARD_PY = $(SIMBA_ROOT)/src/boards/defcon26_badge/board.py
 TIMEOUT ?= 10
 BAUDRATE ?= 115200
 
-# Set to "yes" to unlock flash regions. Solves "Flash page is locked".
-UNLOCK ?= no
-
-ifeq ($(UNLOCK), yes)
-UNLOCK_ARG = --unlock
-endif
-
 upload:
 	@echo "Uploading '$(EXE)'."
-	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(UNLOCK_ARG) $(BIN)
+	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(BIN)
 
 rerun:
 	@echo "Running '$(EXE)'."

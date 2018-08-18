@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2018, Erik Moqvist
+# Copyright (c) 2018, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -28,37 +28,67 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/boards/arduino_due
-SRC += $(SIMBA_ROOT)/src/boards/arduino_due/board.c
+CROSS_COMPILE = mips-unknown-elf-
 
-BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardDue"
-BOARD_PINOUT = "arduino-due-pinout.png"
-BOARD_DESC = "Arduino Due"
+# LIBPATH += $(FREESCALE_POWERPC_EABIVLE_ROOT)/powerpc-eabivle/newlib/lib
 
-MCU = sam3x8e
+# SIZE_SUMMARY_CMD ?= $(SIMBA_ROOT)/bin/memory_usage.py \
+# 			--ram-section .relocate \
+# 			--ram-section .bss \
+# 			--ram-section .main_stack \
+# 			--rom-section .text \
+# 			${EXE}
 
-SERIAL_PORT ?= /dev/arduino
-BOARD_PY = $(SIMBA_ROOT)/src/boards/arduino_due/board.py
-TIMEOUT ?= 10
-BAUDRATE ?= 115200
+CDEFS += F_CPU=$(F_CPU)UL
 
-# Set to "yes" to unlock flash regions. Solves "Flash page is locked".
-UNLOCK ?= no
+OPT ?= -O2
 
-ifeq ($(UNLOCK), yes)
-UNLOCK_ARG = --unlock
-endif
+CFLAGS += \
+	-Werror \
+	-mips3 \
+	-mmicromips \
+	$(OPT) \
+        -ffunction-sections \
+        -fdata-sections \
+        -fpack-struct \
+	-fstack-usage \
+	-Wno-maybe-uninitialized \
+	-Wno-stringop-truncation \
+	-nostdlib \
+	-msoft-float \
+	-G0
 
-upload:
-	@echo "Uploading '$(EXE)'."
-	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(UNLOCK_ARG) $(BIN)
+CXXFLAGS += \
+	-Werror \
+	-mips3 \
+	-mmicromips \
+	$(OPT) \
+        -ffunction-sections \
+        -fdata-sections \
+        -fpack-struct \
+	-fstack-usage \
+	-nostdlib \
+	-msoft-float \
+	-G0
 
-rerun:
-	@echo "Running '$(EXE)'."
-	python -u $(RUN_PY) --port $(SERIAL_PORT) \
-			    --timeout $(TIMEOUT) \
-			    --baudrate $(BAUDRATE) \
-	 		    --pattern $(RUN_END_PATTERN)\
-			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
-			    | python3 -u $(BACKTRACE_PY) $(EXE) $(CROSS_COMPILE) \
-			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
+LDFLAGS += \
+        -Wl,--cref \
+	-mips3 \
+	-mmicromips \
+        -T$(LINKER_SCRIPT) \
+	-nostdlib \
+	-msoft-float \
+	-G0
+
+ENDIANESS = big
+
+build: $(BIN) $(S19)
+
+$(BIN): $(EXE)
+	$(CROSS_COMPILE)objcopy -O binary $< $@
+
+$(S19): $(EXE)
+	@echo "Creating $@"
+	$(CROSS_COMPILE)objcopy -O srec $< $@
+
+include $(SIMBA_ROOT)/make/gnu.mk

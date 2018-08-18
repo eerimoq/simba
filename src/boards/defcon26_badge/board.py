@@ -6,7 +6,7 @@ import time
 import argparse
 
 
-def _upload(port, binary, bossac_port, unlock):
+def _upload(port, binary, bossac_port):
     """Try to upload the binary to the board.
 
     """
@@ -25,10 +25,8 @@ def _upload(port, binary, bossac_port, unlock):
         "-b",
         "-R", binary
     ]
-    command += unlock
     print ' '.join(command)
     subprocess.check_call(command)
-
 
 def subcommand_upload(args):
     """Upload the binary to the board.
@@ -36,13 +34,9 @@ def subcommand_upload(args):
     """
 
     bossac_port = args.port.replace("/dev/", "")
-    unlock = []
-
-    if args.unlock:
-        unlock = ["-u"]
 
     try:
-        _upload(args.port, args.binary, bossac_port, unlock)
+        _upload(args.port, args.binary, bossac_port)
     except:
         try:
             # /dev/arduino cannot be opened unless a COM-port is
@@ -54,7 +48,7 @@ def subcommand_upload(args):
                 "-e",
                 "-w",
                 "-b", args.binary
-                ] + unlock)
+            ])
         except:
             _upload(args.port, args.binary, bossac_port)
 
@@ -69,7 +63,6 @@ def main():
 
     upload = subparsers.add_parser('upload')
     upload.add_argument("--port", default="/dev/arduino")
-    upload.add_argument("--unlock", action='store_true')
     upload.add_argument("binary")
     upload.set_defaults(func=subcommand_upload)
 

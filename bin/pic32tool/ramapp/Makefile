@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2018, Erik Moqvist
+# Copyright (c) 2018, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -28,37 +28,25 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/boards/arduino_due
-SRC += $(SIMBA_ROOT)/src/boards/arduino_due/board.c
+NAME = ramapp
+BOARD ?= defcon26_badge
 
-BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardDue"
-BOARD_PINOUT = "arduino-due-pinout.png"
-BOARD_DESC = "Arduino Due"
+CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_FLASH=1 \
+	CONFIG_FLASH_DEVICE_SEMAPHORE=0 \
+	CONFIG_START_CONSOLE=CONFIG_START_CONSOLE_NONE \
+	CONFIG_SYSTEM_INTERRUPTS=0 \
+	CONFIG_SYSTEM_TICK=0 \
+	CONFIG_CRC_TABLE_LOOKUP=0 \
+	BAUDRATE=$(BAUDRATE)
 
-MCU = sam3x8e
+# Optimize for size.
+# OPT = -Os
+# CFLAGS += -flto
+# CXXFLAGS += -flto
+# LDFLAGS += -flto
 
-SERIAL_PORT ?= /dev/arduino
-BOARD_PY = $(SIMBA_ROOT)/src/boards/arduino_due/board.py
-TIMEOUT ?= 10
-BAUDRATE ?= 115200
+LINKER_SCRIPT ?= script.pic32tool.ld
 
-# Set to "yes" to unlock flash regions. Solves "Flash page is locked".
-UNLOCK ?= no
-
-ifeq ($(UNLOCK), yes)
-UNLOCK_ARG = --unlock
-endif
-
-upload:
-	@echo "Uploading '$(EXE)'."
-	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(UNLOCK_ARG) $(BIN)
-
-rerun:
-	@echo "Running '$(EXE)'."
-	python -u $(RUN_PY) --port $(SERIAL_PORT) \
-			    --timeout $(TIMEOUT) \
-			    --baudrate $(BAUDRATE) \
-	 		    --pattern $(RUN_END_PATTERN)\
-			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
-			    | python3 -u $(BACKTRACE_PY) $(EXE) $(CROSS_COMPILE) \
-			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
+include $(SIMBA_ROOT)/make/app.mk

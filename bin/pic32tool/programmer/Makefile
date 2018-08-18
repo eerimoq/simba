@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2018, Erik Moqvist
+# Copyright (c) 2018, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -28,37 +28,22 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/boards/arduino_due
-SRC += $(SIMBA_ROOT)/src/boards/arduino_due/board.c
+.PHONY: generate_ramapp_upload_instructions_i
 
-BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardDue"
-BOARD_PINOUT = "arduino-due-pinout.png"
-BOARD_DESC = "Arduino Due"
+NAME = programmer
+BOARD ?= arduino_due
 
-MCU = sam3x8e
+CDEFS += \
+	CONFIG_MINIMAL_SYSTEM=1 \
+	CONFIG_ICSP_SOFT=1 \
+	CONFIG_PIN=1
 
-SERIAL_PORT ?= /dev/arduino
-BOARD_PY = $(SIMBA_ROOT)/src/boards/arduino_due/board.py
-TIMEOUT ?= 10
-BAUDRATE ?= 115200
+RAMAPP_UPLOAD_INSTRUCTIONS_I = ramapp_upload_instructions.i
+RAMAPP_OUT = ../ramapp/build/defcon26_badge/ramapp.out
 
-# Set to "yes" to unlock flash regions. Solves "Flash page is locked".
-UNLOCK ?= no
+generate_ramapp_upload_instructions_i:
+	pic32tool.py generate_ramapp_upload_instructions \
+	    $(RAMAPP_OUT) \
+	    $(RAMAPP_UPLOAD_INSTRUCTIONS_I)
 
-ifeq ($(UNLOCK), yes)
-UNLOCK_ARG = --unlock
-endif
-
-upload:
-	@echo "Uploading '$(EXE)'."
-	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(UNLOCK_ARG) $(BIN)
-
-rerun:
-	@echo "Running '$(EXE)'."
-	python -u $(RUN_PY) --port $(SERIAL_PORT) \
-			    --timeout $(TIMEOUT) \
-			    --baudrate $(BAUDRATE) \
-	 		    --pattern $(RUN_END_PATTERN)\
-			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
-			    | python3 -u $(BACKTRACE_PY) $(EXE) $(CROSS_COMPILE) \
-			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
+include $(SIMBA_ROOT)/make/app.mk

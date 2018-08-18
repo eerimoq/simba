@@ -39,6 +39,7 @@
 #define PORT_HAS_HX711
 #define PORT_HAS_GNSS
 #define PORT_HAS_HD44780
+#define PORT_HAS_ICSP_SOFT
 #define PORT_HAS_JTAG_SOFT
 
 /**
@@ -161,6 +162,11 @@
 #endif
 
 #if defined(FAMILY_XVISOR_VIRT)
+#    define PORT_HAS_EEPROM_SOFT
+#    define PORT_HAS_FLASH
+#endif
+
+#if defined(FAMILY_PIC32MM)
 #    define PORT_HAS_EEPROM_SOFT
 #    define PORT_HAS_FLASH
 #endif
@@ -555,6 +561,17 @@
 #        define CONFIG_I2C_SOFT                             0
 #    else
 #        define CONFIG_I2C_SOFT                             1
+#    endif
+#endif
+
+/**
+ * Enable the icsp_soft driver.
+ */
+#ifndef CONFIG_ICSP_SOFT
+#    if defined(CONFIG_MINIMAL_SYSTEM) || !defined(PORT_HAS_ICSP_SOFT)
+#        define CONFIG_ICSP_SOFT                            0
+#    else
+#        define CONFIG_ICSP_SOFT                            1
 #    endif
 #endif
 
@@ -1933,7 +1950,7 @@
 #endif
 
 /**
- * Console UART baudrate.
+ * Console UART reception buffer size.
  */
 #ifndef CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE
 #    if defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32) || defined(BOARD_LINUX)

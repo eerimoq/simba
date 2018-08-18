@@ -131,6 +131,7 @@ DRIVERS_SRC ?= \
 	network/esp_wifi/softap.c \
 	network/i2c.c \
 	network/i2c_soft.c \
+	network/icsp_soft.c \
 	network/jtag_soft.c \
 	network/mcp2515.c \
 	network/nrf24l01.c \

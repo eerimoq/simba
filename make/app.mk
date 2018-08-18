@@ -65,6 +65,7 @@ BIN = $(BUILDDIR)/$(NAME).bin
 UBIN = $(BUILDDIR)/$(NAME).ubin
 UPGRADE_BINARY_DESCRIPTION ?= "$(shell date)"
 HEX = $(BUILDDIR)/$(NAME).hex
+S19 = $(BUILDDIR)/$(NAME).s19
 MAP = $(BUILDDIR)/$(NAME).map
 RUNLOG = $(BUILDDIR)/run.log
 CLEAN = $(BUILDDIR) $(EXE) $(RUNLOG) size.log \

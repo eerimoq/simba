@@ -274,6 +274,9 @@ typedef intptr_t longptr_t;
 #ifdef PORT_HAS_JTAG_SOFT
 #    include "drivers/network/jtag_soft.h"
 #endif
+#ifdef PORT_HAS_ICSP_SOFT
+#    include "drivers/network/icsp_soft.h"
+#endif
 
 #include "inet/isotp.h"
 

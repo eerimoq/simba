@@ -3,7 +3,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2018, Erik Moqvist
+# Copyright (c) 2018, Erik Moqvist
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -28,37 +28,25 @@
 # This file is part of the Simba project.
 #
 
-INC += $(SIMBA_ROOT)/src/boards/arduino_due
-SRC += $(SIMBA_ROOT)/src/boards/arduino_due/board.c
+INC += \
+	$(SIMBA_ROOT)/src/mcus/pic32mm0256gpm048 \
+	$(SIMBA_ROOT)/src/mcus/pic32mm
+SRC += \
+	$(SIMBA_ROOT)/src/mcus/pic32mm/pic32mm.c \
+	$(SIMBA_ROOT)/src/mcus/pic32mm/pic32mm.S \
+	$(SIMBA_ROOT)/src/mcus/pic32mm0256gpm048/mcu.c
 
-BOARD_HOMEPAGE = "https://www.arduino.cc/en/Main/ArduinoBoardDue"
-BOARD_PINOUT = "arduino-due-pinout.png"
-BOARD_DESC = "Arduino Due"
+F_CPU = 25000000
+MCPU = e200z0
 
-MCU = sam3x8e
+LIBPATH += "$(SIMBA_ROOT)/src/mcus/pic32mm0256gpm048"
+LINKER_SCRIPT ?= script.ld
 
-SERIAL_PORT ?= /dev/arduino
-BOARD_PY = $(SIMBA_ROOT)/src/boards/arduino_due/board.py
-TIMEOUT ?= 10
-BAUDRATE ?= 115200
+ARCH = mips
+FAMILY = pic32mm
 
-# Set to "yes" to unlock flash regions. Solves "Flash page is locked".
-UNLOCK ?= no
+MCU_HOMEPAGE = ""
+MCU_NAME = ""
+MCU_DESC = "PIC32MM0256GPM048 @ 25MHz, 32k RAM, 256k Flash"
 
-ifeq ($(UNLOCK), yes)
-UNLOCK_ARG = --unlock
-endif
-
-upload:
-	@echo "Uploading '$(EXE)'."
-	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(UNLOCK_ARG) $(BIN)
-
-rerun:
-	@echo "Running '$(EXE)'."
-	python -u $(RUN_PY) --port $(SERIAL_PORT) \
-			    --timeout $(TIMEOUT) \
-			    --baudrate $(BAUDRATE) \
-	 		    --pattern $(RUN_END_PATTERN)\
-			    --pattern-success $(RUN_END_PATTERN_SUCCESS) \
-			    | python3 -u $(BACKTRACE_PY) $(EXE) $(CROSS_COMPILE) \
-			    | tee $(RUNLOG) ; test $${PIPESTATUS[0]} -eq 0
+include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/mips.mk
