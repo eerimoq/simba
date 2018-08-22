@@ -37,6 +37,20 @@ An Arduino Due (to the right) acts as programmer, connected to a PC
 with serial over USB. DEF CON 26 Badge (to the left) with PIC32MM MCU
 to be programmed.
 
++-----------+--------+---------------+
+| Signal    | Color  | Arduino pin   |
++===========+========+===============+
+| MCLRN     | white  | D4            |
++-----------+--------+---------------+
+| VDD (3V3) | grey   | 3V3           |
++-----------+--------+---------------+
+| VSS (GND) | purple | GND           |
++-----------+--------+---------------+
+| PGED      | blue   | D3            |
++-----------+--------+---------------+
+| PGEC      | green  | D2            |
++-----------+--------+---------------+
+
 Upload ramapp to the Arduino Due, and use pic32tool.py to program the
 PIC32 MCU.
 
