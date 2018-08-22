@@ -34,7 +34,8 @@ INC += \
 SRC += \
 	$(SIMBA_ROOT)/src/mcus/pic32mm/pic32mm.c \
 	$(SIMBA_ROOT)/src/mcus/pic32mm/pic32mm.S \
-	$(SIMBA_ROOT)/src/mcus/pic32mm0256gpm048/mcu.c
+	$(SIMBA_ROOT)/src/mcus/pic32mm0256gpm048/mcu.c \
+	$(SIMBA_ROOT)/3pp/libc/string0.c
 
 F_CPU = 25000000
 MCPU = e200z0

@@ -28,15 +28,15 @@
 
 #include "kernel/asm.h"
         
-///**
-// * Perform a thread context switch.
-// *
-// * @param[in] lr Return address.
-// * @param[in] r1 Stack address.
-// * @param[in] r3 Thread to swap in.
-// * @param[in] r4 Thread to swap out.
-// */
-//ASM_FUNC_BEGIN thrd_port_swap, 4
+/**
+ * Perform a thread context switch.
+ *
+ * @param[in] lr Return address.
+ * @param[in] r1 Stack address.
+ * @param[in] r3 Thread to swap in.
+ * @param[in] r4 Thread to swap out.
+ */
+ASM_FUNC_BEGIN thrd_port_swap, 4
 //        /* Store registers on the stack. lr is the return address. */
 //        e_add16i  %r1, %r1, -84
 //
@@ -69,12 +69,12 @@
 //        e_add16i  %r1, %r1, 84
 //
 //        se_blr
-//ASM_FUNC_END thrd_port_swap
-//
-///**
-// * Thread entry function wrapper.
-// */
-//ASM_FUNC_BEGIN thrd_port_main, 4
+ASM_FUNC_END thrd_port_swap
+
+/**
+ * Thread entry function wrapper.
+ */
+ASM_FUNC_BEGIN thrd_port_main, 4
 //        /* Enable interrupts. */
 //        wrteei    1
 //
@@ -85,4 +85,4 @@
 //
 //        /* Call termination function. */
 //        e_bl      terminate
-//ASM_FUNC_END thrd_port_main
+ASM_FUNC_END thrd_port_main

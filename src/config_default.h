@@ -535,7 +535,7 @@
  * Enable the flash driver.
  */
 #ifndef CONFIG_FLASH
-#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX) || defined(ARCH_ESP) || defined(ARCH_ESP32) || defined(FAMILY_STM32F1) || defined(FAMILY_STM32F2) || defined(FAMILY_STM32F3) || defined(FAMILY_SPC5) || defined(FAMILY_NRF5) || defined(FAMILY_XVISOR_VIRT)
+#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_LINUX) || defined(ARCH_ESP) || defined(ARCH_ESP32) || defined(FAMILY_STM32F1) || defined(FAMILY_STM32F2) || defined(FAMILY_STM32F3) || defined(FAMILY_SPC5) || defined(FAMILY_NRF5) || defined(FAMILY_XVISOR_VIRT) || defined(FAMILY_PIC32MM)
 #        define CONFIG_FLASH                                1
 #    else
 #        define CONFIG_FLASH                                0
@@ -2250,7 +2250,7 @@
  * Use floating point numbers instead of intergers where applicable.
  */
 #ifndef CONFIG_FLOAT
-#    if defined(ARCH_ARM64)
+#    if defined(ARCH_ARM64) || defined(ARCH_MIPS)
 #        define CONFIG_FLOAT                                0
 #    else
 #        define CONFIG_FLOAT                                1
@@ -2342,6 +2342,8 @@
 #        define CONFIG_THRD_IDLE_STACK_SIZE               156
 #    elif defined(ARCH_ESP)
 #        define CONFIG_THRD_IDLE_STACK_SIZE               768
+#    elif defined(ARCH_MIPS)
+#        define CONFIG_THRD_IDLE_STACK_SIZE               256
 #    else
 #        define CONFIG_THRD_IDLE_STACK_SIZE              2048
 #    endif

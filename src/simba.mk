@@ -67,6 +67,10 @@ ifeq ($(TYPE),suite)
       KERNEL_SRC += ports/arm64/gnu/thrd_port.S
   endif
 
+  ifeq ($(BOARD),defcon26_badge)
+      KERNEL_SRC += ports/mips/gnu/thrd_port.S
+  endif
+
   ifneq ($(FAMILY),avr)
     DRIVERS_SRC += storage/eeprom_soft.c
   endif
@@ -340,6 +344,10 @@ endif
 
 ifeq ($(BOARD),xvisor_raspberry_pi_3)
     KERNEL_SRC_TMP += ports/arm64/gnu/thrd_port.S
+endif
+
+ifeq ($(BOARD),defcon26_badge)
+    KERNEL_SRC_TMP += ports/mips/gnu/thrd_port.S
 endif
 
 KERNEL_SRC ?= $(KERNEL_SRC_TMP)

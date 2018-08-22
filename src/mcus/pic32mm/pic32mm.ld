@@ -67,6 +67,16 @@ SECTIONS
         __fixed_end = .;            /* End of text section */
     } > flash
 
+    /* Non-volatile memory. One DFlash block for each nvm block. */
+    .nvm.eeprom_soft :
+    {
+        *(.nvm.eeprom_soft.block_0);
+        . = 0x4000;
+
+        *(.nvm.eeprom_soft.block_1);
+        . = 0x8000;
+    } > flash
+
     . = ALIGN(4);
     __text_end = .;
 

@@ -47,6 +47,7 @@ CFLAGS += \
 	-Werror \
 	-mips3 \
 	-mmicromips \
+	-minterlink-compressed \
 	$(OPT) \
         -ffunction-sections \
         -fdata-sections \
@@ -55,29 +56,28 @@ CFLAGS += \
 	-Wno-maybe-uninitialized \
 	-Wno-stringop-truncation \
 	-nostdlib \
-	-msoft-float \
 	-G0
 
 CXXFLAGS += \
 	-Werror \
 	-mips3 \
 	-mmicromips \
+	-minterlink-compressed \
 	$(OPT) \
         -ffunction-sections \
         -fdata-sections \
         -fpack-struct \
 	-fstack-usage \
 	-nostdlib \
-	-msoft-float \
 	-G0
 
 LDFLAGS += \
         -Wl,--cref \
 	-mips3 \
 	-mmicromips \
+	-minterlink-compressed \
         -T$(LINKER_SCRIPT) \
 	-nostdlib \
-	-msoft-float \
 	-G0
 
 ENDIANESS = big

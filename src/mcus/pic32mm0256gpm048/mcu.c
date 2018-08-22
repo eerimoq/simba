@@ -83,3 +83,5 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
 };
 
 struct flash_device_t flash_device[FLASH_DEVICE_MAX];
+
+struct i2c_device_t i2c_device[I2C_DEVICE_MAX];

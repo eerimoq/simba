@@ -170,3 +170,8 @@ static cpu_usage_t sys_port_interrupt_cpu_usage_get(void)
 static void sys_port_interrupt_cpu_usage_reset(void)
 {
 }
+
+int rand()
+{
+    return (0);
+}

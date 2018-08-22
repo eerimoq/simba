@@ -56,11 +56,12 @@ static int pin_port_write(struct pin_driver_t *self_p, int value)
 
 static int pin_port_toggle(struct pin_driver_t *self_p)
 {
-    int value;
+    /* int value; */
 
-    value = (self_p->dev_p->regs_p->OUT & BIT(self_p->dev_p->pin));
+    /* value = (self_p->dev_p->regs_p->OUT & BIT(self_p->dev_p->pin)); */
 
-    return (pin_port_write(self_p, value));
+    /* return (pin_port_write(self_p, value)); */
+    return (-ENOSYS);
 }
 
 static int pin_port_set_mode(struct pin_driver_t *self_p, int mode)

@@ -121,20 +121,22 @@ static cpu_usage_t thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
 
 static cpu_usage_t thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
 {
-    uint32_t time;
-    uint32_t period;
+    /* uint32_t time; */
+    /* uint32_t period; */
 
-    time = (thrd_p->port.cpu.period.time / 128);
-    period = ((SPC5_STM->CNT - thrd_p->port.cpu.period.start) / 128);
+    /* time = (thrd_p->port.cpu.period.time / 128); */
+    /* period = ((SPC5_STM->CNT - thrd_p->port.cpu.period.start) / 128); */
 
-    return DIV_ROUND(((cpu_usage_t)100 * time), period);
+    /* return DIV_ROUND(((cpu_usage_t)100 * time), period); */
+    return (0);
 }
 
 #    endif
 
 static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
 {
-    thrd_p->port.cpu.period.start = SPC5_STM->CNT;
+    /* thrd_p->port.cpu.period.start = SPC5_STM->CNT; */
+    thrd_p->port.cpu.period.start = 0;
     thrd_p->port.cpu.period.time = 0;
 }
 
