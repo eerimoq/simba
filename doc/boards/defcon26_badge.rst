@@ -4,9 +4,9 @@ DEF CON 26 Badge
 Pinout
 ------
 
-.. image:: ../images/boards/defcon26-badge.png
+.. image:: ../images/boards/defcon26-badge.jpg
    :width: 50%
-   :target: ../_images/defcon26-badge.png
+   :target: ../_images/defcon26-badge.jpg
 
 .. include:: extra/defcon26_badge.rst
 

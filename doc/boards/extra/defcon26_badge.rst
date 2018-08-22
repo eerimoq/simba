@@ -1,5 +1,5 @@
 Pin functions
-=============
+-------------
 
 - Serial port over USB.
 
@@ -26,8 +26,30 @@ Pin functions
 
              USB
 
+Programming setup
+-----------------
+
+.. image:: ../images/defcon26-badge-programming.jpg
+   :width: 50%
+   :target: ../_images/defcon26-badge-programming.jpg
+
+An Arduino Due (to the right) acts as programmer, connected to a PC
+with serial over USB. DEF CON 26 Badge (to the left) with PIC32MM MCU
+to be programmed.
+
+Upload ramapp to the Arduino Due, and use pic32tool.py to program the
+PIC32 MCU.
+
+Inhibit Arduino Due reset when opening the serial port to the
+programmer on Linux:
+
+.. code-block:: text
+
+   stty -F /dev/arduino -hup
+
+             
 Component connections
-=====================
+---------------------
 
 .. code-block:: text
 
@@ -99,7 +121,7 @@ Component connections
    U3.46 - U2.26 (I2C SCL)
 
 U3 - GPIO expander, and more?
-=============================
+-----------------------------
 
 .. code-block:: text
 
@@ -123,7 +145,7 @@ U3 - GPIO expander, and more?
            37 38 39 40 41 42 43 44 45 46 47 48
 
 I2C protocol
-============
+------------
 
 Example transfer
 ----------------
@@ -210,13 +232,3 @@ Registers?
 +---------+-----------------------------------------+
 | 0x26-   | Typically 0xff, but unclear what it is. |
 +---------+-----------------------------------------+
-
-Other
-=====
-
-Inhibit Arduino Due reset when opening the serial port to the
-programmer.
-
-.. code-block:: text
-
-   stty -F /dev/arduino -hup

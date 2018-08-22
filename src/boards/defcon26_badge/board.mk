@@ -32,7 +32,7 @@ INC += $(SIMBA_ROOT)/src/boards/defcon26_badge
 SRC += $(SIMBA_ROOT)/src/boards/defcon26_badge/board.c
 
 BOARD_HOMEPAGE = "https://www.defcon.org/html/defcon-26/dc-26-index.html"
-BOARD_PINOUT = "defcon26-badge.png"
+BOARD_PINOUT = "defcon26-badge.jpg"
 BOARD_DESC = "DEF CON 26 Badge"
 
 MCU = pic32mm0256gpm048

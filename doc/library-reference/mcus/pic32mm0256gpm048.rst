@@ -1,0 +1,14 @@
+:mod:`pic32mm0256gpm048` --- PIC32MM0256GPM048
+==============================================
+
+.. module:: pic32mm0256gpm048
+   :synopsis: Pic32mm0256gpm048.
+
+----------------------------------------------
+
+Source code: :github-blob:`src/mcus/pic32mm0256gpm048/mcu.h`
+
+----------------------------------------------
+
+.. doxygenfile:: mcus/pic32mm0256gpm048/mcu.h
+   :project: simba
