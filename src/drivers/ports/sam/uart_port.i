@@ -46,10 +46,13 @@ static int uart_port_module_init()
 
 static int uart_port_start(struct uart_driver_t *self_p)
 {
-    uint16_t cd = (F_CPU / 16 / self_p->baudrate - 1);
-    struct uart_device_t *dev_p = self_p->dev_p;
+    uint16_t cd;
+    struct uart_device_t *dev_p;
     uint32_t mask;
 
+    cd = DIV_ROUND(F_CPU / 16, self_p->baudrate);
+    dev_p = self_p->dev_p;
+    
     /* PMC */
     pmc_peripheral_clock_enable(dev_p->id);
 
