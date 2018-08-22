@@ -85,11 +85,34 @@ static ssize_t fast_data_write(uint8_t *buf_p, size_t size)
     return (size);
 }
 
+static int is_ram_range(uint32_t address, uint32_t size)
+{
+    return ((address >= PIC32MM_RAM_ADDRESS)
+            && (((address + size) <= PIC32MM_RAM_END)));
+}
+
 static int is_flash_range(uint32_t address, uint32_t size)
 {
     return ((address >= PIC32MM_FLASH_ADDRESS)
-            && (((address + size) <=
-                 (PIC32MM_FLASH_ADDRESS + PIC32MM_FLASH_SIZE))));
+            && (((address + size) <= PIC32MM_FLASH_END)));
+}
+
+static int is_sfrs_range(uint32_t address, uint32_t size)
+{
+    return ((address >= PIC32MM_SFRS_ADDRESS)
+            && (((address + size) <= PIC32MM_SFRS_END)));
+}
+
+static int is_boot_flash_range(uint32_t address, uint32_t size)
+{
+    return ((address >= PIC32MM_BOOT_FLASH_ADDRESS)
+            && (((address + size) <= PIC32MM_BOOT_FLASH_END)));
+}
+
+static int is_configuration_bits_range(uint32_t address, uint32_t size)
+{
+    return ((address >= PIC32MM_CONFIGURATION_BITS_ADDRESS)
+            && (((address + size) <= PIC32MM_CONFIGURATION_BITS_END)));
 }
 
 static ssize_t handle_erase(uint8_t *buf_p, size_t size)
@@ -132,7 +155,11 @@ static ssize_t handle_read(uint8_t *buf_p, size_t size)
         return (-1);
     }
 
-    if (!is_flash_range(address, size)) {
+    if (!(is_flash_range(address, size)
+          || is_boot_flash_range(address, size)
+          || is_ram_range(address, size)
+          || is_configuration_bits_range(address, size)
+          || is_sfrs_range(address, size))) {
         return (-1);
     }
 

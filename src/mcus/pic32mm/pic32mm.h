@@ -143,8 +143,21 @@ struct pic32mm_conf_t {
 #define PIC32MM_TIMER1  ((volatile struct pic32mm_timer_t *)  0xbf808000ul)
 #define PIC32MM_CONF    ((volatile struct pic32mm_conf_t *)   0xbfc017c0ul)
 
-#define PIC32MM_FLASH_ADDRESS  0xbd000000
-#define PIC32MM_FLASH_SIZE     0x00040000
+#define PIC32MM_RAM_ADDRESS                 0x00000000
+#define PIC32MM_RAM_SIZE                    0x00004000
+#define PIC32MM_RAM_END                     0x00008000
+#define PIC32MM_FLASH_ADDRESS               0x1d000000
+#define PIC32MM_FLASH_SIZE                  0x00040000
+#define PIC32MM_FLASH_END                   0x1d040000
+#define PIC32MM_SFRS_ADDRESS                0x1f800000
+#define PIC32MM_SFRS_SIZE                   0x00010000
+#define PIC32MM_SFRS_END                    0x1f810000
+#define PIC32MM_BOOT_FLASH_ADDRESS          0x1fc00000
+#define PIC32MM_BOOT_FLASH_SIZE             0x00001700
+#define PIC32MM_BOOT_FLASH_END              0x1fc01700
+#define PIC32MM_CONFIGURATION_BITS_ADDRESS  0x1fc01700
+#define PIC32MM_CONFIGURATION_BITS_SIZE     0x00000100
+#define PIC32MM_CONFIGURATION_BITS_END      0x1fc01800
 
 /* Interrupt service routine. */
 #define ISR(vector)                             \
