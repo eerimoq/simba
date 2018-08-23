@@ -148,6 +148,10 @@ def serial_open(port):
                                       baudrate=460800,
                                       timeout=SERIAL_TIMEOUT)
 
+    execute_command(serial_connection, PROGRAMMER_COMMAND_TYPE_PING)
+
+    print('Connected to programmer.')
+
     return serial_connection
 
 
