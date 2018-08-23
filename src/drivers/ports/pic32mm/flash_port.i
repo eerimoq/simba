@@ -26,6 +26,17 @@
  * This file is part of the Simba project.
  */
 
+static void write_protect_unlock(volatile struct pic32mm_flash_t *regs_p)
+{
+    regs_p->NVMKEY = 0xaa996655;
+    regs_p->NVMKEY = 0x556699aa;
+}
+
+static void write_protect_lock(volatile struct pic32mm_flash_t *regs_p)
+{
+    regs_p->NVMKEY = 0;
+}
+
 static int flash_port_module_init(void)
 {
     return (0);
@@ -44,6 +55,34 @@ static ssize_t flash_port_write(struct flash_driver_t *self_p,
                                 const void *src_p,
                                 size_t size)
 {
+    volatile struct pic32mm_flash_t *regs_p;
+    size_t i;
+    const uint32_t *u32_src_p;
+
+    u32_src_p = src_p;
+    regs_p = self_p->dev_p->regs_p;
+    regs_p = PIC32MM_FLASH;
+
+    write_protect_unlock(regs_p);
+
+    for (i = 0; i < size; i += 8) {
+        regs_p->NVMADDR = (dst + i);
+        regs_p->NVMDATA0 = *u32_src_p++;
+        regs_p->NVMDATA1 = *u32_src_p++;
+        regs_p->NVMCON = PIC32MM_FLASH_NVMCON_NVMOP_DWORD_PROGRAM;
+        regs_p->NVMCON = (PIC32MM_FLASH_NVMCON_WREN
+                          | PIC32MM_FLASH_NVMCON_NVMOP_DWORD_PROGRAM);
+        regs_p->NVMCON = (PIC32MM_FLASH_NVMCON_WR
+                          | PIC32MM_FLASH_NVMCON_WREN
+                          | PIC32MM_FLASH_NVMCON_NVMOP_DWORD_PROGRAM);
+
+        while ((regs_p->NVMCON & PIC32MM_FLASH_NVMCON_WR) != 0);
+
+        regs_p->NVMCON = 0;
+    }
+
+    write_protect_lock(regs_p);
+
     return (size);
 }
 
@@ -51,5 +90,32 @@ static int flash_port_erase(struct flash_driver_t *self_p,
                             uintptr_t addr,
                             size_t size)
 {
+    volatile struct pic32mm_flash_t *regs_p;
+    uintptr_t end;
+
+    regs_p = self_p->dev_p->regs_p;
+    regs_p = PIC32MM_FLASH;
+
+    end = ((addr + size - 1) & 0xfffff800);
+    addr &= 0xfffff800;
+
+    write_protect_unlock(regs_p);
+
+    for (; addr <= end; addr += 0x800) {
+        regs_p->NVMADDR = addr;
+        regs_p->NVMCON = PIC32MM_FLASH_NVMCON_NVMOP_PAGE_ERASE;
+        regs_p->NVMCON = (PIC32MM_FLASH_NVMCON_WREN
+                          | PIC32MM_FLASH_NVMCON_NVMOP_PAGE_ERASE);
+        regs_p->NVMCON = (PIC32MM_FLASH_NVMCON_WR
+                          | PIC32MM_FLASH_NVMCON_WREN
+                          | PIC32MM_FLASH_NVMCON_NVMOP_PAGE_ERASE);
+
+        while ((regs_p->NVMCON & PIC32MM_FLASH_NVMCON_WR) != 0);
+
+        regs_p->NVMCON = 0;
+    }
+
+    write_protect_lock(regs_p);
+
     return (0);
 }

@@ -29,6 +29,45 @@
 #ifndef __PIC32MM_H__
 #define __PIC32MM_H__
 
+/* 5. Flash. */
+struct pic32mm_flash_t {
+    uint32_t NVMCON;
+    uint32_t RESERVED0[3];
+    uint32_t NVMKEY;
+    uint32_t RESERVED1[3];
+    uint32_t NVMADDR;
+    uint32_t RESERVED2[3];
+    uint32_t NVMDATA0;
+    uint32_t RESERVED3[3];
+    uint32_t NVMDATA1;
+    uint32_t RESERVED4[3];
+    uint32_t NVMSRCADDR;
+    uint32_t RESERVED5[3];
+    uint32_t NVMPWP;
+    uint32_t RESERVED6[3];
+    uint32_t NVMBWP;
+};
+
+#define PIC32MM_FLASH_NVMCON_WR                       BIT(15)
+#define PIC32MM_FLASH_NVMCON_WREN                     BIT(14)
+#define PIC32MM_FLASH_NVMCON_WRERR                    BIT(13)
+#define PIC32MM_FLASH_NVMCON_LVDERR                   BIT(12)
+#define PIC32MM_FLASH_NVMCON_NVMOP_POS                (0)
+#define PIC32MM_FLASH_NVMCON_NVMOP_MASK         \
+    (0xf << PIC32MM_FLASH_NVMCON_NVMOP_POS)
+#define PIC32MM_FLASH_NVMCON_NVMOP(value)               \
+    BITFIELD_SET(PIC32MM_FLASH_NVMCON_NVMOP, value)
+#define PIC32MM_FLASH_NVMCON_NVMOP_PROGRAM_ERASE        \
+    PIC32MM_FLASH_NVMCON_NVMOP(7)
+#define PIC32MM_FLASH_NVMCON_NVMOP_PAGE_ERASE   \
+    PIC32MM_FLASH_NVMCON_NVMOP(4)
+#define PIC32MM_FLASH_NVMCON_NVMOP_ROW_PROGRAM  \
+    PIC32MM_FLASH_NVMCON_NVMOP(3)
+#define PIC32MM_FLASH_NVMCON_NVMOP_DWORD_PROGRAM        \
+    PIC32MM_FLASH_NVMCON_NVMOP(2)
+#define PIC32MM_FLASH_NVMCON_NVMOP_NOP          \
+    PIC32MM_FLASH_NVMCON_NVMOP(0)
+
 /* 10. IO. */
 struct pic32mm_port_t {
     uint32_t ANSEL;
@@ -135,6 +174,7 @@ struct pic32mm_conf_t {
 #define PIC32MM_UART1   ((volatile struct pic32mm_uart_t *)   0xbf801800ul)
 #define PIC32MM_UART2   ((volatile struct pic32mm_uart_t *)   0xbf801900ul)
 #define PIC32MM_UART3   ((volatile struct pic32mm_uart_t *)   0xbf802000ul)
+#define PIC32MM_FLASH   ((volatile struct pic32mm_flash_t *)  0xbf802930ul)
 #define PIC32MM_PINSEL  ((volatile struct pic32mm_pinsel_t *) 0xbf802a00ul)
 #define PIC32MM_PORTA   ((volatile struct pic32mm_port_t *)   0xbf802bb0ul)
 #define PIC32MM_PORTB   ((volatile struct pic32mm_port_t *)   0xbf802cb0ul)

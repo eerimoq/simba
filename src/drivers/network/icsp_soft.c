@@ -38,26 +38,52 @@
 
 #define KEY    0x4d434850
 
-static int clock_low(struct icsp_soft_driver_t *self_p)
+static inline int clock_low(struct icsp_soft_driver_t *self_p)
 {
-    pin_write(&self_p->pgec, 0);
-
-    return (0);
+    return (pin_device_write_low(&pin_d2_dev));
 }
 
-static int clock_high(struct icsp_soft_driver_t *self_p)
+static inline int clock_high(struct icsp_soft_driver_t *self_p)
 {
-    pin_write(&self_p->pgec, 1);
-
-    return (0);
+    return (pin_device_write_high(&pin_d2_dev));
 }
 
-static int clock_pulse(struct icsp_soft_driver_t *self_p)
+static inline int clock_pulse(struct icsp_soft_driver_t *self_p)
 {
     clock_high(self_p);
     clock_low(self_p);
 
     return (0);
+}
+
+static inline int clock_bit_in(struct icsp_soft_driver_t *self_p)
+{
+    int tdo;
+
+    pin_device_write_low(self_p->pged_p);
+    clock_pulse(self_p);
+    clock_pulse(self_p);
+    pin_device_set_mode(self_p->pged_p, PIN_INPUT);
+    clock_pulse(self_p);
+    time_busy_wait_us(0);
+    tdo = pin_device_read(self_p->pged_p);
+    pin_device_set_mode(self_p->pged_p, PIN_OUTPUT);
+    clock_pulse(self_p);
+
+    return (tdo);
+}
+
+static inline int clock_bit_tms(struct icsp_soft_driver_t *self_p,
+                                int tms)
+{
+    pin_device_write_low(self_p->pged_p);
+    clock_pulse(self_p);
+    pin_device_write(self_p->pged_p, tms);
+    clock_pulse(self_p);
+    pin_device_write_high(self_p->pged_p);
+    clock_pulse(self_p);
+
+    return (clock_pulse(self_p));
 }
 
 static int move(struct icsp_soft_driver_t *self_p,
@@ -125,47 +151,41 @@ static int transfer(struct icsp_soft_driver_t *self_p,
     }
 
     for (i = 0; i < number_of_bits; i++) {
-        byte_index = (i / 8);
-        bit_index = (7 - (i % 8));
-
         /* TDI. */
         if (u8_txbuf_p != NULL) {
+            byte_index = (i / 8);
+            bit_index = (7 - (i % 8));
             value = ((u8_txbuf_p[byte_index] >> bit_index) & 1);
         } else {
             value = 0;
         }
-        
-        pin_write(&self_p->pged, value);
+
+        pin_device_write(self_p->pged_p, value);
         clock_pulse(self_p);
 
         /* TMS. */
+        value = (i == (number_of_bits - 1));
 
-        /* The last bit is transferred with TMS=1. */
-        if (i == (number_of_bits - 1)) {
-            value = 1;
-        } else {
-            value = 0;
-        }
-
-        pin_write(&self_p->pged, value);
+        pin_device_write(self_p->pged_p, value);
         clock_pulse(self_p);
 
         /* TDO. */
-        pin_set_mode(&self_p->pged, PIN_INPUT);
         clock_pulse(self_p);
-        
-        value = pin_read(&self_p->pged);
-        
+
         if (u8_rxbuf_p != NULL) {
+            pin_device_set_mode(self_p->pged_p, PIN_INPUT);
+
             if (i != (number_of_bits - 1)) {
                 byte_index = ((i + 1) / 8);
                 bit_index = (7 - ((i + 1) % 8));
+                value = pin_device_read(self_p->pged_p);
                 u8_rxbuf_p[byte_index] |= (value << bit_index);
             }
+
+            pin_device_set_mode(self_p->pged_p, PIN_OUTPUT);
         }
 
         clock_pulse(self_p);
-        pin_set_mode(&self_p->pged, PIN_OUTPUT);
     }
 
     return (move_to_idle_from_shift(self_p));
@@ -176,7 +196,7 @@ static int send_key(struct icsp_soft_driver_t *self_p)
     int i;
 
     for (i = 31; i >= 0; i--) {
-        pin_write(&self_p->pged, (KEY >> i) & 1);
+        pin_device_write(self_p->pged_p, (KEY >> i) & 1);
         clock_pulse(self_p);
     }
 
@@ -195,9 +215,13 @@ int icsp_soft_init(struct icsp_soft_driver_t *self_p,
 {
     ASSERTN(self_p != NULL, EINVAL);
 
-    pin_init(&self_p->pgec, pgec_p, PIN_INPUT);
-    pin_init(&self_p->pged, pged_p, PIN_INPUT);
-    pin_init(&self_p->mclrn, mclrn_p, PIN_INPUT);
+    self_p->pgec_p = pgec_p;
+    self_p->pged_p = pged_p;
+    self_p->mclrn_p = mclrn_p;
+
+    pin_device_set_mode(self_p->pgec_p, PIN_INPUT);
+    pin_device_set_mode(self_p->pged_p, PIN_INPUT);
+    pin_device_set_mode(self_p->mclrn_p, PIN_INPUT);
 
     return (0);
 }
@@ -206,26 +230,26 @@ int icsp_soft_start(struct icsp_soft_driver_t *self_p)
 {
     ASSERTN(self_p != NULL, EINVAL);
 
-    pin_set_mode(&self_p->pgec, PIN_OUTPUT);
-    pin_write(&self_p->pgec, 0);
-    pin_set_mode(&self_p->pged, PIN_OUTPUT);
-    pin_write(&self_p->pged, 0);
-    pin_set_mode(&self_p->mclrn, PIN_OUTPUT);
-    pin_write(&self_p->mclrn, 0);
+    pin_device_set_mode(self_p->pgec_p, PIN_OUTPUT);
+    pin_device_write_low(self_p->pgec_p);
+    pin_device_set_mode(self_p->pged_p, PIN_OUTPUT);
+    pin_device_write_low(self_p->pged_p);
+    pin_device_set_mode(self_p->mclrn_p, PIN_OUTPUT);
+    pin_device_write_low(self_p->mclrn_p);
 
     /* 1. Toggle MCLRN. */
-    pin_write(&self_p->mclrn, 0);
+    pin_device_write_low(self_p->mclrn_p);
     time_busy_wait_us(P6_US);
-    pin_write(&self_p->mclrn, 1);
+    pin_device_write_high(self_p->mclrn_p);
     time_busy_wait_us(P14_US + P20_US);
-    pin_write(&self_p->mclrn, 0);
-    
+    pin_device_write_low(self_p->mclrn_p);
+
     /* 2. Send key. */
     send_key(self_p);
 
     /* 3. Set MCLRN high. */
     time_busy_wait_us(P19_US);
-    pin_write(&self_p->mclrn, 1);
+    pin_device_write_high(self_p->mclrn_p);
     time_busy_wait_us(P7_US);
 
     return (icsp_soft_reset(self_p));
@@ -237,9 +261,9 @@ int icsp_soft_stop(struct icsp_soft_driver_t *self_p)
 
     move_to_reset(self_p);
 
-    pin_set_mode(&self_p->pgec, PIN_INPUT);
-    pin_set_mode(&self_p->pged, PIN_INPUT);
-    pin_set_mode(&self_p->mclrn, PIN_INPUT);
+    pin_device_set_mode(self_p->pgec_p, PIN_INPUT);
+    pin_device_set_mode(self_p->pged_p, PIN_INPUT);
+    pin_device_set_mode(self_p->mclrn_p, PIN_INPUT);
 
     return (0);
 }
@@ -274,20 +298,12 @@ int icsp_soft_data_transfer(struct icsp_soft_driver_t *self_p,
     ASSERTN(self_p != NULL, EINVAL);
 
     int value;
-    
+
     move_to_capture_dr_from_idle(self_p);
 
     /* TDO LSB captured during transition. */
-    pin_write(&self_p->pged, 0);
-    clock_pulse(self_p);
-    clock_pulse(self_p);
-    pin_write(&self_p->pged, 1);
-    clock_pulse(self_p);
-    pin_set_mode(&self_p->pged, PIN_INPUT);
-    value = pin_read(&self_p->pged);
-    pin_set_mode(&self_p->pged, PIN_OUTPUT);
-    clock_pulse(self_p);
-    
+    value = clock_bit_in(self_p);
+
     return (transfer(self_p, rxbuf_p, txbuf_p, number_of_bits, value));
 }
 
@@ -320,20 +336,12 @@ int icsp_soft_fast_data_transfer(struct icsp_soft_driver_t *self_p,
 
     int value;
     int pracc;
-    
-    /* PrACC must be 1 for a successful transfer. */
+
     move_to_capture_dr_from_idle(self_p);
 
+    /* PrACC must be 1 for a successful transfer. */
     while (1) {
-        pin_write(&self_p->pged, 0);
-        clock_pulse(self_p);
-        clock_pulse(self_p);
-        pin_write(&self_p->pged, 1);
-        clock_pulse(self_p);
-        pin_set_mode(&self_p->pged, PIN_INPUT);
-        pracc = pin_read(&self_p->pged);
-        pin_set_mode(&self_p->pged, PIN_OUTPUT);
-        clock_pulse(self_p);
+        pracc = clock_bit_in(self_p);
 
         if (pracc == 1) {
             break;
@@ -341,18 +349,10 @@ int icsp_soft_fast_data_transfer(struct icsp_soft_driver_t *self_p,
 
         move_to_capture_dr_from_shift_dr(self_p);
     }
-    
+
     /* First read bit in the data transfer. */
-    pin_write(&self_p->pged, 0);
-    clock_pulse(self_p);
-    clock_pulse(self_p);
-    pin_write(&self_p->pged, 1);
-    clock_pulse(self_p);
-    pin_set_mode(&self_p->pged, PIN_INPUT);
-    value = pin_read(&self_p->pged);
-    pin_set_mode(&self_p->pged, PIN_OUTPUT);
-    clock_pulse(self_p);
-    
+    value = clock_bit_in(self_p);
+
     return (transfer(self_p, rxbuf_p, txbuf_p, number_of_bits, value));
 }
 
@@ -362,14 +362,7 @@ int icsp_soft_make_transition(struct icsp_soft_driver_t *self_p,
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN((transition == 0) || (transition == 1), EINVAL);
 
-    pin_write(&self_p->pged, 0);
-    clock_pulse(self_p);
-    pin_write(&self_p->pged, transition);
-    clock_pulse(self_p);
-    pin_write(&self_p->pged, 1);
-    clock_pulse(self_p);
-
-    return (clock_pulse(self_p));
+    return (clock_bit_tms(self_p, transition));
 }
 
 #endif

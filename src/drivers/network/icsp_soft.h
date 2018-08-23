@@ -32,9 +32,9 @@
 #include "simba.h"
 
 struct icsp_soft_driver_t {
-    struct pin_driver_t pgec;
-    struct pin_driver_t pged;
-    struct pin_driver_t mclrn;
+    struct pin_device_t *pgec_p;
+    struct pin_device_t *pged_p;
+    struct pin_device_t *mclrn_p;
 };
 
 /**

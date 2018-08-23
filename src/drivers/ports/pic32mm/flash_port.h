@@ -31,6 +31,7 @@
 
 struct flash_device_t {
     struct mutex_t mutex;
+    volatile struct pic32mm_flash_t *regs_p;
 };
 
 struct flash_driver_t {

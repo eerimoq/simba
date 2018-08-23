@@ -49,7 +49,7 @@ PROGRAMMER_COMMAND_TYPE_DISCONNECT =  102
 
 SERIAL_TIMEOUT = 3.0
 
-READ_WRITE_CHUNK_SIZE = 1024
+READ_WRITE_CHUNK_SIZE = 1016
 
 FLASH_ADDRESS               = 0x1d000000
 FLASH_SIZE                  = 0x00040000
@@ -259,12 +259,16 @@ def erase(serial_connection, address, size):
     print('Erase complete.')
 
 
-def do_connect(args):
-    serial_connection = serial_open(args.port)
-
+def connect(serial_connection):
     execute_command(serial_connection, PROGRAMMER_COMMAND_TYPE_CONNECT)
 
     print('Connected to PIC32.')
+
+
+def do_connect(args):
+    serial_connection = serial_open(args.port)
+
+    connect(serial_connection)
 
 
 def do_disconnect(args):
@@ -301,13 +305,16 @@ def do_flash_read(args):
 def do_flash_write(args):
     serial_connection = serial_open(args.port)
 
+    if not args.no_connect:
+        connect(serial_connection)
+
     f = bincopy.BinFile()
     f.add_file(args.binfile)
 
     erase_segments = []
     total = 0
 
-    for address, _, data in f.iter_segments():
+    for address, data in f.segments:
         erase_segments.append((address, len(data)))
         total += len(data)
 
@@ -318,7 +325,7 @@ def do_flash_write(args):
     print('Writing {} to flash.'.format(os.path.abspath(args.binfile)))
 
     with tqdm(total=total, unit=' bytes') as progress:
-        for address, _, data in f.iter_segments():
+        for address, data in f.segments:
             left = len(data)
 
             while left > 0:
@@ -341,7 +348,7 @@ def do_flash_write(args):
         print('Verifying written data.')
 
         with tqdm(total=total, unit=' bytes') as progress:
-            for address, _, data in f.iter_segments():
+            for address, data in f.segments:
                 left = len(data)
 
                 while left > 0:
@@ -509,7 +516,7 @@ def main():
     subparser.set_defaults(func=do_flash_read)
 
     subparser = subparsers.add_parser('flash_write')
-    subparser.add_argument('-u', '--no-upload', action='store_true')
+    subparser.add_argument('-c', '--no-connect', action='store_true')
     subparser.add_argument('-e', '--erase', action='store_true')
     subparser.add_argument('-v', '--verify', action='store_true')
     subparser.add_argument('binfile')

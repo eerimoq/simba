@@ -82,6 +82,8 @@ struct uart_device_t uart_device[UART_DEVICE_MAX] = {
     { .drv_p = NULL, .regs_p = PIC32MM_UART3 }
 };
 
-struct flash_device_t flash_device[FLASH_DEVICE_MAX];
+struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {
+    { .regs_p = PIC32MM_FLASH }
+};
 
 struct i2c_device_t i2c_device[I2C_DEVICE_MAX];
