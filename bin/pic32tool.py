@@ -20,7 +20,6 @@ import re
 import argparse
 import struct
 import serial
-import time
 import binascii
 import bincopy
 import subprocess
@@ -32,6 +31,7 @@ __version__ = '0.1'
 
 
 ERRORS = {
+    -34: "bad value, likely a memory address out of range",
     -71: "communication between programmer and PIC32 failed",
     -106: "PIC32 already connected",
     -107: "PIC32 is not connected",
@@ -172,9 +172,7 @@ def packet_write(serial_connection, command_type, payload):
     header = struct.pack('>HH', command_type, len(payload))
     footer = struct.pack('>H', crc_ccitt(header + payload))
 
-    serial_connection.write(header)
-    time.sleep(0.002)
-    serial_connection.write(payload + footer)
+    serial_connection.write(header + payload + footer)
 
 
 def packet_read(serial_connection):

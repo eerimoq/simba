@@ -603,7 +603,6 @@ static ssize_t prepare_command_response(uint8_t *buf_p,
     if (size < 0) {
         buf_p[0] = (COMMAND_TYPE_FAILED >> 8);
         buf_p[1] = COMMAND_TYPE_FAILED;
-        /* size = 0; */
         buf_p[4] = (size >> 24);
         buf_p[5] = (size >> 16);
         buf_p[6] = (size >> 8);

@@ -120,20 +120,20 @@ static ssize_t handle_erase(uint8_t *buf_p, size_t size)
     uint32_t address;
 
     if (size < 8) {
-        return (-1);
+        return (-EMSGSIZE);
     }
 
     address = (buf_p[0] << 24 | (buf_p[1] << 16) | (buf_p[2] << 8) | buf_p[3]);
     size = (buf_p[4] << 24 | (buf_p[5] << 16) | (buf_p[6] << 8) | buf_p[7]);
 
     if (size == 0) {
-        return (-1);
+        return (-EINVAL);
     }
 
-    if (is_flash_range(address, size)) {
+    if (is_flash_range(address, size) || is_boot_flash_range(address, size)) {
         return (flash_erase(&flash, address, size));
     } else {
-        return (-1);
+        return (-ERANGE);
     }
 }
 
@@ -145,14 +145,14 @@ static ssize_t handle_read(uint8_t *buf_p, size_t size)
     uint8_t *src_p;
 
     if (size != 8) {
-        return (-1);
+        return (-EMSGSIZE);
     }
 
     address = (buf_p[0] << 24 | (buf_p[1] << 16) | (buf_p[2] << 8) | buf_p[3]);
     size = (buf_p[4] << 24 | (buf_p[5] << 16) | (buf_p[6] << 8) | buf_p[7]);
 
     if (size > MAXIMUM_PAYLOAD_SIZE) {
-        return (-1);
+        return (-EINVAL);
     }
 
     if (!(is_flash_range(address, size)
@@ -160,7 +160,7 @@ static ssize_t handle_read(uint8_t *buf_p, size_t size)
           || is_ram_range(address, size)
           || is_configuration_bits_range(address, size)
           || is_sfrs_range(address, size))) {
-        return (-1);
+        return (-EINVAL);
     }
 
     dst_p = buf_p;
@@ -179,23 +179,23 @@ static ssize_t handle_write(uint8_t *buf_p, size_t size)
     ssize_t res;
 
     if (size < 8) {
-        return (-1);
+        return (-EMSGSIZE);
     }
 
     address = (buf_p[0] << 24 | (buf_p[1] << 16) | (buf_p[2] << 8) | buf_p[3]);
     size = (buf_p[4] << 24 | (buf_p[5] << 16) | (buf_p[6] << 8) | buf_p[7]);
 
     if (size > MAXIMUM_PAYLOAD_SIZE) {
-        return (-1);
+        return (-EINVAL);
     }
 
-    if (is_flash_range(address, size)) {
+    if (is_flash_range(address, size) || is_boot_flash_range(address, size)) {
         res = flash_write(&flash, address, &buf_p[8], size);
     } else {
-        res = -1;
+        res = -ERANGE;
     }
 
-    return (res == size ? 0 : -1);
+    return (res == size ? 0 : res);
 }
 
 static ssize_t handle_command(uint8_t *buf_p, size_t size)
@@ -224,7 +224,7 @@ static ssize_t handle_command(uint8_t *buf_p, size_t size)
         break;
 
     default:
-        res = -1;
+        res = -ENOCOMMAND;
         break;
     }
 
@@ -242,7 +242,7 @@ static ssize_t read_command_request(uint8_t *buf_p)
     size = ((buf_p[2] << 8) | buf_p[3]);
 
     if (size > MAXIMUM_PAYLOAD_SIZE) {
-        return (-1);
+        return (-EINVAL);
     }
 
     fast_data_read(&buf_p[4], size + 2);
@@ -252,7 +252,7 @@ static ssize_t read_command_request(uint8_t *buf_p)
         buf_p[6] = (crc >> 8);
         buf_p[7] = crc;
 
-        return (-1);
+        return (-EBADCRC);
     }
 
     return (size);
@@ -266,7 +266,11 @@ static void write_command_response(uint8_t *buf_p, ssize_t size)
     if (size < 0) {
         buf_p[0] = (COMMAND_TYPE_FAILED >> 8);
         buf_p[1] = COMMAND_TYPE_FAILED;
-        size = 0;
+        buf_p[4] = (size >> 24);
+        buf_p[5] = (size >> 16);
+        buf_p[6] = (size >> 8);
+        buf_p[7] = (size >> 0);
+        size = 4;
     }
 
     buf_p[2] = (size >> 8);

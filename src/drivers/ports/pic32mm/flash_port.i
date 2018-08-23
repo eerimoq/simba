@@ -44,6 +44,11 @@ static void wait_for_operation_completed(volatile struct pic32mm_flash_t *regs_p
 
 static int flash_port_module_init(void)
 {
+    /* Unlock boot flash. */
+    write_protect_unlock(PIC32MM_FLASH);
+    PIC32MM_FLASH->NVMBWP = 0x8000;
+    write_protect_lock(PIC32MM_FLASH);
+    
     return (0);
 }
 
@@ -118,7 +123,7 @@ static int flash_port_erase(struct flash_driver_t *self_p,
                           | PIC32MM_FLASH_NVMCON_NVMOP_PAGE_ERASE);
 
         wait_for_operation_completed(regs_p);
-
+        
         regs_p->NVMCON = 0;
     }
 
