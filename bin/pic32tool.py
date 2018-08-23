@@ -11,11 +11,6 @@
 # +------+          |               |          +---------+
 #                   +---------------+
 #
-# 1. Upload and start ramapp to PIC32 over ICSP.
-#
-# 2. Communicate with the ramapp over the UART. ICSP is not used
-#    anymore.
-#
 
 from __future__ import print_function
 
@@ -155,6 +150,7 @@ def format_error(error):
         return 'error: ' + ERRORS[error]
     except KeyError:
         return 'Failed with {}.'.format(error)
+
 
 def serial_open(port):
     serial_connection = serial.Serial(port,
