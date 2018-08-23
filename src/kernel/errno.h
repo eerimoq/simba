@@ -437,6 +437,9 @@
 /** Bad value. */
 #define EBADVALUE      1006
 
+/** Bad CRC. */
+#define EBADCRC        1007
+
 /**
  * Map given error number to a string.
  *

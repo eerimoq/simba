@@ -36,7 +36,14 @@ import bitstruct
 __version__ = '0.1'
 
 
-# Command types.
+ERRORS = {
+    -71: "communication between programmer and PIC32 failed",
+    -106: "PIC32 already connected",
+    -107: "PIC32 is not connected",
+    -1007: "invalid packet checksum"
+}
+
+# Command types. Anything less than zero is error codes.
 COMMAND_TYPE_FAILED = -1
 COMMAND_TYPE_PING   =  1
 COMMAND_TYPE_ERASE  =  2
@@ -143,6 +150,12 @@ def crc_ccitt(data):
     return (msb << 8) + lsb
 
 
+def format_error(error):
+    try:
+        return 'error: ' + ERRORS[error]
+    except KeyError:
+        return 'Failed with {}.'.format(error)
+
 def serial_open(port):
     serial_connection = serial.Serial(port,
                                       baudrate=460800,
@@ -179,7 +192,7 @@ def packet_read(serial_connection):
         print('error: failed to read packet header')
         return None, None
 
-    command_type, payload_size = struct.unpack('>HH', header)
+    command_type, payload_size = struct.unpack('>hH', header)
 
     if payload_size > 0:
         payload = serial_connection.read(payload_size)
@@ -221,6 +234,9 @@ def execute_command(serial_connection, command_type, payload=None):
 
         if response_command_type == command_type:
             return response_payload
+        elif response_command_type == COMMAND_TYPE_FAILED:
+            error = struct.unpack('>i', response_payload)[0]
+            sys.exit(format_error(error))
 
     sys.exit('Communication failure.')
 

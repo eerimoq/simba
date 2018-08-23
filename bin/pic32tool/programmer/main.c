@@ -228,7 +228,7 @@ static int enter_serial_execution_mode(struct icsp_soft_driver_t *icsp_p)
     }
 
     if ((status & STATUS_CPS) == 0) {
-        return (-1);
+        return (-EPROTO);
     }
 
     command = MCHP_ASSERT_RST;
@@ -469,7 +469,7 @@ static ssize_t ramapp_read(uint8_t *buf_p)
 
     /* Read type and size. */
     if (xfer_fast_data_32(&icsp, 0, &data) != 0) {
-        return (-1);
+        return (-EPROTO);
     }
 
     data = reverse_32(data);
@@ -482,7 +482,7 @@ static ssize_t ramapp_read(uint8_t *buf_p)
     size = ((buf_p[2] << 8) | buf_p[3]);
 
     if (size > MAXIMUM_PAYLOAD_SIZE) {
-        return (-1);
+        return (-EPROTO);
     }
 
     /* Read payload and crc. */
@@ -490,7 +490,7 @@ static ssize_t ramapp_read(uint8_t *buf_p)
 
     for (i = 0; i < number_of_words; i++) {
         if (xfer_fast_data_32(&icsp, 0, &data) != 0) {
-            return (-1);
+            return (-EPROTO);
         }
 
         data = reverse_32(data);
@@ -528,11 +528,12 @@ static ssize_t ramapp_write(uint8_t *buf_p, size_t size)
     return (size);
 
 }
+
 static ssize_t handle_ramapp_command(uint8_t *buf_p, size_t size)
 {
     ssize_t res;
 
-    res = -1;
+    res = -ENOTCONN;
 
     if (connected) {
         res = ramapp_write(buf_p, size);
@@ -552,7 +553,7 @@ static ssize_t handle_connect(uint8_t *buf_p, size_t size)
     int res;
 
     if (connected) {
-        return (-1);
+        return (-EISCONN);
     }
 
     icsp_soft_init(&icsp,
@@ -583,7 +584,7 @@ static ssize_t handle_connect(uint8_t *buf_p, size_t size)
 static ssize_t handle_disconnect(uint8_t *buf_p, size_t size)
 {
     if (!connected) {
-        return (-1);
+        return (-ENOTCONN);
     }
 
     icsp_soft_stop(&icsp);
@@ -602,7 +603,12 @@ static ssize_t prepare_command_response(uint8_t *buf_p,
     if (size < 0) {
         buf_p[0] = (COMMAND_TYPE_FAILED >> 8);
         buf_p[1] = COMMAND_TYPE_FAILED;
-        size = 0;
+        /* size = 0; */
+        buf_p[4] = (size >> 24);
+        buf_p[5] = (size >> 16);
+        buf_p[6] = (size >> 8);
+        buf_p[7] = (size >> 0);
+        size = 4;
     }
 
     buf_p[2] = (size >> 8);
@@ -627,7 +633,7 @@ static ssize_t handle_programmer_command(int type,
     uint16_t actual_crc;
     uint16_t expected_crc;
 
-    res = -1;
+    res = -EBADCRC;
     actual_crc = ((buf_p[size - CRC_SIZE] << 8)
                   | buf_p[size - CRC_SIZE + 1]);
     expected_crc = crc_ccitt(0xffff, &buf_p[0], size - CRC_SIZE);
@@ -686,7 +692,7 @@ static ssize_t read_command_request(uint8_t *buf_p)
     size = ((buf_p[2] << 8) | buf_p[3]);
 
     if (size > MAXIMUM_PAYLOAD_SIZE) {
-        return (-1);
+        return (-EMSGSIZE);
     }
 
     /* Read payload and crc. */
