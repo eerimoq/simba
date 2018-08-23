@@ -37,6 +37,11 @@ static void write_protect_lock(volatile struct pic32mm_flash_t *regs_p)
     regs_p->NVMKEY = 0;
 }
 
+static void wait_for_operation_completed(volatile struct pic32mm_flash_t *regs_p)
+{
+    while ((regs_p->NVMCON & PIC32MM_FLASH_NVMCON_WR) != 0);
+}
+
 static int flash_port_module_init(void)
 {
     return (0);
@@ -47,6 +52,8 @@ static ssize_t flash_port_read(struct flash_driver_t *self_p,
                                size_t src,
                                size_t size)
 {
+    memcpy(dst_p, (void *)src, size);
+
     return (size);
 }
 
@@ -76,7 +83,7 @@ static ssize_t flash_port_write(struct flash_driver_t *self_p,
                           | PIC32MM_FLASH_NVMCON_WREN
                           | PIC32MM_FLASH_NVMCON_NVMOP_DWORD_PROGRAM);
 
-        while ((regs_p->NVMCON & PIC32MM_FLASH_NVMCON_WR) != 0);
+        wait_for_operation_completed(regs_p);
 
         regs_p->NVMCON = 0;
     }
@@ -110,7 +117,7 @@ static int flash_port_erase(struct flash_driver_t *self_p,
                           | PIC32MM_FLASH_NVMCON_WREN
                           | PIC32MM_FLASH_NVMCON_NVMOP_PAGE_ERASE);
 
-        while ((regs_p->NVMCON & PIC32MM_FLASH_NVMCON_WR) != 0);
+        wait_for_operation_completed(regs_p);
 
         regs_p->NVMCON = 0;
     }
