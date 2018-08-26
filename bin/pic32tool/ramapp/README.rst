@@ -21,7 +21,7 @@ This is the packet format:
 
    TYPE  REQ-SIZE  RSP-SIZE  DESCRIPTION
    ------------------------------------------------
-     -1         -         0  Command failure.
+     -1         -         4  Command failure.
       1         0         0  Ping.
       2         8         0  Erase flash.
       3         8         n  Read from flash.
@@ -32,9 +32,9 @@ Command failure
 
 .. code-block:: text
 
-   +----+---+-----+
-   | -1 | 0 | crc |
-   +----+---+-----+
+   +----+---+------------+-----+
+   | -1 | 4 | error code | crc |
+   +----+---+------------+-----+
 
 Ping
 ^^^^
