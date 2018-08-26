@@ -7,24 +7,24 @@ Pin functions
 
   .. code-block:: text
 
-     +------------------+
-     |                  |
-     |                  |
-     |                  |
-     |                  |
-     |                  |
-     |                  |
-     | DEF CON 26 Badge |
-     |                  o--- MCLRN
-     |                  o--- VDD (3V3)
-     |                  o--- VSS (GND)
-     |                  o--- PGED
-     |                  o--- PGEC
-     |                  |
-     +--------o---------+
-              |
-
-             USB
+                  +------------------+
+                  |                  |
+                  |                  |
+                  |                  |
+                  |                  |
+                  |                  |
+                  |                  |
+                  | DEF CON 26 Badge |
+                  |                  o--- MCLRN
+   PIC-UART-TX ---o                  o--- VDD (3V3)
+  PIC-UART-GND ---o                  o--- VSS (GND)
+                  o                  o--- PGED
+   PIC-UART-RX ---o                  o--- PGEC
+                  |                  |
+                  +--------o---------+
+                           |
+                  
+                          USB
 
 Programming setup
 -----------------

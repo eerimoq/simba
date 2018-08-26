@@ -45,27 +45,19 @@ static int uart_port_module_init()
 
 static int uart_port_start(struct uart_driver_t *self_p)
 {
-    /* const struct uart_device_t *dev_p; */
-    /* volatile struct nrf5_uart_t *regs_p; */
-    /* int port; */
-    
-    /* dev_p = self_p->dev_p; */
-    /* regs_p = dev_p->regs_p; */
+    volatile struct pic32mm_uart_t *regs_p;
 
-    /* /\* Configure pin functions. *\/ */
-    /* port = (dev_p->tx_pin_p->regs_p == NRF5_GPIO_P1); */
-    /* regs_p->PSEL.TXD = ((port << 5) | dev_p->tx_pin_p->pin); */
-    /* port = (dev_p->rx_pin_p->regs_p == NRF5_GPIO_P1); */
-    /* regs_p->PSEL.RXD = ((port << 5) | dev_p->rx_pin_p->pin); */
-    
-    /* regs_p->BAUDRATE = 0x01d7e000; */
-    /* regs_p->ENABLE = 4; */
-    /* regs_p->TASKS.STARTTX = 1; */
-    /* regs_p->TASKS.STARTRX = 1; */
-    /* regs_p->EVENTS.TXDRDY = 0; */
-    /* regs_p->EVENTS.RXDRDY = 0; */
+    regs_p = self_p->dev_p->regs_p;
 
-    return (-ENOSYS);
+    write_reg(&PIC32MM_PINSEL->RPOR[3].VALUE, (4 << 8)); // 4 = UART 2 TX (RP14)
+    write_reg(&regs_p->BRG, 51); // baudrate 9600
+    write_reg(&regs_p->STA, 0);
+    write_reg(&regs_p->MODE, 0x8000);
+    write_reg(&regs_p->STA, 0x0400);
+
+    // RP18 RX
+
+    return (0);
 }
 
 static int uart_port_stop(struct uart_driver_t *self_p)
@@ -79,29 +71,26 @@ static ssize_t uart_port_write_cb(void *arg_p,
                                   const void *buf_p,
                                   size_t size)
 {
-    /* size_t i; */
-    /* struct uart_driver_t *self_p; */
-    /* volatile struct nrf5_uart_t *regs_p; */
-    /* const uint8_t *u8_buf_p; */
+    size_t i;
+    struct uart_driver_t *self_p;
+    volatile struct pic32mm_uart_t *regs_p;
+    const uint8_t *u8_buf_p;
 
-    /* self_p = container_of(arg_p, struct uart_driver_t, base); */
-    /* regs_p = self_p->dev_p->regs_p; */
-    /* u8_buf_p = buf_p; */
+    self_p = container_of(arg_p, struct uart_driver_t, base);
+    regs_p = self_p->dev_p->regs_p;
+    u8_buf_p = buf_p;
 
-    /* mutex_lock(&self_p->mutex); */
+    mutex_lock(&self_p->mutex);
 
-    /* for (i = 0; i < size; i++) { */
-    /*     regs_p->TXD = u8_buf_p[i]; */
+    for (i = 0; i < size; i++) {
+        while ((read_reg(&regs_p->STA) & BIT(8)) == 0);
 
-    /*     while (regs_p->EVENTS.TXDRDY == 0); */
+        write_reg(&regs_p->TXREG, u8_buf_p[i]);
+    }
 
-    /*     regs_p->EVENTS.TXDRDY = 0; */
-    /* } */
+    mutex_unlock(&self_p->mutex);
 
-    /* mutex_unlock(&self_p->mutex); */
-
-    /* return (size); */
-    return (-ENOSYS);
+    return (size);
 }
 
 static ssize_t uart_port_write_cb_isr(void *arg_p,
@@ -114,15 +103,19 @@ static ssize_t uart_port_write_cb_isr(void *arg_p,
 static int uart_port_device_start(struct uart_device_t *dev_p,
                                   long baudrate)
 {
-    PIC32MM_PINSEL->RPOR[5].VALUE = (4 << 8); // 4 = UART 2 TX (RP22)
-    /* PIC32MM_PINSEL->RPOR[0].VALUE = (4 << 8); // 4 = UART 2 TX (RP2) */
-    /* PIC32MM_PINSEL->RPOR[0].VALUE = (4); // 4 = UART 2 TX (RP1) */
-    PIC32MM_UART2->BRG = 51; // baudrate
-    PIC32MM_UART2->STA = 0;
-    PIC32MM_UART2->MODE = 0x8000;
-    PIC32MM_UART2->STA = 0x0400;
-    
-    return (-ENOSYS);
+    volatile struct pic32mm_uart_t *regs_p;
+
+    regs_p = dev_p->regs_p;
+
+    write_reg(&PIC32MM_PINSEL->RPOR[3].VALUE, (4 << 8)); // 4 = UART 2 TX (RP14)
+    write_reg(&regs_p->BRG, 51); // baudrate 9600
+    write_reg(&regs_p->STA, 0);
+    write_reg(&regs_p->MODE, 0x8000);
+    write_reg(&regs_p->STA, 0x0400);
+
+    // RP18 RX
+
+    return (0);
 }
 
 static int uart_port_device_stop(struct uart_device_t *dev_p)
@@ -141,10 +134,18 @@ static ssize_t uart_port_device_write(struct uart_device_t *dev_p,
                                       const void *buf_p,
                                       size_t size)
 {
-    static uint8_t a = 0;
-    a++;
-    PIC32MM_UART2->TXREG = a;
-    time_busy_wait_us(200);
-    
-    return (-ENOSYS);
+    size_t i;
+    const uint8_t *u8_buf_p;
+    volatile struct pic32mm_uart_t *regs_p;
+
+    u8_buf_p = buf_p;
+    regs_p = dev_p->regs_p;
+
+    for (i = 0; i < size; i++) {
+        while ((read_reg(&regs_p->STA) & BIT(8)) == 0);
+
+        write_reg(&regs_p->TXREG, u8_buf_p[i]);
+    }
+
+    return (size);
 }

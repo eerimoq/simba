@@ -28,321 +28,274 @@
 
 #include "simba.h"
 
-#if CONFIG_SYSTEM_INTERRUPTS == 1
+extern uint32_t __text_end;
+extern uint32_t __relocate_begin;
+extern uint32_t __relocate_end;
+extern uint32_t __bss_begin;
+extern uint32_t __bss_end;
 
-#    if CONFIG_SYSTEM_INTERRUPT_STACK_SIZE != 0
-char interrupt_stack[CONFIG_SYSTEM_INTERRUPT_STACK_SIZE];
-#    endif
+#define WEAK_ISR_NONE(name)                                             \
+    void isr_ ## name (void) __attribute__ ((weak, alias("isr_none")));
 
 /**
  * Panic if no interrupt service routine is installed in the interrupt
  * vector.
  */
-static void isr_none(uint32_t address)
+static void isr_none(void)
 {
-    sys_panic(FSTR("unhandled external interrupt %d"),
-              (address - 0x800) / 4);
+    sys_panic(FSTR("unhandled interrupt"));
 }
 
-void isr_software_configurable_flag_0(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_software_configurable_flag_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_software_configurable_flag_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_software_configurable_flag_3(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_software_configurable_flag_4(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_software_configurable_flag_5(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_software_configurable_flag_6(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_software_configurable_flag_7(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_ecsm_flash_bank_stall_abort(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_combined_error(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_0(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_3(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_4(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_5(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_6(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_7(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_8(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_9(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_10(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_11(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_12(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_13(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_14(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_edma_channel_15(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_swt_timeout(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_stm_match_on_channel_0(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_stm_match_on_channel_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_stm_match_on_channel_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_stm_match_on_channel_3(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_ecc_dbd(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_ecc_sbc(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_rtc_api_rtc(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_rtc_api_api(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_siul_0(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_siul_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_siul_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_wkpu_irq_0(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_wkpu_irq_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_wkpu_irq_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_wkpu_irq_3(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_mc_me_safe_mode(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_mc_me_mode_transition(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_mc_me_invalid_mode(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_mc_me_invalid_mode_config(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_fxosc_counter_expired_ipi_int_osc_fxosc(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_pit_channel_0(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_pit_channel_1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_pit_channel_2(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_flexcan_0_esr_err(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_flexcan_0_esr_boff_tx_rx_warn(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_flexcan_0_buf_00_03(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_flexcan_0_buf_04_07(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_flexcan_0_buf_08_11(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_flexcan_0_buf_12_15(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_flexcan_0_buf_16_31(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_0_sr_eoqf(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_0_sr_tfff(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_0_sr_tcf(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_0_sr_rfdf(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_0_rxi(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_0_txi(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_0_err(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_adc_1_eoc(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_adc_1_wd(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_1_sr_eoqf(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_1_sr_tfff(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_1_sr_tcf(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_dspi_1_sr_rfdf(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_1_rxi(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_1_txi(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_1_err(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_2_rxi(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_2_txi(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_linflex_2_err(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_pit_channel_3(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f0_f1(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f2_f3(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f4_f5(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f6_f7(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f8_f9(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f10_f11(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f12_f13(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f14_f15(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f16_f17(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f18_f19(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f20_f21(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f22_f23(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f24_f25(uint32_t address) __attribute__ ((weak, alias("isr_none")));
-void isr_emios_0_gfr_f26_f27(uint32_t address) __attribute__ ((weak, alias("isr_none")));
+WEAK_ISR_NONE(core_timer);
+WEAK_ISR_NONE(core_software_0);
+WEAK_ISR_NONE(core_software_1);
+WEAK_ISR_NONE(external_0);
+WEAK_ISR_NONE(external_1);
+WEAK_ISR_NONE(external_2);
+WEAK_ISR_NONE(external_3);
+WEAK_ISR_NONE(external_4);
+WEAK_ISR_NONE(porta_change_notification);
+WEAK_ISR_NONE(portb_change_notification);
+WEAK_ISR_NONE(portc_change_notification);
+WEAK_ISR_NONE(portd_change_notification);
+WEAK_ISR_NONE(timer1);
+WEAK_ISR_NONE(timer2);
+WEAK_ISR_NONE(timer3);
+WEAK_ISR_NONE(comparator_1);
+WEAK_ISR_NONE(comparator_2);
+WEAK_ISR_NONE(comparator_3);
+WEAK_ISR_NONE(usb);
+WEAK_ISR_NONE(real_time_clock_alarm);
+WEAK_ISR_NONE(adc_conversion);
+WEAK_ISR_NONE(high_low_voltage_detect);
+WEAK_ISR_NONE(logic_cell_1);
+WEAK_ISR_NONE(logic_cell_2);
+WEAK_ISR_NONE(logic_cell_3);
+WEAK_ISR_NONE(logic_cell_4);
+WEAK_ISR_NONE(spi1_error);
+WEAK_ISR_NONE(spi1_transmission);
+WEAK_ISR_NONE(spi1_reception);
+WEAK_ISR_NONE(spi2_error);
+WEAK_ISR_NONE(spi2_transmission);
+WEAK_ISR_NONE(spi2_reception);
+WEAK_ISR_NONE(spi3_error);
+WEAK_ISR_NONE(spi3_transmission);
+WEAK_ISR_NONE(spi3_reception);
+WEAK_ISR_NONE(uart1_reception);
+WEAK_ISR_NONE(uart1_transmission);
+WEAK_ISR_NONE(uart1_error);
+WEAK_ISR_NONE(uart2_reception);
+WEAK_ISR_NONE(uart2_transmission);
+WEAK_ISR_NONE(uart2_error);
+WEAK_ISR_NONE(uart3_reception);
+WEAK_ISR_NONE(uart3_transmission);
+WEAK_ISR_NONE(uart3_error);
+WEAK_ISR_NONE(i2c1_slave);
+WEAK_ISR_NONE(i2c1_master);
+WEAK_ISR_NONE(i2c1_bus_collision);
+WEAK_ISR_NONE(i2c2_slave);
+WEAK_ISR_NONE(i2c2_master);
+WEAK_ISR_NONE(i2c2_bus_collision);
+WEAK_ISR_NONE(i2c3_slave);
+WEAK_ISR_NONE(i2c3_master);
+WEAK_ISR_NONE(i2c3_bus_collision);
+WEAK_ISR_NONE(ccp1_input_capture_or_output_compare);
+WEAK_ISR_NONE(ccp1_timer);
+WEAK_ISR_NONE(ccp2_input_capture_or_output_compare);
+WEAK_ISR_NONE(ccp2_timer);
+WEAK_ISR_NONE(ccp3_input_capture_or_output_compare);
+WEAK_ISR_NONE(ccp3_timer);
+WEAK_ISR_NONE(ccp4_input_capture_or_output_compare);
+WEAK_ISR_NONE(ccp4_timer);
+WEAK_ISR_NONE(ccp5_input_capture_or_output_compare);
+WEAK_ISR_NONE(ccp5_timer);
+WEAK_ISR_NONE(ccp6_input_capture_or_output_compare);
+WEAK_ISR_NONE(ccp6_timer);
+WEAK_ISR_NONE(ccp7_input_capture_or_output_compare);
+WEAK_ISR_NONE(ccp7_timer);
+WEAK_ISR_NONE(ccp8_input_capture_or_output_compare);
+WEAK_ISR_NONE(ccp8_timer);
+WEAK_ISR_NONE(ccp9_input_capture_or_output_compare);
+WEAK_ISR_NONE(ccp9_timer);
+WEAK_ISR_NONE(frc_auto_tune);
+WEAK_ISR_NONE(nvm_program_or_erase_complete);
+WEAK_ISR_NONE(core_performance_counter);
+WEAK_ISR_NONE(single_bit_ecc_error);
+WEAK_ISR_NONE(dma_channel_0);
+WEAK_ISR_NONE(dma_channel_1);
+WEAK_ISR_NONE(dma_channel_2);
+WEAK_ISR_NONE(dma_channel_3);
 
-/* Vector table with all external (IVOR4) interrupt service
-   routines. */
+/* Vector table of unmasked hardware or software interrupt signals. */
 __attribute__ ((section(".vector"), used))
-void (*vector_table[])(uint32_t address) = {
-    isr_software_configurable_flag_0,
-    isr_software_configurable_flag_1,
-    isr_software_configurable_flag_2,
-    isr_software_configurable_flag_3,
-    isr_software_configurable_flag_4,
-    isr_software_configurable_flag_5,
-    isr_software_configurable_flag_6,
-    isr_software_configurable_flag_7,
+void (*vector_table[])(void) = {
+    isr_core_timer,
+    isr_core_software_0,
+    isr_core_software_1,
+    isr_external_0,
+    isr_external_1,
+    isr_external_2,
+    isr_external_3,
+    isr_external_4,
+    isr_porta_change_notification,
+    isr_portb_change_notification,
+    isr_portc_change_notification,
+    isr_portd_change_notification,
     isr_none,
-    isr_ecsm_flash_bank_stall_abort,
-    isr_edma_combined_error,
-    isr_edma_channel_0,
-    isr_edma_channel_1,
-    isr_edma_channel_2,
-    isr_edma_channel_3,
-    isr_edma_channel_4,
-    isr_edma_channel_5,
-    isr_edma_channel_6,
-    isr_edma_channel_7,
-    isr_edma_channel_8,
-    isr_edma_channel_9,
-    isr_edma_channel_10,
-    isr_edma_channel_11,
-    isr_edma_channel_12,
-    isr_edma_channel_13,
-    isr_edma_channel_14,
-    isr_edma_channel_15,
     isr_none,
-    isr_swt_timeout,
     isr_none,
-    isr_stm_match_on_channel_0,
-    isr_stm_match_on_channel_1,
-    isr_stm_match_on_channel_2,
-    isr_stm_match_on_channel_3,
     isr_none,
-    isr_ecc_dbd,
-    isr_ecc_sbc,
     isr_none,
-    isr_rtc_api_rtc,
-    isr_rtc_api_api,
+    isr_timer1,
+    isr_timer2,
+    isr_timer3,
     isr_none,
-    isr_siul_0,
-    isr_siul_1,
-    isr_siul_2,
     isr_none,
     isr_none,
-    isr_wkpu_irq_0,
-    isr_wkpu_irq_1,
-    isr_wkpu_irq_2,
-    isr_wkpu_irq_3,
+    isr_comparator_1,
+    isr_comparator_2,
+    isr_comparator_3,
     isr_none,
-    isr_mc_me_safe_mode,
-    isr_mc_me_mode_transition,
-    isr_mc_me_invalid_mode,
-    isr_mc_me_invalid_mode_config,
     isr_none,
-    isr_none,
-    isr_fxosc_counter_expired_ipi_int_osc_fxosc,
-    isr_none,
-    isr_pit_channel_0,
-    isr_pit_channel_1,
-    isr_pit_channel_2,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_flexcan_0_esr_err,
-    isr_flexcan_0_esr_boff_tx_rx_warn,
-    isr_none,
-    isr_flexcan_0_buf_00_03,
-    isr_flexcan_0_buf_04_07,
-    isr_flexcan_0_buf_08_11,
-    isr_flexcan_0_buf_12_15,
-    isr_flexcan_0_buf_16_31,
-    isr_none,
-    isr_none,
-    isr_dspi_0_sr_eoqf,
-    isr_dspi_0_sr_tfff,
-    isr_dspi_0_sr_tcf,
-    isr_dspi_0_sr_rfdf,
-    isr_linflex_0_rxi,
-    isr_linflex_0_txi,
-    isr_linflex_0_err,
-    isr_adc_1_eoc,
-    isr_none,
-    isr_adc_1_wd,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_dspi_1_sr_eoqf,
-    isr_dspi_1_sr_tfff,
-    isr_dspi_1_sr_tcf,
-    isr_dspi_1_sr_rfdf,
-    isr_linflex_1_rxi,
-    isr_linflex_1_txi,
-    isr_linflex_1_err,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_linflex_2_rxi,
-    isr_linflex_2_txi,
-    isr_linflex_2_err,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_pit_channel_3,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_emios_0_gfr_f0_f1,
-    isr_emios_0_gfr_f2_f3,
-    isr_emios_0_gfr_f4_f5,
-    isr_emios_0_gfr_f6_f7,
-    isr_emios_0_gfr_f8_f9,
-    isr_emios_0_gfr_f10_f11,
-    isr_emios_0_gfr_f12_f13,
-    isr_emios_0_gfr_f14_f15,
-    isr_emios_0_gfr_f16_f17,
-    isr_emios_0_gfr_f18_f19,
-    isr_emios_0_gfr_f20_f21,
-    isr_emios_0_gfr_f22_f23,
-    isr_emios_0_gfr_f24_f25,
-    isr_emios_0_gfr_f26_f27
+    isr_none,
+    isr_usb,
+    isr_none,
+    isr_none,
+    isr_real_time_clock_alarm,
+    isr_adc_conversion,
+    isr_none,
+    isr_none,
+    isr_high_low_voltage_detect,
+    isr_logic_cell_1,
+    isr_logic_cell_2,
+    isr_logic_cell_3,
+    isr_logic_cell_4,
+    isr_spi1_error,
+    isr_spi1_transmission,
+    isr_spi1_reception,
+    isr_spi2_error,
+    isr_spi2_transmission,
+    isr_spi2_reception,
+    isr_spi3_error,
+    isr_spi3_transmission,
+    isr_spi3_reception,
+    isr_none,
+    isr_none,
+    isr_none,
+    isr_uart1_reception,
+    isr_uart1_transmission,
+    isr_uart1_error,
+    isr_none,
+    isr_none,
+    isr_none,
+    isr_usb,
+    isr_none,
+    isr_none,
+    isr_real_time_clock_alarm,
+    isr_adc_conversion,
+    isr_none,
+    isr_none,
+    isr_high_low_voltage_detect,
+    isr_logic_cell_1,
+    isr_logic_cell_2,
+    isr_logic_cell_3,
+    isr_logic_cell_4,
+    isr_spi1_error,
+    isr_spi1_transmission,
+    isr_spi1_reception,
+    isr_spi2_error,
+    isr_spi2_transmission,
+    isr_spi2_reception,
+    isr_spi3_error,
+    isr_spi3_transmission,
+    isr_spi3_reception,
+    isr_none,
+    isr_none,
+    isr_none,
+    isr_uart1_reception,
+    isr_uart1_transmission,
+    isr_uart1_error,
+    isr_uart2_reception,
+    isr_uart2_transmission,
+    isr_uart2_error,
+    isr_uart3_reception,
+    isr_uart3_transmission,
+    isr_uart3_error,
+    isr_none,
+    isr_none,
+    isr_none,
+    isr_i2c1_slave,
+    isr_i2c1_master,
+    isr_i2c1_bus_collision,
+    isr_i2c2_slave,
+    isr_i2c2_master,
+    isr_i2c2_bus_collision,
+    isr_i2c3_slave,
+    isr_i2c3_master,
+    isr_i2c3_bus_collision,
+    isr_ccp1_input_capture_or_output_compare,
+    isr_ccp1_timer,
+    isr_ccp2_input_capture_or_output_compare,
+    isr_ccp2_timer,
+    isr_ccp3_input_capture_or_output_compare,
+    isr_ccp3_timer,
+    isr_ccp4_input_capture_or_output_compare,
+    isr_ccp4_timer,
+    isr_ccp5_input_capture_or_output_compare,
+    isr_ccp5_timer,
+    isr_ccp6_input_capture_or_output_compare,
+    isr_ccp6_timer,
+    isr_ccp7_input_capture_or_output_compare,
+    isr_ccp7_timer,
+    isr_ccp8_input_capture_or_output_compare,
+    isr_ccp8_timer,
+    isr_ccp9_input_capture_or_output_compare,
+    isr_ccp9_timer,
+    isr_frc_auto_tune,
+    isr_nvm_program_or_erase_complete,
+    isr_core_performance_counter,
+    isr_none,
+    isr_single_bit_ecc_error,
+    isr_dma_channel_0,
+    isr_dma_channel_1,
+    isr_dma_channel_2,
+    isr_dma_channel_3
 };
 
-#endif
-
-void spc5_init(void)
+void pic32mm_relocate_init(void)
 {
-/* #if CONFIG_EXTERNAL_OSCILLATOR_FREQUENCY_HZ == 16000000 */
-/*     SPC5_MC_CGM->FMPLL.CR = (SPC5_MC_CGM_FMPLL_CR_IDF(1) */
-/*                              | SPC5_MC_CGM_FMPLL_CR_ODF(2) */
-/*                              | SPC5_MC_CGM_FMPLL_CR_NDIV(48)); */
-/* #elif CONFIG_EXTERNAL_OSCILLATOR_FREQUENCY_HZ == 8000000 */
-/*     SPC5_MC_CGM->FMPLL.CR = (SPC5_MC_CGM_FMPLL_CR_IDF(0) */
-/*                              | SPC5_MC_CGM_FMPLL_CR_ODF(2) */
-/*                              | SPC5_MC_CGM_FMPLL_CR_NDIV(48)); */
-/* #else */
-/* #    error "Unsupported external oscillator frequency." */
-/* #endif */
+    uint32_t *relocate_begin_p;
+    uint32_t *text_end_p;
+    size_t i;
+    size_t size;
 
-/*     SPC5_MC_ME->DRUN_MC = 0x001f00f2; */
-/*     SPC5_MC_ME->MCTL = 0x30005af0; */
-/*     SPC5_MC_ME->MCTL = 0x3000a50f; */
+    relocate_begin_p = &__relocate_begin;
+    text_end_p = &__text_end;
+    size = (&__relocate_end - relocate_begin_p);
 
-/*     /\* Wait for PLL to become stable. *\/ */
-/*     while ((SPC5_MC_ME->GS & 0x40) == 0); */
+    for (i = 0; i < size; i++) {
+        relocate_begin_p[i] = text_end_p[i];
+    }
+}
 
-/*     SPC5_MC_ME->DRUN_MC = 0x001f00f4; */
+void pic32mm_bss_init(void)
+{
+    size_t i;
+    size_t size;
 
-/*     /\* See page 184 in the reference manual. *\/ */
-/*     SPC5_MC_ME->RUN_PC[0] = 0x8; */
-/*     SPC5_MC_ME->PCTL[48] = 0; */
-/*     SPC5_MC_ME->PCTL[68] = 0; */
-/*     SPC5_MC_ME->MCTL = 0x30005af0; */
-/*     SPC5_MC_ME->MCTL = 0x3000a50f; */
+    size = (&__bss_end - &__bss_begin);
 
-/* #if CONFIG_SPC5_WATCHDOG_DISABLE == 1 */
-/*     /\* Disable the watchdog. *\/ */
-/*     SPC5_SWT->SR = 0x0000c520; */
-/*     SPC5_SWT->SR = 0x0000d928; */
-/*     SPC5_SWT->CR = (SPC5_SWT_CR_MAP_0 */
-/*                     | SPC5_SWT_CR_RIA */
-/*                     | SPC5_SWT_CR_CSL */
-/*                     | SPC5_SWT_CR_FRZ); */
-/* #endif */
+    for (i = 0; i < size; i++) {
+        (&__bss_begin)[i] = 0;
+    }
+}
 
-/* #if CONFIG_SYSTEM_INTERRUPTS == 1 */
-/*     /\* Software vector mode. *\/ */
-/*     SPC5_INTC->MCR = 0; */
-/*     SPC5_INTC->IACKR = (uint32_t)vector_table; */
-/*     SPC5_INTC->CPR = 0; */
-/* #endif */
+uint32_t read_reg(volatile uint32_t *reg_p)
+{
+    return (*reg_p);
+}
+
+void write_reg(volatile uint32_t *reg_p, uint32_t value)
+{
+    *reg_p = value;
 }

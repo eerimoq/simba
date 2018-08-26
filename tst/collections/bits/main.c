@@ -34,28 +34,28 @@ static int test_insert(void)
     uint32_t src;
     int pos;
     int size;
- 
+
     /* Insert a one at LSB. */
     dst = 0xffffffff;
     src = 0x0;
     pos = 0;
     size = 1;
     BTASSERT(bits_insert_32(dst, pos, size, src) == 0xfffffffe);
- 
+
     /* Insert a one at MSB. */
     dst = 0xffffffff;
     src = 0x0;
     pos = 31;
     size = 1;
     BTASSERT(bits_insert_32(dst, pos, size, src) == 0x7fffffff);
- 
+
     /* Insert in the middle. */
     dst = 0xffffffff;
     src = 0x34;
     pos = 17;
     size = 5;
     BTASSERT(bits_insert_32(dst, pos, size, src) == 0xffe9ffff);
- 
+
     /* Insert the maximum 31 bits. */
     dst = 0xffffffff;
     src = 0x12345678;

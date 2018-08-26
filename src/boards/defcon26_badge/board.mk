@@ -37,17 +37,20 @@ BOARD_DESC = "DEF CON 26 Badge"
 
 MCU = pic32mm0256gpm048
 
+PROGRAMMER_PORT ?= /dev/arduino
 SERIAL_PORT ?= /dev/arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/defcon26_badge/board.py
 TIMEOUT ?= 10
-BAUDRATE ?= 115200
+BAUDRATE ?= 9600
 
 upload:
 	@echo "Uploading '$(EXE)'."
-	python -u $(BOARD_PY) upload --port $(SERIAL_PORT) $(BIN)
+	pic32tool.py -p $(PROGRAMMER_PORT) flash_write -e -v $(S19)
+	pic32tool.py -p $(PROGRAMMER_PORT) disconnect
 
 rerun:
 	@echo "Running '$(EXE)'."
+	pic32tool.py -p $(PROGRAMMER_PORT) reset
 	python -u $(RUN_PY) --port $(SERIAL_PORT) \
 			    --timeout $(TIMEOUT) \
 			    --baudrate $(BAUDRATE) \

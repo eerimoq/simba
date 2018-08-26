@@ -514,7 +514,7 @@ int harness_run(struct harness_testcase_t *testcases_p)
         std_printf(OSTR("\r\nenter: %s\r\n"), testcase_p->name_p);
 
         err = testcase_p->callback();
- 
+
         do {
             entry_p = (struct mock_entry_t *)list_remove_head(&module.mock.list);
 

@@ -37,20 +37,12 @@
  * application main function.
  */
 ASM_FUNC_BEGIN _start, 2
-//        jal     _relocate_init
-//
-//#if CONFIG_SYSTEM_INTERRUPTS == 1
-//        /* Configure the MSR register. */
-//        e_lis     %r1, MSR@h
-//        e_or2i    %r1, MSR@l
-//        mtmsr     %r1
-//#endif
-//
         /* Stack pointer initialization. */
         lui    $sp, %hi(__main_stack_end)
         addiu  $sp, $sp, %lo(__main_stack_end)
-        nop
 
+        jal    pic32mm_relocate_init
+        jal    pic32mm_bss_init
 //        e_bl      spc5_init
 //
 //#if CONFIG_SYSTEM_INTERRUPTS == 1
@@ -58,44 +50,12 @@ ASM_FUNC_BEGIN _start, 2
 //#endif
 
         /* Call the application main function! */
-        jal      main
+        jal    main
 
 .L_start_loop:
-        b .L_start_loop
+        b      .L_start_loop
 ASM_FUNC_END _start
 
-/**
- * Initialize the relocate segment.
- */
-//ASM_FUNC_LOCAL_BEGIN _relocate_init, 2
-//        lui    $a3, %hi(__relocate_begin)
-//        addiu  $a3, %lo(__relocate_begin)
-//        lui    $a2, %hi(__relocate_end)
-//        addiu  $a2, %lo(__relocate_end)
-//
-//        subu   $a2, $a2, $a3
-//        beqz   $a2, .L_relocate_init_2
-//
-//        lui    $t0, %hi(__text_end)
-//        addiu  $t0, %lo(__text_end)
-//        move   $v0, $zero
-//
-//.L_relocate_init_1:
-//        addu   $v1, $t0, $v0
-//        lw     $a1, 0($v1)
-//        addu   $a0, $a3, $v0
-//        addiu  $v0, $v0, 4
-//        sltu   $v1, $v0, $a2
-//        bnez   $v1, .L_relocate_init_1
-//        sw     $a1, 0($a0)
-//
-//.L_relocate_init_2:
-//        jrc    $ra
-//        nop
-//ASM_FUNC_END _relocate_init
-
-//#if CONFIG_SYSTEM_INTERRUPTS == 1
-//
 ///**
 // * Setup interrput handling.
 // */
@@ -464,5 +424,3 @@ ASM_FUNC_END _start
 //        e_add16i  %r3, %r3, isr_debug_string@l
 //        e_bl      sys_panic
 //ASM_FUNC_END isr_debug
-//
-//#endif

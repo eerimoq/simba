@@ -77,6 +77,7 @@
 #define COMMAND_TYPE_PING                                 100
 #define COMMAND_TYPE_CONNECT                              101
 #define COMMAND_TYPE_DISCONNECT                           102
+#define COMMAND_TYPE_RESET                                103
 
 static int connected = 0;
 static struct icsp_soft_driver_t icsp;
@@ -594,6 +595,26 @@ static ssize_t handle_disconnect(uint8_t *buf_p, size_t size)
     return (0);
 }
 
+static ssize_t handle_reset(uint8_t *buf_p, size_t size)
+{
+    struct pin_driver_t mclrn;
+    
+    if (connected) {
+        return (-EISCONN);
+    }
+
+    pin_init(&mclrn, &pin_mclrn_dev, PIN_OUTPUT);
+    pin_write(&mclrn, 1);
+    thrd_sleep_ms(10);
+    pin_write(&mclrn, 0); 
+    thrd_sleep_ms(10); 
+    pin_write(&mclrn, 1); 
+    thrd_sleep_ms(10); 
+    pin_set_mode(&mclrn, PIN_INPUT);
+    
+    return (0);
+}
+
 static ssize_t prepare_command_response(uint8_t *buf_p,
                                         ssize_t size)
 {
@@ -650,6 +671,10 @@ static ssize_t handle_programmer_command(int type,
 
         case COMMAND_TYPE_DISCONNECT:
             res = handle_disconnect(buf_p, size);
+            break;
+
+        case COMMAND_TYPE_RESET:
+            res = handle_reset(buf_p, size);
             break;
 
         default:

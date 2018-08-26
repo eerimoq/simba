@@ -34,36 +34,24 @@
 #endif
 
 #define THRD_PORT_STACK(name, size)                             \
-    uint64_t name[DIV_CEIL(sizeof(struct thrd_t) + (size),      \
-                           sizeof(uint64_t))] __attribute((aligned (8)))
+    uint32_t name[DIV_CEIL(sizeof(struct thrd_t) + (size),      \
+                           sizeof(uint32_t))] __attribute((aligned (4)))
 
 #define THRD_PORT_CONTEXT_STORE_ISR
 #define THRD_PORT_CONTEXT_LOAD_ISR
 
 struct thrd_port_context_t {
-    uint32_t r13;
-    uint32_t r14;
-    uint32_t r15;
-    uint32_t r16;
-    uint32_t r17;
-    uint32_t r18;
-    uint32_t r19;
-    uint32_t r20;
-    uint32_t r21;
-    uint32_t r22;
-    uint32_t r23;
-    uint32_t r24;
-    uint32_t r25;
-    uint32_t r26;
-    uint32_t r27;
-    uint32_t r28;
-    uint32_t r29;
-    uint32_t r30;
-    uint32_t r31;
-    uint32_t cr;
-    uint32_t lr;
-    uint32_t r2;
-    uint32_t r0;
+    uint32_t s0;
+    uint32_t s1;
+    uint32_t s2;
+    uint32_t s3;
+    uint32_t s4;
+    uint32_t s5;
+    uint32_t s6;
+    uint32_t s7;
+    uint32_t gp;
+    uint32_t fp;
+    uint32_t ra;
 };
 
 struct thrd_port_t {

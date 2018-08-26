@@ -32,20 +32,29 @@
 /* 5. Flash. */
 struct pic32mm_flash_t {
     uint32_t NVMCON;
-    uint32_t RESERVED0[3];
+    uint32_t NVMCONCLR;
+    uint32_t NVMCONSET;
+    uint32_t NVMCONINV;
     uint32_t NVMKEY;
-    uint32_t RESERVED1[3];
+    uint32_t RESERVED0[3];
     uint32_t NVMADDR;
-    uint32_t RESERVED2[3];
+    uint32_t NVMADDRCLR;
+    uint32_t NVMADDRSET;
+    uint32_t NVMADDRINV;
     uint32_t NVMDATA0;
-    uint32_t RESERVED3[3];
+    uint32_t RESERVED1[3];
     uint32_t NVMDATA1;
-    uint32_t RESERVED4[3];
+    uint32_t RESERVED2[3];
     uint32_t NVMSRCADDR;
-    uint32_t RESERVED5[3];
+    uint32_t RESERVED3[3];
     uint32_t NVMPWP;
-    uint32_t RESERVED6[3];
+    uint32_t NVMPWPCLR;
+    uint32_t NVMPWPSET;
+    uint32_t NVMPWPINV;
     uint32_t NVMBWP;
+    uint32_t NVMBWPCLR;
+    uint32_t NVMBWPSET;
+    uint32_t NVMBWPINV;
 };
 
 #define PIC32MM_FLASH_NVMCON_WR                       BIT(15)
@@ -198,9 +207,16 @@ struct pic32mm_conf_t {
 #define PIC32MM_CONFIGURATION_BITS_ADDRESS  0x1fc01700
 #define PIC32MM_CONFIGURATION_BITS_SIZE     0x00000100
 #define PIC32MM_CONFIGURATION_BITS_END      0x1fc01800
+#define PIC32MM_UDID_ADDRESS                0x1fc41840
+#define PIC32MM_UDID_SIZE                   0x00000014
+#define PIC32MM_UDID_END                    0x1fc41854
 
 /* Interrupt service routine. */
 #define ISR(vector)                             \
     void isr_ ## vector(void)
+
+uint32_t read_reg(volatile uint32_t *reg_p);
+
+void write_reg(volatile uint32_t *reg_p, uint32_t value);
 
 #endif

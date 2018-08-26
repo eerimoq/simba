@@ -35,7 +35,9 @@ ERRORS = {
     -71: "communication between programmer and PIC32 failed",
     -106: "PIC32 already connected",
     -107: "PIC32 is not connected",
-    -1007: "invalid packet checksum"
+    -1007: "invalid packet checksum",
+    -1008: "flash write failed",
+    -1009: "flash erase failed"
 }
 
 # Command types. Anything less than zero is error codes.
@@ -48,8 +50,9 @@ COMMAND_TYPE_WRITE  =  4
 PROGRAMMER_COMMAND_TYPE_PING       =  100
 PROGRAMMER_COMMAND_TYPE_CONNECT    =  101
 PROGRAMMER_COMMAND_TYPE_DISCONNECT =  102
+PROGRAMMER_COMMAND_TYPE_RESET      =  103
 
-SERIAL_TIMEOUT = 3.0
+SERIAL_TIMEOUT = 1.0
 
 READ_WRITE_CHUNK_SIZE = 1016
 
@@ -62,6 +65,7 @@ BOOT_FLASH_SIZE             = 0x00001700
 CONFIGURATION_BITS_ADDRESS  = 0x1fc01700
 CONFIGURATION_BITS_SIZE     = 0x00000100
 DEVICE_ID_ADDRESS           = 0x1f803660
+UDID_ADDRESS                = 0x1fc41840
 
 RAMAPP_UPLOAD_INSTRUCTIONS_I_FMT = '''\
 /**
@@ -121,6 +125,16 @@ DEVICE_ID_FMT = '''\
 DEVID
   VER: {}
   DEVID: 0x{:08x}\
+'''
+
+
+UDID_FMT = '''\
+UDID
+  UDID1: 0x{:08x}
+  UDID2: 0x{:08x}
+  UDID3: 0x{:08x}
+  UDID4: 0x{:08x}
+  UDID5: 0x{:08x}\
 '''
 
 
@@ -279,35 +293,43 @@ def connect(serial_connection):
     print('Connected to PIC32.')
 
 
-def do_connect(args):
+def read_words(args, address, length):
     serial_connection = serial_open(args.port)
+    payload = struct.pack('>II', address, 4 * length)
+    words = execute_command(serial_connection,
+                            COMMAND_TYPE_READ,
+                            payload)
 
-    connect(serial_connection)
+    return bitstruct.byteswap(length * '4', words)
+
+
+def do_connect(args):
+    connect(serial_open(args.port))
 
 
 def do_disconnect(args):
-    serial_connection = serial_open(args.port)
-
-    execute_command(serial_connection, PROGRAMMER_COMMAND_TYPE_DISCONNECT)
+    execute_command(serial_open(args.port), PROGRAMMER_COMMAND_TYPE_DISCONNECT)
 
     print('Disconnected from PIC32.')
 
 
-def do_ping(args):
-    serial_connection = serial_open(args.port)
+def do_reset(args):
+    execute_command(serial_open(args.port), PROGRAMMER_COMMAND_TYPE_RESET)
 
-    execute_command(serial_connection, COMMAND_TYPE_PING)
+    print('Resetted PIC32.')
+
+
+def do_ping(args):
+    execute_command(serial_open(args.port), COMMAND_TYPE_PING)
 
     print('Ping response received.')
 
 
 def do_flash_erase(args):
-    serial_connection = serial_open(args.port)
-
     address = int(args.address, 0)
     size = int(args.size, 0)
 
-    erase(serial_connection, address, size)
+    erase(serial_open(args.port), address, size)
 
 
 def do_flash_read(args):
@@ -375,12 +397,13 @@ def do_flash_write(args):
                     read_data = execute_command(serial_connection,
                                                 COMMAND_TYPE_READ,
                                                 payload)
-                    address += size
-                    left -= size
 
                     if bytearray(read_data) != data[:size]:
-                        sys.exit('Verify failed.')
+                        sys.exit(
+                            'Verify failed at address 0x{:x}.'.format(address))
 
+                    address += size
+                    left -= size
                     data = data[size:]
                     progress.update(size)
 
@@ -388,38 +411,34 @@ def do_flash_write(args):
 
 
 def do_configuration_print(args):
-    serial_connection = serial_open(args.port)
-
-    payload = struct.pack('>II', CONFIGURATION_BITS_ADDRESS, 40)
-    config = execute_command(serial_connection,
-                             COMMAND_TYPE_READ,
-                             payload)
-    config = bitstruct.byteswap(10 * '4', config)
-    unpacked = bitstruct.unpack('p32'
-                                'u16u1u1p9u1u1p3'
-                                'p27u2u1p2'
-                                'p28u1u1u2'
-                                'p16u1u2u5u1u2u5'
-                                'p16u2p1u1p1u1u2u1u1p1u1p1u3'
-                                'u1p31'
-                                'p32'
-                                'p32',
+    config = read_words(args, CONFIGURATION_BITS_ADDRESS + 0xc0, 10)
+    unpacked = bitstruct.unpack('p32'                          # RESERVED
+                                'u16u1u1p9u1u1p3'              # FDEVOPT
+                                'p27u2u1p2'                    # FICD
+                                'p28u1u1u2'                    # FPOR
+                                'p16u1u2u5u1u2u5'              # FWDT
+                                'p16u2p1u1p1u1u2u1u1p1u1p1u3'  # FOSCSEL
+                                'u1p31'                        # FSEC
+                                'p32'                          # RESERVED
+                                'p32'                          # RESERVED
+                                'p32',                         # RESERVED
                                 config)
 
     print(CONFIGURATION_FMT.format(*unpacked))
 
 
 def do_device_id_print(args):
-    serial_connection = serial_open(args.port)
-
-    payload = struct.pack('>II', DEVICE_ID_ADDRESS, 4)
-    device_id = execute_command(serial_connection,
-                                COMMAND_TYPE_READ,
-                                payload)
-    device_id = bitstruct.byteswap('4', device_id)
+    device_id = read_words(args, DEVICE_ID_ADDRESS, 1)
     unpacked = bitstruct.unpack('u4u28', device_id)
 
     print(DEVICE_ID_FMT.format(*unpacked))
+
+
+def do_udid_print(args):
+    udid = read_words(args, UDID_ADDRESS, 5)
+    unpacked = bitstruct.unpack(5 * 'u32', udid)
+
+    print(UDID_FMT.format(*unpacked))
 
 
 def do_programmer_ping(args):
@@ -515,6 +534,9 @@ def main():
     subparser = subparsers.add_parser('disconnect')
     subparser.set_defaults(func=do_disconnect)
 
+    subparser = subparsers.add_parser('reset')
+    subparser.set_defaults(func=do_reset)
+
     subparser = subparsers.add_parser('ping')
     subparser.set_defaults(func=do_ping)
 
@@ -541,6 +563,9 @@ def main():
 
     subparser = subparsers.add_parser('device_id_print')
     subparser.set_defaults(func=do_device_id_print)
+
+    subparser = subparsers.add_parser('udid_print')
+    subparser.set_defaults(func=do_udid_print)
 
     subparser = subparsers.add_parser('programmer_ping')
     subparser.set_defaults(func=do_programmer_ping)

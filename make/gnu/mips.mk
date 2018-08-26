@@ -44,6 +44,7 @@ CDEFS += F_CPU=$(F_CPU)UL
 OPT ?= -O2
 
 CFLAGS += \
+	-EL \
 	-Werror \
 	-mips3 \
 	-mmicromips \
@@ -59,6 +60,7 @@ CFLAGS += \
 	-G0
 
 CXXFLAGS += \
+	-EL \
 	-Werror \
 	-mips3 \
 	-mmicromips \
@@ -72,6 +74,7 @@ CXXFLAGS += \
 	-G0
 
 LDFLAGS += \
+	-EL \
         -Wl,--cref \
 	-mips3 \
 	-mmicromips \

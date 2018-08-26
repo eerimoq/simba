@@ -99,39 +99,38 @@ static void sys_port_reboot()
 
 static int sys_port_backtrace(void **buf_pp, size_t size)
 {
-    /* void *return_address_p; */
-    /* void *frame_address_p; */
-    /* void **frame_address_pp; */
-    /* int depth; */
-    /* int depth_max; */
+    void *return_address_p;
+    void *frame_address_p;
+    void **frame_address_pp;
+    int depth;
+    int depth_max;
 
-    /* return_address_p = __builtin_return_address(0); */
-    /* frame_address_p = __builtin_frame_address(1); */
-    /* depth = 0; */
-    /* depth_max = (size / sizeof(void*) / 2); */
+    return_address_p = __builtin_return_address(0);
+    frame_address_p = __builtin_frame_address(1);
+    depth = 0;
+    depth_max = (size / sizeof(void*) / 2);
 
-    /* buf_pp[depth] = return_address_p; */
-    /* buf_pp[depth + 1] = frame_address_p; */
-    /* depth++; */
+    buf_pp[depth] = return_address_p;
+    buf_pp[depth + 1] = frame_address_p;
+    depth++;
 
-    /* frame_address_pp = (void **)frame_address_p; */
+    frame_address_pp = (void **)frame_address_p;
 
-    /* while ((frame_address_p != NULL) && (depth < depth_max)) { */
-    /*     frame_address_p = *frame_address_pp; */
-    /*     frame_address_pp = (void **)frame_address_p; */
+    while ((frame_address_p != NULL) && (depth < depth_max)) {
+        frame_address_p = *frame_address_pp;
+        frame_address_pp = (void **)frame_address_p;
 
-    /*     if (*frame_address_pp == NULL) { */
-    /*         break; */
-    /*     } */
+        if (*frame_address_pp == NULL) {
+            break;
+        }
 
-    /*     return_address_p = *(frame_address_pp + 1); */
-    /*     buf_pp[2 * depth] = return_address_p; */
-    /*     buf_pp[2 * depth + 1] = frame_address_p; */
-    /*     depth++; */
-    /* } */
+        return_address_p = *(frame_address_pp + 1);
+        buf_pp[2 * depth] = return_address_p;
+        buf_pp[2 * depth + 1] = frame_address_p;
+        depth++;
+    }
 
-    /* return (depth); */
-    return (0);
+    return (depth);
 }
 
 static int32_t sys_port_get_time_into_tick()
@@ -146,12 +145,12 @@ static int32_t sys_port_get_time_into_tick()
 
 static void sys_port_lock(void)
 {
-    /* asm volatile("wrteei 0"); */
+    asm volatile("di");
 }
 
 static void sys_port_unlock(void)
 {
-    /* asm volatile("wrteei 1"); */
+    asm volatile("ei");
 }
 
 static void sys_port_lock_isr(void)

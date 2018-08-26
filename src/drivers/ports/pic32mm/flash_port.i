@@ -42,13 +42,36 @@ static void wait_for_operation_completed(volatile struct pic32mm_flash_t *regs_p
     while ((regs_p->NVMCON & PIC32MM_FLASH_NVMCON_WR) != 0);
 }
 
+static int commit(volatile struct pic32mm_flash_t *regs_p)
+{
+    int res;
+
+    res = 0;
+
+    write_protect_unlock(regs_p);
+
+    regs_p->NVMCONSET = PIC32MM_FLASH_NVMCON_WR;
+
+    wait_for_operation_completed(regs_p);
+
+    if (regs_p->NVMCON & PIC32MM_FLASH_NVMCON_WRERR) {
+        res = -1;
+    }
+
+    regs_p->NVMCONCLR = PIC32MM_FLASH_NVMCON_WREN;
+
+    write_protect_lock(regs_p);
+
+    return (res);
+}
+
 static int flash_port_module_init(void)
 {
     /* Unlock boot flash. */
     write_protect_unlock(PIC32MM_FLASH);
     PIC32MM_FLASH->NVMBWP = 0x8000;
     write_protect_lock(PIC32MM_FLASH);
-    
+
     return (0);
 }
 
@@ -70,32 +93,26 @@ static ssize_t flash_port_write(struct flash_driver_t *self_p,
     volatile struct pic32mm_flash_t *regs_p;
     size_t i;
     const uint32_t *u32_src_p;
+    ssize_t res;
 
+    res = size;
     u32_src_p = src_p;
     regs_p = self_p->dev_p->regs_p;
     regs_p = PIC32MM_FLASH;
 
-    write_protect_unlock(regs_p);
-
-    for (i = 0; i < size; i += 8) {
+    for (i = 0; (i < size) && (res == size); i += 8) {
         regs_p->NVMADDR = (dst + i);
         regs_p->NVMDATA0 = *u32_src_p++;
         regs_p->NVMDATA1 = *u32_src_p++;
-        regs_p->NVMCON = PIC32MM_FLASH_NVMCON_NVMOP_DWORD_PROGRAM;
         regs_p->NVMCON = (PIC32MM_FLASH_NVMCON_WREN
                           | PIC32MM_FLASH_NVMCON_NVMOP_DWORD_PROGRAM);
-        regs_p->NVMCON = (PIC32MM_FLASH_NVMCON_WR
-                          | PIC32MM_FLASH_NVMCON_WREN
-                          | PIC32MM_FLASH_NVMCON_NVMOP_DWORD_PROGRAM);
 
-        wait_for_operation_completed(regs_p);
-
-        regs_p->NVMCON = 0;
+        if (commit(regs_p) != 0) {
+            res = -EFLASHWRITE;
+        }
     }
 
-    write_protect_lock(regs_p);
-
-    return (size);
+    return (res);
 }
 
 static int flash_port_erase(struct flash_driver_t *self_p,
@@ -104,30 +121,24 @@ static int flash_port_erase(struct flash_driver_t *self_p,
 {
     volatile struct pic32mm_flash_t *regs_p;
     uintptr_t end;
+    int res;
 
+    res = 0;
     regs_p = self_p->dev_p->regs_p;
     regs_p = PIC32MM_FLASH;
 
     end = ((addr + size - 1) & 0xfffff800);
     addr &= 0xfffff800;
 
-    write_protect_unlock(regs_p);
-
-    for (; addr <= end; addr += 0x800) {
+    for (; (addr <= end) && (res == 0); addr += 0x800) {
         regs_p->NVMADDR = addr;
-        regs_p->NVMCON = PIC32MM_FLASH_NVMCON_NVMOP_PAGE_ERASE;
         regs_p->NVMCON = (PIC32MM_FLASH_NVMCON_WREN
                           | PIC32MM_FLASH_NVMCON_NVMOP_PAGE_ERASE);
-        regs_p->NVMCON = (PIC32MM_FLASH_NVMCON_WR
-                          | PIC32MM_FLASH_NVMCON_WREN
-                          | PIC32MM_FLASH_NVMCON_NVMOP_PAGE_ERASE);
 
-        wait_for_operation_completed(regs_p);
-        
-        regs_p->NVMCON = 0;
+        if (commit(regs_p) != 0) {
+            res = -EFLASHERASE;
+        }
     }
 
-    write_protect_lock(regs_p);
-
-    return (0);
+    return (res);
 }

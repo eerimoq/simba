@@ -223,13 +223,6 @@
 #endif
 
 /**
- * Read, and when needed clear, the reset cause at startup.
- */
-#ifndef CONFIG_SYS_RESET_CAUSE
-#    define CONFIG_SYS_RESET_CAUSE                          1
-#endif
-
-/**
  * Kick the watchdog in `sys_panic()` before writing to the console.
  */
 #ifndef CONFIG_SYS_PANIC_KICK_WATCHDOG
@@ -1933,7 +1926,11 @@
  * Console device index.
  */
 #ifndef CONFIG_START_CONSOLE_DEVICE_INDEX
-#    define CONFIG_START_CONSOLE_DEVICE_INDEX               0
+#    if defined(FAMILY_PIC32MM)
+#        define CONFIG_START_CONSOLE_DEVICE_INDEX           1
+#    else
+#        define CONFIG_START_CONSOLE_DEVICE_INDEX           0
+#    endif
 #endif
 
 /**
@@ -1944,6 +1941,8 @@
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      76800
 #    elif defined(FAMILY_ESP32) || defined(FAMILY_SPC5) || defined(BOARD_ARDUINO_DUE)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE     115200
+#    elif defined(FAMILY_PIC32MM)
+#        define CONFIG_START_CONSOLE_UART_BAUDRATE       9600
 #    else
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      38400
 #    endif
@@ -2336,14 +2335,12 @@
  * Stack size of the idle thread.
  */
 #ifndef CONFIG_THRD_IDLE_STACK_SIZE
-#    if defined(ARCH_ARM)
+#    if defined(ARCH_ARM) || defined(ARCH_MIPS)
 #        define CONFIG_THRD_IDLE_STACK_SIZE               384
 #    elif defined(ARCH_AVR) || defined(FAMILY_SPC5)
 #        define CONFIG_THRD_IDLE_STACK_SIZE               156
 #    elif defined(ARCH_ESP)
 #        define CONFIG_THRD_IDLE_STACK_SIZE               768
-#    elif defined(ARCH_MIPS)
-#        define CONFIG_THRD_IDLE_STACK_SIZE               256
 #    else
 #        define CONFIG_THRD_IDLE_STACK_SIZE              2048
 #    endif

@@ -17,7 +17,7 @@ SECTIONS
 {
     .text :
     {
-        . = ALIGN(4);
+        . = 0x1fc;
         __fixed_begin = .;
         KEEP(*(.startup .startup.*))
         . = ALIGN(4);

@@ -440,6 +440,12 @@
 /** Bad CRC. */
 #define EBADCRC        1007
 
+/** Flash write failed. */
+#define EFLASHWRITE    1008
+
+/** Flash erase failed. */
+#define EFLASHERASE    1009
+
 /**
  * Map given error number to a string.
  *

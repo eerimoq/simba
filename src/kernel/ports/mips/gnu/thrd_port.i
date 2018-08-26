@@ -65,9 +65,9 @@ static int thrd_port_spawn(struct thrd_t *thrd_p,
 
     /* Prepare the context on the stack. */
     memset(context_p, 0, sizeof(*context_p));
-    context_p->r13 = (uint32_t)main;
-    context_p->r14 = (uint32_t)arg_p;
-    context_p->lr = (uint32_t)thrd_port_main;
+    context_p->s0 = (uint32_t)main;
+    context_p->s1 = (uint32_t)arg_p;
+    context_p->ra = (uint32_t)thrd_port_main;
 
     return (0);
 }
@@ -78,7 +78,9 @@ static void thrd_port_idle_wait(struct thrd_t *thrd_p)
     sys_unlock();
 
     /* Wait for an interrupt to occur. */
-    /* asm volatile ("wait"); */
+    PRINT_FILE_LINE();
+    asm volatile ("wait");
+    PRINT_FILE_LINE();
 
     /* Add this thread to the ready list and reschedule. */
     sys_lock();
