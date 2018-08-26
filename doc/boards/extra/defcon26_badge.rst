@@ -7,24 +7,24 @@ Pin functions
 
   .. code-block:: text
 
-                  +------------------+
-                  |                  |
-                  |                  |
-                  |                  |
-                  |                  |
-                  |                  |
-                  |                  |
-                  | DEF CON 26 Badge |
-                  |                  o--- MCLRN
-   PIC-UART-TX ---o                  o--- VDD (3V3)
-  PIC-UART-GND ---o                  o--- VSS (GND)
-                  o                  o--- PGED
-   PIC-UART-RX ---o                  o--- PGEC
-                  |                  |
-                  +--------o---------+
-                           |
-                  
-                          USB
+                     +------------------+
+                     |                  |
+                     |                  |
+                     |                  |
+                     |                  |
+                     |                  |
+                     |                  |
+                     | DEF CON 26 Badge |
+                     |                  o--- MCLRN
+      PIC-UART-TX ---o                  o--- VDD (3V3)
+     PIC-UART-GND ---o                  o--- VSS (GND)
+                     o                  o--- PGED
+      PIC-UART-RX ---o                  o--- PGEC
+                     |                  |
+                     +--------o---------+
+                              |
+
+                             USB
 
 Programming setup
 -----------------
@@ -33,7 +33,8 @@ Programming setup
    :width: 50%
    :target: ../_images/defcon26-badge-programming.jpg
 
-An Arduino Due (to the right) acts as programmer, connected to a PC
+An :doc:`Arduino Due<arduino_due>` (to the right) acts as
+:github-tree:`programmer<bin/pic32tool/programmer>`, connected to a PC
 with serial over USB. DEF CON 26 Badge (to the left) with PIC32MM MCU
 to be programmed.
 
@@ -51,8 +52,9 @@ to be programmed.
 | PGEC      | green  | D2            |
 +-----------+--------+---------------+
 
-Upload ramapp to the Arduino Due, and use pic32tool.py to program the
-PIC32 MCU.
+Upload ramapp to the Arduino Due, and use
+:github-tree:`pic32tool.py<bin/pic32tool.py>` to program the PIC32
+MCU.
 
 Inhibit Arduino Due reset when opening the serial port to the
 programmer on Linux:
@@ -61,7 +63,6 @@ programmer on Linux:
 
    stty -F /dev/arduino -hup
 
-             
 Component connections
 ---------------------
 
@@ -69,73 +70,73 @@ Component connections
 
    D11.1 - U3.23
    D11.2 - 3V3
-   
+
    D12.1 - U3.37
    D12.2 - 3V3
-   
+
    D16.1 - U3.16
    D16.2 - 3V3
-   
+
    U3.18
        U3.15
    U3.23
-   
+
    D18.1 - U3.20
    D18.2 - 3V3
-   
+
    D20.1 - U3.2
    D20.2 - 3V3
-   
+
    D21.1 - U3.7
    D21.2 - 3V3
-   
+
    D27.1 - U3.26
    D27.2 - 3V3
-   
+
    D28.1 - U3.3
    D28.2 - 3V3
    D28.3 - U3.5
    D28.4 - U3.6
-   
+
    D29.1 - U3.47
    D29.2 - 3V3
    D29.3 - U3.48
    D29.4 - U3.1
-   
+
    D30.1 - U3.35
    D30.2 - 3V3
    D30.3 - U3.36
    D30.4 - U3.37
-   
+
    D31.1 - U3.30
    D31.2 - 3V3
    D31.3 - U3.31
    D31.4 - U3.34
-   
+
    D32.1 - U3.27
    D32.2 - 3V3
    D32.3 - U3.28
    D32.4 - U3.29
-   
+
    D33.1 - U3.23
    D33.2 - 3V3
    D33.3 - U3.24
    D33.4 - U3.25
-   
+
    D35.1 - U3.4
    D35.2 - 3V3
-   
+
    D36.1 - U3.32 - D37.1
    D36.2 - 3V3
-   
+
    D37.1 - U3.32 - D36.1
    D37.2 - 3V3
-   
+
    U3.45 - U2.25 (I2C SDA)
    U3.46 - U2.26 (I2C SCL)
 
-U3 - GPIO expander, and more?
------------------------------
+U3 - LED driver?
+----------------
 
 .. code-block:: text
 
