@@ -31,6 +31,7 @@ __version__ = '0.1'
 
 
 ERRORS = {
+    -22: "invalid argument",
     -34: "bad value, likely a memory address out of range",
     -71: "communication between programmer and PIC32 failed",
     -106: "PIC32 already connected",

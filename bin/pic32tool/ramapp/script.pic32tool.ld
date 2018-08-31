@@ -28,10 +28,6 @@ SECTIONS
         . = ALIGN(4);
         __fixed_begin = .;
         KEEP(*(.startup .startup.*))
-        . = ALIGN(4);
-        KEEP(*(.vector))
-        . = ALIGN(4);
-        KEEP(*(.ivor))
         *(.text .text.* .gnu.linkonce.t.*)
         *(.rodata .rodata* .gnu.linkonce.r.*)
         *(.sdata .sdata.*);

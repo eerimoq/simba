@@ -69,7 +69,8 @@ static int flash_port_module_init(void)
 {
     /* Unlock boot flash. */
     write_protect_unlock(PIC32MM_FLASH);
-    PIC32MM_FLASH->NVMBWP = 0x8000;
+    PIC32MM_FLASH->NVMBWPSET = 0x8000;
+    PIC32MM_FLASH->NVMBWPCLR = 0x0700;
     write_protect_lock(PIC32MM_FLASH);
 
     return (0);
