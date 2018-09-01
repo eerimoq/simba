@@ -179,6 +179,77 @@ struct pic32mm_conf_t {
     uint32_t FSEC;
 };
 
+#define PIC32MM_CONF_FDEVOPT_USERID_POS                      16
+#define PIC32MM_CONF_FDEVOPT_USERID_MASK        \
+    (0xffff << PIC32MM_CONF_FDEVOPT_USERID_POS)
+#define PIC32MM_CONF_FDEVOPT_USERID(value)              \
+    BITFIELD_SET(PIC32MM_CONF_FDEVOPT_USERID, value)
+#define PIC32MM_CONF_FDEVOPT_FVBUSIO                         BIT(15)
+#define PIC32MM_CONF_FDEVOPT_FUSBIDIO                        BIT(14)
+#define PIC32MM_CONF_FDEVOPT_ALTI2C                          BIT(4)
+#define PIC32MM_CONF_FDEVOPT_SOSCHP                          BIT(3)
+
+#define PIC32MM_CONF_FICD_ICS_POS                            3
+#define PIC32MM_CONF_FICD_ICS_MASK              \
+    (0x3 << PIC32MM_CONF_FICD_ICS_POS)
+#define PIC32MM_CONF_FICD_ICS(value)            \
+    BITFIELD_SET(PIC32MM_CONF_FICD_ICS, value)
+#define PIC32MM_CONF_FICD_JTAGEN                             BIT(2)
+
+#define PIC32MM_CONF_FPOR_LPBOREN                            BIT(3)
+#define PIC32MM_CONF_FPOR_RETVR                              BIT(2)
+#define PIC32MM_CONF_FPOR_BOREN_POS                          0
+#define PIC32MM_CONF_FPOR_BOREN_MASK            \
+    (0x3 << PIC32MM_CONF_FPOR_BOREN_POS)
+#define PIC32MM_CONF_FPOR_BOREN(value)                  \
+    BITFIELD_SET(PIC32MM_CONF_FPOR_BOREN, value)
+
+#define PIC32MM_CONF_FWDT_FWDTEN                             BIT(15)
+#define PIC32MM_CONF_FWDT_RCLKSEL_POS                        13
+#define PIC32MM_CONF_FWDT_RCLKSEL_MASK          \
+    (0x3 << PIC32MM_CONF_FWDT_RCLKSEL_POS)
+#define PIC32MM_CONF_FWDT_RCLKSEL(value)                \
+    BITFIELD_SET(PIC32MM_CONF_FWDT_RCLKSEL, value)
+#define PIC32MM_CONF_FWDT_RWDTPS_POS                         8
+#define PIC32MM_CONF_FWDT_RWDTPS_MASK           \
+    (0x1f << PIC32MM_CONF_FWDT_RWDTPS_POS)
+#define PIC32MM_CONF_FWDT_RWDTPS(value)                 \
+    BITFIELD_SET(PIC32MM_CONF_FWDT_RWDTPS, value)
+#define PIC32MM_CONF_FWDT_WINDIS                             BIT(7)
+#define PIC32MM_CONF_FWDT_FWDTWINSZ_POS                      5
+#define PIC32MM_CONF_FWDT_FWDTWINSZ_MASK        \
+    (0x3 << PIC32MM_CONF_FWDT_FWDTWINSZ_POS)
+#define PIC32MM_CONF_FWDT_FWDTWINSZ(value)              \
+    BITFIELD_SET(PIC32MM_CONF_FWDT_FWDTWINSZ, value)
+#define PIC32MM_CONF_FWDT_SWDTPS_POS                         0
+#define PIC32MM_CONF_FWDT_SWDTPS_MASK           \
+    (0x1f << PIC32MM_CONF_FWDT_SWDTPS_POS)
+#define PIC32MM_CONF_FWDT_SWDTPS(value)                 \
+    BITFIELD_SET(PIC32MM_CONF_FWDT_SWDTPS, value)
+
+#define PIC32MM_CONF_FOSCSEL_FCKSM_POS                       14
+#define PIC32MM_CONF_FOSCSEL_FCKSM_MASK         \
+    (0x3 << PIC32MM_CONF_FOSCSEL_FCKSM_POS)
+#define PIC32MM_CONF_FOSCSEL_FCKSM(value)               \
+    BITFIELD_SET(PIC32MM_CONF_FOSCSEL_FCKSM, value)
+#define PIC32MM_CONF_FOSCSEL_SOSCSEL                         BIT(12)
+#define PIC32MM_CONF_FOSCSEL_OSCIOFNC                        BIT(10)
+#define PIC32MM_CONF_FOSCSEL_POSCMOD_POS                     8
+#define PIC32MM_CONF_FOSCSEL_POSCMOD_MASK       \
+    (0x3 << PIC32MM_CONF_FOSCSEL_POSCMOD_POS)
+#define PIC32MM_CONF_FOSCSEL_POSCMOD(value)             \
+    BITFIELD_SET(PIC32MM_CONF_FOSCSEL_POSCMOD, value)
+#define PIC32MM_CONF_FOSCSEL_IESO                            BIT(7)
+#define PIC32MM_CONF_FOSCSEL_SOSCEN                          BIT(6)
+#define PIC32MM_CONF_FOSCSEL_PLLSRC                          BIT(4)
+#define PIC32MM_CONF_FOSCSEL_FNOSC_POS                       0
+#define PIC32MM_CONF_FOSCSEL_FNOSC_MASK         \
+    (0x7 << PIC32MM_CONF_FOSCSEL_FNOSC_POS)
+#define PIC32MM_CONF_FOSCSEL_FNOSC(value)               \
+    BITFIELD_SET(PIC32MM_CONF_FOSCSEL_FNOSC, value)
+
+#define PIC32MM_CONF_FSEC_CP                                 BIT(31)
+
 /* Base addresses of peripherals. */
 #define PIC32MM_UART1   ((volatile struct pic32mm_uart_t *)   0xbf801800ul)
 #define PIC32MM_UART2   ((volatile struct pic32mm_uart_t *)   0xbf801900ul)
