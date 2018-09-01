@@ -77,6 +77,46 @@ struct pic32mm_flash_t {
 #define PIC32MM_FLASH_NVMCON_NVMOP_NOP          \
     PIC32MM_FLASH_NVMCON_NVMOP(0)
 
+/* 8. Interrupts. */
+struct pic32mm_int_t {
+    uint32_t INTCON;
+    uint32_t INTCONCLR;
+    uint32_t INTCONSET;
+    uint32_t INTCONINV;
+    uint32_t PRISS;
+    uint32_t PRISSCLR;
+    uint32_t PRISSSET;
+    uint32_t PRISSINV;
+    uint32_t INTSTAT;
+    uint32_t INTSTATCLR;
+    uint32_t INTSTATSET;
+    uint32_t INTSTATINV;
+    uint32_t IPTMR;
+    uint32_t IPTMRCLR;
+    uint32_t IPTMRSET;
+    uint32_t IPTMRINV;
+    struct {
+        uint32_t VALUE;
+        uint32_t CLR;
+        uint32_t SET;
+        uint32_t INV;
+    } IFS[4];
+    uint32_t RESERVED0[16];
+    struct {
+        uint32_t VALUE;
+        uint32_t CLR;
+        uint32_t SET;
+        uint32_t INV;
+    } IEC[4];
+    uint32_t RESERVED1[16];
+    struct {
+        uint32_t VALUE;
+        uint32_t CLR;
+        uint32_t SET;
+        uint32_t INV;
+    } IPC[26];
+};
+
 /* 10. IO. */
 struct pic32mm_port_t {
     uint32_t ANSEL;
@@ -268,6 +308,7 @@ struct pic32mm_conf_t {
 #define PIC32MM_PORTD   ((volatile struct pic32mm_port_t *)   0xbf802eb0ul)
 #define PIC32MM_TIMER1  ((volatile struct pic32mm_timer_t *)  0xbf808000ul)
 #define PIC32MM_CONF    ((volatile struct pic32mm_conf_t *)   0xbfc017c0ul)
+#define PIC32MM_INT     ((volatile struct pic32mm_int_t *)    0xbf80f000ul)
 
 #define PIC32MM_RAM_ADDRESS                 0x00000000
 #define PIC32MM_RAM_SIZE                    0x00004000
