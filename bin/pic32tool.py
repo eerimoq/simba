@@ -617,8 +617,9 @@ def do_generate_ramapp_upload_instructions(args):
 
 def main():
     description = (
-        "Erase, read from and write to PIC32 flash memory. Uploads the PE to "
-        "SRAM using ICSP, which in turn accesses the flash memory.")
+        "Erase, read from and write to PIC32 flash memory, and more. Uploads "
+        "the RAM applicatiopn to RAM using ICSP, which in turn accesses the "
+        "flash memory.")
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-p', '--port',
                         default='/dev/ttyUSB1',
@@ -631,58 +632,82 @@ def main():
 
     subparsers = parser.add_subparsers()
 
-    subparser = subparsers.add_parser('connect')
+    subparser = subparsers.add_parser(
+        'connect',
+        help='Upload and connect to the PIC32 RAM application')
     subparser.set_defaults(func=do_connect)
 
-    subparser = subparsers.add_parser('disconnect')
+    subparser = subparsers.add_parser(
+        'disconnect',
+        help='Disconnect from the PIC32 RAM application.')
     subparser.set_defaults(func=do_disconnect)
 
-    subparser = subparsers.add_parser('reset')
+    subparser = subparsers.add_parser('reset',
+                                      help='Reset the PIC32.')
     subparser.set_defaults(func=do_reset)
 
-    subparser = subparsers.add_parser('ping')
+    subparser = subparsers.add_parser(
+        'ping',
+        help='Test if the PIC32 is alive and executing the RAM application.')
     subparser.set_defaults(func=do_ping)
 
-    subparser = subparsers.add_parser('flash_erase')
+    subparser = subparsers.add_parser('flash_erase',
+                                      help='Erase given flash range.')
     subparser.add_argument('address')
     subparser.add_argument('size')
     subparser.set_defaults(func=do_flash_erase)
 
-    subparser = subparsers.add_parser('flash_read')
+    subparser = subparsers.add_parser('flash_read',
+                                      help='Read from the flash memory.')
     subparser.add_argument('address')
     subparser.add_argument('size')
     subparser.add_argument('outfile')
     subparser.set_defaults(func=do_flash_read)
 
-    subparser = subparsers.add_parser('flash_read_all')
+    subparser = subparsers.add_parser(
+        'flash_read_all',
+        help='Read program flash, boot flash and configuration memory.')
     subparser.add_argument('outfile')
     subparser.set_defaults(func=do_flash_read_all)
 
-    subparser = subparsers.add_parser('flash_write')
+    subparser = subparsers.add_parser(
+        'flash_write',
+        help=('Write given file to flash. Optionally performs erase and '
+              'verify operations'))
     subparser.add_argument('-e', '--erase', action='store_true')
     subparser.add_argument('-v', '--verify', action='store_true')
     subparser.add_argument('binfile')
     subparser.set_defaults(func=do_flash_write)
 
-    subparser = subparsers.add_parser('flash_erase_chip')
+    subparser = subparsers.add_parser(
+        'flash_erase_chip',
+        help='Erases program flash, boot flash and configuration memory.')
     subparser.set_defaults(func=do_erase_chip)
 
-    subparser = subparsers.add_parser('configuration_print')
+    subparser = subparsers.add_parser('configuration_print',
+                                      help='Print the configuration memory.')
     subparser.set_defaults(func=do_configuration_print)
 
-    subparser = subparsers.add_parser('device_id_print')
+    subparser = subparsers.add_parser('device_id_print',
+                                      help='Print the device id.')
     subparser.set_defaults(func=do_device_id_print)
 
-    subparser = subparsers.add_parser('udid_print')
+    subparser = subparsers.add_parser('udid_print',
+                                      help='Print the uniquite chip id')
     subparser.set_defaults(func=do_udid_print)
 
-    subparser = subparsers.add_parser('device_status_print')
+    subparser = subparsers.add_parser('device_status_print',
+                                      help='Print the device status.')
     subparser.set_defaults(func=do_device_status_print)
 
-    subparser = subparsers.add_parser('programmer_ping')
+    subparser = subparsers.add_parser(
+        'programmer_ping',
+        help='Test if the programmer is alive.')
     subparser.set_defaults(func=do_programmer_ping)
 
-    subparser = subparsers.add_parser('generate_ramapp_upload_instructions')
+    subparser = subparsers.add_parser(
+        'generate_ramapp_upload_instructions',
+        help='Generate the RAM application C source file.')
     subparser.add_argument('elffile')
     subparser.add_argument('outfile')
     subparser.set_defaults(func=do_generate_ramapp_upload_instructions)
