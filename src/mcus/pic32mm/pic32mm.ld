@@ -10,6 +10,10 @@ __bflash_begin = ORIGIN(bflash);
 __bflash_end = ORIGIN(bflash) + LENGTH(bflash);
 __bflash_size = LENGTH(bflash);
 
+__confbits_begin = ORIGIN(confbits);
+__confbits_end = ORIGIN(confbits) + LENGTH(confbits);
+__confbits_size = LENGTH(confbits);
+
 __ram_begin = ORIGIN(ram);
 __ram_end = ORIGIN(ram) + LENGTH(ram);
 __ram_size = LENGTH(ram);
@@ -23,6 +27,11 @@ SECTIONS
     {
         KEEP(*(.reset .reset.*))
     } > bflash
+
+    .confbits :
+    {
+        KEEP(*(.confbits .confbits.*))
+    } > confbits
 
     .text :
     {

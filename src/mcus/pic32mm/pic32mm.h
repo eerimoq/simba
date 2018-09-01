@@ -179,6 +179,7 @@ struct pic32mm_conf_t {
     uint32_t FSEC;
 };
 
+#define PIC32MM_CONF_FDEVOPT_RESERVED                        0x00003fe7
 #define PIC32MM_CONF_FDEVOPT_USERID_POS                      16
 #define PIC32MM_CONF_FDEVOPT_USERID_MASK        \
     (0xffff << PIC32MM_CONF_FDEVOPT_USERID_POS)
@@ -189,6 +190,7 @@ struct pic32mm_conf_t {
 #define PIC32MM_CONF_FDEVOPT_ALTI2C                          BIT(4)
 #define PIC32MM_CONF_FDEVOPT_SOSCHP                          BIT(3)
 
+#define PIC32MM_CONF_FICD_RESERVED                           0xffffffe3
 #define PIC32MM_CONF_FICD_ICS_POS                            3
 #define PIC32MM_CONF_FICD_ICS_MASK              \
     (0x3 << PIC32MM_CONF_FICD_ICS_POS)
@@ -196,6 +198,7 @@ struct pic32mm_conf_t {
     BITFIELD_SET(PIC32MM_CONF_FICD_ICS, value)
 #define PIC32MM_CONF_FICD_JTAGEN                             BIT(2)
 
+#define PIC32MM_CONF_FPOR_RESERVED                           0xfffffff0
 #define PIC32MM_CONF_FPOR_LPBOREN                            BIT(3)
 #define PIC32MM_CONF_FPOR_RETVR                              BIT(2)
 #define PIC32MM_CONF_FPOR_BOREN_POS                          0
@@ -204,6 +207,7 @@ struct pic32mm_conf_t {
 #define PIC32MM_CONF_FPOR_BOREN(value)                  \
     BITFIELD_SET(PIC32MM_CONF_FPOR_BOREN, value)
 
+#define PIC32MM_CONF_FWDT_RESERVED                           0xffff0000
 #define PIC32MM_CONF_FWDT_FWDTEN                             BIT(15)
 #define PIC32MM_CONF_FWDT_RCLKSEL_POS                        13
 #define PIC32MM_CONF_FWDT_RCLKSEL_MASK          \
@@ -227,6 +231,7 @@ struct pic32mm_conf_t {
 #define PIC32MM_CONF_FWDT_SWDTPS(value)                 \
     BITFIELD_SET(PIC32MM_CONF_FWDT_SWDTPS, value)
 
+#define PIC32MM_CONF_FOSCSEL_RESERVED                        0xffff2828
 #define PIC32MM_CONF_FOSCSEL_FCKSM_POS                       14
 #define PIC32MM_CONF_FOSCSEL_FCKSM_MASK         \
     (0x3 << PIC32MM_CONF_FOSCSEL_FCKSM_POS)
@@ -248,6 +253,7 @@ struct pic32mm_conf_t {
 #define PIC32MM_CONF_FOSCSEL_FNOSC(value)               \
     BITFIELD_SET(PIC32MM_CONF_FOSCSEL_FNOSC, value)
 
+#define PIC32MM_CONF_FSEC_RESERVED                           0x7fffffff
 #define PIC32MM_CONF_FSEC_CP                                 BIT(31)
 
 /* Base addresses of peripherals. */

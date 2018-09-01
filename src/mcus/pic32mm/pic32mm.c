@@ -262,6 +262,36 @@ void (*vector_table[])(void) = {
     isr_dma_channel_3
 };
 
+__attribute__ ((section(".confbits"), used))
+struct pic32mm_conf_t configuration = {
+    .RESERVED0 = 0xffffffff,
+    .FDEVOPT = (PIC32MM_CONF_FDEVOPT_RESERVED
+                | PIC32MM_CONF_FDEVOPT_USERID(0xffff)
+                | PIC32MM_CONF_FDEVOPT_FUSBIDIO
+                | PIC32MM_CONF_FDEVOPT_ALTI2C
+                | PIC32MM_CONF_FDEVOPT_SOSCHP),
+    .FICD = (PIC32MM_CONF_FICD_RESERVED
+             | PIC32MM_CONF_FICD_ICS(2)),
+    .FPOR = (PIC32MM_CONF_FPOR_RESERVED
+             | PIC32MM_CONF_FPOR_LPBOREN
+             | PIC32MM_CONF_FPOR_RETVR
+             | PIC32MM_CONF_FPOR_BOREN(3)),
+    .FWDT = (PIC32MM_CONF_FWDT_RESERVED
+             | PIC32MM_CONF_FWDT_RCLKSEL(3)
+             | PIC32MM_CONF_FWDT_RWDTPS(20)
+             | PIC32MM_CONF_FWDT_WINDIS
+             | PIC32MM_CONF_FWDT_FWDTWINSZ(3)
+             | PIC32MM_CONF_FWDT_SWDTPS(20)),
+    .FOSCSEL = (PIC32MM_CONF_FOSCSEL_RESERVED
+                | PIC32MM_CONF_FOSCSEL_FCKSM(1)
+                | PIC32MM_CONF_FOSCSEL_OSCIOFNC
+                | PIC32MM_CONF_FOSCSEL_POSCMOD(3)
+                | PIC32MM_CONF_FOSCSEL_IESO
+                | PIC32MM_CONF_FOSCSEL_PLLSRC),
+    .FSEC = (PIC32MM_CONF_FSEC_CP
+             | PIC32MM_CONF_FSEC_RESERVED)
+};
+
 void pic32mm_relocate_init(void)
 {
     uint32_t *relocate_begin_p;
@@ -299,27 +329,3 @@ void write_reg(volatile uint32_t *reg_p, uint32_t value)
 {
     *reg_p = value;
 }
-
-__attribute__ ((section(".configuration"), used))
-struct pic32mm_conf_t configuration = {
-    .FDEVOPT = (PIC32MM_CONF_FDEVOPT_USERID(0xffff)
-                | PIC32MM_CONF_FDEVOPT_FUSBIDIO
-                | PIC32MM_CONF_FDEVOPT_ALTI2C
-                | PIC32MM_CONF_FDEVOPT_SOSCHP),
-    .FICD = (PIC32MM_CONF_FICD_ICS(2)
-             | PIC32MM_CONF_FICD_JTAGEN),
-    .FPOR = (PIC32MM_CONF_FPOR_LPBOREN
-             | PIC32MM_CONF_FPOR_RETVR
-             | PIC32MM_CONF_FPOR_BOREN(3)),
-    .FWDT = (PIC32MM_CONF_FWDT_RCLKSEL(3)
-             | PIC32MM_CONF_FWDT_RWDTPS(20)
-             | PIC32MM_CONF_FWDT_WINDIS
-             | PIC32MM_CONF_FWDT_FWDTWINSZ(3)
-             | PIC32MM_CONF_FWDT_SWDTPS(20)),
-    .FOSCSEL = (PIC32MM_CONF_FOSCSEL_FCKSM(1)
-                | PIC32MM_CONF_FOSCSEL_OSCIOFNC
-                | PIC32MM_CONF_FOSCSEL_POSCMOD(3)
-                | PIC32MM_CONF_FOSCSEL_IESO
-                | PIC32MM_CONF_FOSCSEL_PLLSRC),
-    .FSEC = (PIC32MM_CONF_FSEC_CP)
-};
