@@ -78,6 +78,8 @@
 #define COMMAND_TYPE_CONNECT                              101
 #define COMMAND_TYPE_DISCONNECT                           102
 #define COMMAND_TYPE_RESET                                103
+#define COMMAND_TYPE_DEVICE_STATUS                        104
+#define COMMAND_TYPE_CHIP_ERASE                           105
 
 static int connected = 0;
 static struct icsp_soft_driver_t icsp;
@@ -163,6 +165,8 @@ static int xfer_instruction(struct icsp_soft_driver_t *icsp_p,
 {
     int res;
     uint32_t response;
+    struct time_t time;
+    struct time_t end_time;
 
     res = send_command(icsp_p, ETAP_CONTROL);
 
@@ -170,15 +174,27 @@ static int xfer_instruction(struct icsp_soft_driver_t *icsp_p,
         return (res);
     }
 
+    time.seconds = 0;
+    time.nanoseconds = 500000000;
+
+    time_get(&end_time);
+    time_add(&end_time, &end_time, &time);
+
     do {
         res = xfer_data_32(icsp_p,
                            reverse_32(0x0004c000),
                            &response);
 
-        if (res != 0) {
-            return (res);
+        time_get(&time);
+
+        if (time_compare_greater_than_t == time_compare(&time, &end_time)) {
+            res = -ETIMEDOUT;
         }
-    } while (!(response & CONTROL_PRACC));
+    } while (((response & CONTROL_PRACC) == 0) && (res == 0));
+
+    if (res != 0) {
+        return (res);
+    }
 
     res = send_command(icsp_p, ETAP_DATA);
 
@@ -358,62 +374,6 @@ static int read_from_address(struct icsp_soft_driver_t *icsp_p,
     return (res);
 }
 
-static int read_device_status(struct icsp_soft_driver_t *icsp_p)
-{
-    int res;
-    uint8_t command;
-    uint8_t status;
-
-    res = send_command(icsp_p, MTAP_SW_MTAP);
-
-    if (res != 0) {
-        return (res);
-    }
-
-    res = send_command(icsp_p, MTAP_COMMAND);
-
-    if (res != 0) {
-        return (res);
-    }
-
-    command = MCHP_STATUS;
-    res = icsp_soft_data_transfer(icsp_p, &status, &command, 8);
-
-    if (res != 0) {
-        return (res);
-    }
-
-    return (status);
-}
-
-static void print_device_status(struct icsp_soft_driver_t *icsp_p,
-                                void *out_p)
-{
-    int status;
-
-    status = read_device_status(icsp_p);
-
-    if (status < 0) {
-        std_fprintf(out_p,
-                    OSTR("Failed to read device status with %d.\r\n"),
-                    status);
-    } else {
-        std_fprintf(out_p,
-                    OSTR("STATUS: 0x%02x\r\n"
-                         "  CPS:    %d\r\n"
-                         "  NVMERR: %d\r\n"
-                         "  CFGRDY: %d\r\n"
-                         "  FCBUSY: %d\r\n"
-                         "  DEVRST: %d\r\n"),
-                    reverse_8(status),
-                    (status & STATUS_CPS) != 0,
-                    (status & STATUS_NVMERR) != 0,
-                    (status & STATUS_CFGRDY) != 0,
-                    (status & STATUS_FCBUSY) != 0,
-                    (status & STATUS_DEVRST) != 0);
-    }
-}
-
 static int read_device_id(struct icsp_soft_driver_t *icsp_p,
                           uint32_t *device_id_p)
 {
@@ -459,7 +419,120 @@ static void print_device_configuration(struct icsp_soft_driver_t *icsp_p,
     }
 }
 
+static void print_device_status(struct icsp_soft_driver_t *icsp_p,
+                                void *out_p)
+{
+    int status;
+
+    status = read_device_status(icsp_p);
+
+    if (status < 0) {
+        std_fprintf(out_p,
+                    OSTR("Failed to read device status with %d.\r\n"),
+                    status);
+    } else {
+        std_fprintf(out_p,
+                    OSTR("STATUS: 0x%02x\r\n"
+                         "  CPS:    %d\r\n"
+                         "  NVMERR: %d\r\n"
+                         "  CFGRDY: %d\r\n"
+                         "  FCBUSY: %d\r\n"
+                         "  DEVRST: %d\r\n"),
+                    reverse_8(status),
+                    (status & STATUS_CPS) != 0,
+                    (status & STATUS_NVMERR) != 0,
+                    (status & STATUS_CFGRDY) != 0,
+                    (status & STATUS_FCBUSY) != 0,
+                    (status & STATUS_DEVRST) != 0);
+    }
+}
+
 #endif
+
+static int read_device_status(struct icsp_soft_driver_t *icsp_p)
+{
+    int res;
+    uint8_t command;
+    uint8_t status;
+
+    res = send_command(icsp_p, MTAP_SW_MTAP);
+
+    if (res != 0) {
+        return (res);
+    }
+
+    res = send_command(icsp_p, MTAP_COMMAND);
+
+    if (res != 0) {
+        return (res);
+    }
+
+    command = MCHP_STATUS;
+    res = icsp_soft_data_transfer(icsp_p, &status, &command, 8);
+
+    if (res != 0) {
+        return (res);
+    }
+
+    return (status);
+}
+
+static int chip_erase(struct icsp_soft_driver_t *icsp_p)
+{
+    int res;
+    uint8_t command;
+    uint8_t status;
+    struct time_t time;
+    struct time_t end_time;
+
+    res = send_command(icsp_p, MTAP_SW_MTAP);
+
+    if (res != 0) {
+        return (res);
+    }
+
+    res = send_command(icsp_p, MTAP_COMMAND);
+
+    if (res != 0) {
+        return (res);
+    }
+
+    command = MCHP_ERASE;
+    res = icsp_soft_data_transfer(icsp_p, &status, &command, 8);
+
+    if (res != 0) {
+        return (res);
+    }
+
+    command = MCHP_DE_ASSERT_RST;
+    res = icsp_soft_data_transfer(icsp_p, &status, &command, 8);
+
+    if (res != 0) {
+        return (res);
+    }
+
+    thrd_sleep_ms(10);
+
+    time.seconds = 3;
+    time.nanoseconds = 0;
+
+    time_get(&end_time);
+    time_add(&end_time, &end_time, &time);
+
+    do {
+        command = MCHP_STATUS;
+        res = icsp_soft_data_transfer(icsp_p, &status, &command, 8);
+        status &= (STATUS_FCBUSY | STATUS_CFGRDY);
+
+        time_get(&time);
+
+        if (time_compare_greater_than_t == time_compare(&time, &end_time)) {
+            res = -ETIMEDOUT;
+        }
+    } while ((status != STATUS_CFGRDY) && (res == 0));
+
+    return (res);
+}
 
 static ssize_t ramapp_read(uint8_t *buf_p)
 {
@@ -553,6 +626,8 @@ static ssize_t handle_connect(uint8_t *buf_p, size_t size)
 {
     int res;
 
+    res = 0;
+
     if (connected) {
         return (-EISCONN);
     }
@@ -598,7 +673,7 @@ static ssize_t handle_disconnect(uint8_t *buf_p, size_t size)
 static ssize_t handle_reset(uint8_t *buf_p, size_t size)
 {
     struct pin_driver_t mclrn;
-    
+
     if (connected) {
         return (-EISCONN);
     }
@@ -606,13 +681,58 @@ static ssize_t handle_reset(uint8_t *buf_p, size_t size)
     pin_init(&mclrn, &pin_mclrn_dev, PIN_OUTPUT);
     pin_write(&mclrn, 1);
     thrd_sleep_ms(10);
-    pin_write(&mclrn, 0); 
-    thrd_sleep_ms(10); 
-    pin_write(&mclrn, 1); 
-    thrd_sleep_ms(10); 
+    pin_write(&mclrn, 0);
+    thrd_sleep_ms(10);
+    pin_write(&mclrn, 1);
+    thrd_sleep_ms(10);
     pin_set_mode(&mclrn, PIN_INPUT);
-    
+
     return (0);
+}
+
+static ssize_t handle_device_status(uint8_t *buf_p, size_t size)
+{
+    int status;
+
+    if (connected) {
+        return (-EISCONN);
+    }
+
+    icsp_soft_init(&icsp,
+                   &pin_pgec_dev,
+                   &pin_pged_dev,
+                   &pin_mclrn_dev);
+    icsp_soft_start(&icsp);
+
+    status = read_device_status(&icsp);
+
+    icsp_soft_stop(&icsp);
+
+    buf_p[4] = reverse_8(status);
+    status = 1;
+
+    return (status);
+}
+
+static ssize_t handle_chip_erase(uint8_t *buf_p, size_t size)
+{
+    int res;
+
+    if (connected) {
+        return (-EISCONN);
+    }
+
+    icsp_soft_init(&icsp,
+                   &pin_pgec_dev,
+                   &pin_pged_dev,
+                   &pin_mclrn_dev);
+    icsp_soft_start(&icsp);
+
+    res = chip_erase(&icsp);
+
+    icsp_soft_stop(&icsp);
+
+    return (res);
 }
 
 static ssize_t prepare_command_response(uint8_t *buf_p,
@@ -675,6 +795,14 @@ static ssize_t handle_programmer_command(int type,
 
         case COMMAND_TYPE_RESET:
             res = handle_reset(buf_p, size);
+            break;
+
+        case COMMAND_TYPE_DEVICE_STATUS:
+            res = handle_device_status(buf_p, size);
+            break;
+
+        case COMMAND_TYPE_CHIP_ERASE:
+            res = handle_chip_erase(buf_p, size);
             break;
 
         default:

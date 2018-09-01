@@ -36,6 +36,7 @@ ERRORS = {
     -71: "communication between programmer and PIC32 failed",
     -106: "PIC32 already connected",
     -107: "PIC32 is not connected",
+    -110: "PIC32 command timeout",
     -1007: "invalid packet checksum",
     -1008: "flash write failed",
     -1009: "flash erase failed"
@@ -48,12 +49,15 @@ COMMAND_TYPE_ERASE  =  2
 COMMAND_TYPE_READ   =  3
 COMMAND_TYPE_WRITE  =  4
 
-PROGRAMMER_COMMAND_TYPE_PING       =  100
-PROGRAMMER_COMMAND_TYPE_CONNECT    =  101
-PROGRAMMER_COMMAND_TYPE_DISCONNECT =  102
-PROGRAMMER_COMMAND_TYPE_RESET      =  103
+PROGRAMMER_COMMAND_TYPE_PING          =  100
+PROGRAMMER_COMMAND_TYPE_CONNECT       =  101
+PROGRAMMER_COMMAND_TYPE_DISCONNECT    =  102
+PROGRAMMER_COMMAND_TYPE_RESET         =  103
+PROGRAMMER_COMMAND_TYPE_DEVICE_STATUS =  104
+PROGRAMMER_COMMAND_TYPE_CHIP_ERASE    =  105
 
-SERIAL_TIMEOUT = 5.0
+ERASE_TIMEOUT = 5
+SERIAL_TIMEOUT = 1
 
 READ_WRITE_CHUNK_SIZE = 1016
 
@@ -142,6 +146,16 @@ UDID
   UDID3: 0x{:08x}
   UDID4: 0x{:08x}
   UDID5: 0x{:08x}\
+'''
+
+
+DEVICE_STATUS_FMT = '''\
+STATUS: 0x{:02x}
+  CPS:    {}
+  NVMERR: {}
+  CFGRDY: {}
+  FCBUSY: {}
+  DEVRST: {}\
 '''
 
 
@@ -330,7 +344,9 @@ def erase(serial_connection, address, size):
 
     print('Erasing 0x{:08x}-0x{:08x}.'.format(address, address + size))
 
+    serial_connection.timeout = ERASE_TIMEOUT
     execute_command(serial_connection, COMMAND_TYPE_ERASE, payload)
+    serial_connection.timeout = SERIAL_TIMEOUT
 
     print('Erase complete.')
 
@@ -384,6 +400,24 @@ def do_reset(args):
     print('Resetted PIC32.')
 
 
+def do_device_status_print(args):
+    status = execute_command(serial_open_ensure_connected_to_programmer(args.port),
+                             PROGRAMMER_COMMAND_TYPE_DEVICE_STATUS)
+    unpacked = bitstruct.unpack('u1p1u1p1u1u1p1u1', status)
+    status = struct.unpack('B', status)[0]
+
+    print(DEVICE_STATUS_FMT.format(status, *unpacked))
+
+
+def do_erase_chip(args):
+    print('Erasing the chip.')
+
+    execute_command(serial_open_ensure_connected_to_programmer(args.port),
+                    PROGRAMMER_COMMAND_TYPE_CHIP_ERASE)
+
+    print('Chip erase complete.')
+
+
 def do_ping(args):
     # The open function pings the PIC32.
     serial_open_ensure_connected(args.port)
@@ -394,13 +428,6 @@ def do_flash_erase(args):
     size = int(args.size, 0)
 
     erase(serial_open_ensure_connected(args.port), address, size)
-
-
-def do_flash_erase_all(args):
-    serial_connection = serial_open_ensure_connected(args.port)
-
-    for address, size in FLASH_RANGES:
-        erase(serial_connection, address, size)
 
 
 def do_flash_read(args):
@@ -621,9 +648,6 @@ def main():
     subparser.add_argument('size')
     subparser.set_defaults(func=do_flash_erase)
 
-    subparser = subparsers.add_parser('flash_erase_all')
-    subparser.set_defaults(func=do_flash_erase_all)
-
     subparser = subparsers.add_parser('flash_read')
     subparser.add_argument('address')
     subparser.add_argument('size')
@@ -640,6 +664,9 @@ def main():
     subparser.add_argument('binfile')
     subparser.set_defaults(func=do_flash_write)
 
+    subparser = subparsers.add_parser('flash_erase_chip')
+    subparser.set_defaults(func=do_erase_chip)
+
     subparser = subparsers.add_parser('configuration_print')
     subparser.set_defaults(func=do_configuration_print)
 
@@ -648,6 +675,9 @@ def main():
 
     subparser = subparsers.add_parser('udid_print')
     subparser.set_defaults(func=do_udid_print)
+
+    subparser = subparsers.add_parser('device_status_print')
+    subparser.set_defaults(func=do_device_status_print)
 
     subparser = subparsers.add_parser('programmer_ping')
     subparser.set_defaults(func=do_programmer_ping)

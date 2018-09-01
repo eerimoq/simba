@@ -56,7 +56,7 @@ def subcommand_upload(args):
                 "-b", args.binary
                 ] + unlock)
         except:
-            _upload(args.port, args.binary, bossac_port)
+            _upload(args.port, args.binary, bossac_port, unlock)
 
 
 def main():
