@@ -53,7 +53,7 @@ PROGRAMMER_COMMAND_TYPE_CONNECT    =  101
 PROGRAMMER_COMMAND_TYPE_DISCONNECT =  102
 PROGRAMMER_COMMAND_TYPE_RESET      =  103
 
-SERIAL_TIMEOUT = 1.0
+SERIAL_TIMEOUT = 5.0
 
 READ_WRITE_CHUNK_SIZE = 1016
 
@@ -67,6 +67,12 @@ CONFIGURATION_BITS_ADDRESS  = 0x1fc01700
 CONFIGURATION_BITS_SIZE     = 0x00000100
 DEVICE_ID_ADDRESS           = 0x1f803660
 UDID_ADDRESS                = 0x1fc41840
+
+FLASH_RANGES = [
+    (FLASH_ADDRESS, FLASH_SIZE),
+    (BOOT_FLASH_ADDRESS, BOOT_FLASH_SIZE),
+    (CONFIGURATION_BITS_ADDRESS, CONFIGURATION_BITS_SIZE),
+]
 
 RAMAPP_UPLOAD_INSTRUCTIONS_I_FMT = '''\
 /**
@@ -139,8 +145,14 @@ UDID
 '''
 
 
-class CommandError(Exception):
-    pass
+class CommandFailedError(Exception):
+
+    def __init__(self, error):
+        super().__init__()
+        self.error = error
+
+    def __str__(self):
+        return format_error(self.error)
 
 
 def crc_ccitt(data):
@@ -168,13 +180,41 @@ def format_error(error):
 
 
 def serial_open(port):
-    serial_connection = serial.Serial(port,
-                                      baudrate=460800,
-                                      timeout=SERIAL_TIMEOUT)
+    return serial.Serial(port,
+                         baudrate=460800,
+                         timeout=SERIAL_TIMEOUT)
 
-    execute_command(serial_connection, PROGRAMMER_COMMAND_TYPE_PING)
 
-    print('Connected to programmer.')
+def serial_open_ensure_connected_to_programmer(port):
+    serial_connection = serial_open(port)
+
+    programmer_ping(serial_connection)
+
+    return serial_connection
+
+
+def serial_open_ensure_connected(port):
+    serial_connection = serial_open_ensure_connected_to_programmer(port)
+
+    try:
+        connect(serial_connection)
+    except CommandFailedError as e:
+        if e.error != -106:
+            raise
+
+    ping(serial_connection)
+
+    return serial_connection
+
+
+def serial_open_ensure_disconnected(port):
+    serial_connection = serial_open_ensure_connected_to_programmer(port)
+
+    try:
+        disconnect(serial_connection)
+    except CommandFailedError as e:
+        if e.error != -107:
+            raise
 
     return serial_connection
 
@@ -245,33 +285,40 @@ def execute_command(serial_connection, command_type, payload=None):
             return response_payload
         elif response_command_type == COMMAND_TYPE_FAILED:
             error = struct.unpack('>i', response_payload)[0]
-            sys.exit(format_error(error))
+
+            raise CommandFailedError(error)
 
     sys.exit('Communication failure.')
 
 
-def read(port, address, size, outfile):
-    serial_connection = serial_open(port)
-    left = size
-    read_data = []
+def read_to_file(serial_connection, ranges, outfile):
+    binfile = bincopy.BinFile()
 
-    with tqdm(total=left, unit=' bytes') as progress:
-        while left > 0:
-            if left > READ_WRITE_CHUNK_SIZE:
-                size = READ_WRITE_CHUNK_SIZE
-            else:
-                size = left
+    for address, size in ranges:
+        left = size
 
-            payload = struct.pack('>II', address, size)
-            read_data.append(execute_command(serial_connection,
-                                             COMMAND_TYPE_READ,
-                                             payload))
-            address += size
-            left -= size
-            progress.update(size)
+        print('Reading 0x{:08x}-0x{:08x}.'.format(address, address + size))
 
-    with open(outfile, "wb") as fout:
-        fout.write(b''.join(read_data))
+        with tqdm(total=left, unit=' bytes') as progress:
+            while left > 0:
+                if left > READ_WRITE_CHUNK_SIZE:
+                    size = READ_WRITE_CHUNK_SIZE
+                else:
+                    size = left
+
+                payload = struct.pack('>II', address, size)
+                binfile.add_binary(execute_command(serial_connection,
+                                                   COMMAND_TYPE_READ,
+                                                   payload),
+                                   address)
+                address += size
+                left -= size
+                progress.update(size)
+
+        print('Read complete.')
+
+    with open(outfile, 'w') as fout:
+        fout.write(binfile.as_srec())
 
 
 def erase(serial_connection, address, size):
@@ -294,8 +341,14 @@ def connect(serial_connection):
     print('Connected to PIC32.')
 
 
+def disconnect(serial_connection):
+    execute_command(serial_connection, PROGRAMMER_COMMAND_TYPE_DISCONNECT)
+
+    print('Disconnected from PIC32.')
+
+
 def read_words(args, address, length):
-    serial_connection = serial_open(args.port)
+    serial_connection = serial_open_ensure_connected(args.port)
     payload = struct.pack('>II', address, 4 * length)
     words = execute_command(serial_connection,
                             COMMAND_TYPE_READ,
@@ -304,56 +357,74 @@ def read_words(args, address, length):
     return bitstruct.byteswap(length * '4', words)
 
 
+def ping(serial_connection):
+    execute_command(serial_connection, COMMAND_TYPE_PING)
+
+    print('PIC32 is alive.')
+
+
+def programmer_ping(serial_connection):
+    execute_command(serial_connection, PROGRAMMER_COMMAND_TYPE_PING)
+
+    print('Programmer is alive.')
+
+
 def do_connect(args):
-    connect(serial_open(args.port))
+    connect(serial_open_ensure_connected_to_programmer(args.port))
 
 
 def do_disconnect(args):
-    execute_command(serial_open(args.port), PROGRAMMER_COMMAND_TYPE_DISCONNECT)
-
-    print('Disconnected from PIC32.')
+    disconnect(serial_open_ensure_connected_to_programmer(args.port))
 
 
 def do_reset(args):
-    execute_command(serial_open(args.port), PROGRAMMER_COMMAND_TYPE_RESET)
+    execute_command(serial_open_ensure_disconnected(args.port),
+                    PROGRAMMER_COMMAND_TYPE_RESET)
 
     print('Resetted PIC32.')
 
 
 def do_ping(args):
-    execute_command(serial_open(args.port), COMMAND_TYPE_PING)
-
-    print('Ping response received.')
+    # The open function pings the PIC32.
+    serial_open_ensure_connected(args.port)
 
 
 def do_flash_erase(args):
     address = int(args.address, 0)
     size = int(args.size, 0)
 
-    erase(serial_open(args.port), address, size)
+    erase(serial_open_ensure_connected(args.port), address, size)
+
+
+def do_flash_erase_all(args):
+    serial_connection = serial_open_ensure_connected(args.port)
+
+    for address, size in FLASH_RANGES:
+        erase(serial_connection, address, size)
 
 
 def do_flash_read(args):
     address = int(args.address, 0)
     size = int(args.size, 0)
-    read(args.port, address, size, args.outfile)
+    serial_connection = serial_open_ensure_connected(args.port)
+    read_to_file(serial_connection, [(address, size)], args.outfile)
+
+
+def do_flash_read_all(args):
+    serial_connection = serial_open_ensure_connected(args.port)
+    read_to_file(serial_connection, FLASH_RANGES, args.outfile)
 
 
 def do_flash_write(args):
-    serial_connection = serial_open(args.port)
-
-    if not args.no_connect:
-        connect(serial_connection)
+    serial_connection = serial_open_ensure_connected(args.port)
 
     f = bincopy.BinFile()
     f.add_file(args.binfile)
 
     erase_segments = []
-    total = 0
 
     for address, data in f.segments:
         erase_segments.append((address, len(data)))
-        total += len(data)
 
     if args.erase:
         for address, size in erase_segments:
@@ -361,8 +432,11 @@ def do_flash_write(args):
 
     print('Writing {} to flash.'.format(os.path.abspath(args.binfile)))
 
-    with tqdm(total=total, unit=' bytes') as progress:
-        for address, data in f.segments:
+    for address, data in f.segments:
+        print('Writing 0x{:08x}-0x{:08x}.'.format(address,
+                                                  address + len(data)))
+
+        with tqdm(total=len(data), unit=' bytes') as progress:
             left = len(data)
 
             while left > 0:
@@ -379,13 +453,16 @@ def do_flash_write(args):
                 left -= size
                 progress.update(size)
 
-    print('Write complete.')
+        print('Write complete.')
 
     if args.verify:
         print('Verifying written data.')
 
-        with tqdm(total=total, unit=' bytes') as progress:
-            for address, data in f.segments:
+        for address, data in f.segments:
+            print('Verifying 0x{:08x}-0x{:08x}.'.format(address,
+                                                        address + len(data)))
+
+            with tqdm(total=len(data), unit=' bytes') as progress:
                 left = len(data)
 
                 while left > 0:
@@ -408,7 +485,7 @@ def do_flash_write(args):
                     data = data[size:]
                     progress.update(size)
 
-        print('Verify complete.')
+            print('Verify complete.')
 
 
 def do_configuration_print(args):
@@ -445,9 +522,7 @@ def do_udid_print(args):
 def do_programmer_ping(args):
     serial_connection = serial_open(args.port)
 
-    execute_command(serial_connection, PROGRAMMER_COMMAND_TYPE_PING)
-
-    print('Programmer ping response received.')
+    programmer_ping(serial_connection)
 
 
 def do_generate_ramapp_upload_instructions(args):
@@ -546,14 +621,20 @@ def main():
     subparser.add_argument('size')
     subparser.set_defaults(func=do_flash_erase)
 
+    subparser = subparsers.add_parser('flash_erase_all')
+    subparser.set_defaults(func=do_flash_erase_all)
+
     subparser = subparsers.add_parser('flash_read')
     subparser.add_argument('address')
     subparser.add_argument('size')
     subparser.add_argument('outfile')
     subparser.set_defaults(func=do_flash_read)
 
+    subparser = subparsers.add_parser('flash_read_all')
+    subparser.add_argument('outfile')
+    subparser.set_defaults(func=do_flash_read_all)
+
     subparser = subparsers.add_parser('flash_write')
-    subparser.add_argument('-c', '--no-connect', action='store_true')
     subparser.add_argument('-e', '--erase', action='store_true')
     subparser.add_argument('-v', '--verify', action='store_true')
     subparser.add_argument('binfile')
