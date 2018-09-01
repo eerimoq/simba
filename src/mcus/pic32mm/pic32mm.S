@@ -30,6 +30,18 @@
 #include "config_default.h"
 #include "kernel/asm.h"
 
+.section .reset, "ax", @progbits
+
+/**
+ * Reset entry point.
+ */
+ASM_FUNC_BEGIN _reset, 2
+        jal _start
+        nop
+ASM_FUNC_END _reset
+
+
+
 .section .startup
 
 /**

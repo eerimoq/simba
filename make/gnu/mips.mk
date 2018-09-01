@@ -85,10 +85,7 @@ LDFLAGS += \
 
 ENDIANESS = big
 
-build: $(BIN) $(S19)
-
-$(BIN): $(EXE)
-	$(CROSS_COMPILE)objcopy -O binary $< $@
+build: $(S19)
 
 $(S19): $(EXE)
 	@echo "Creating $@"

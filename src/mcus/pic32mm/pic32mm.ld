@@ -2,9 +2,13 @@
  * PIC32MM common linker script definitions.
  */
 
-__flash_begin = ORIGIN(flash);
-__flash_end = ORIGIN(flash) + LENGTH(flash);
-__flash_size = LENGTH(flash);
+__pflash_begin = ORIGIN(pflash);
+__pflash_end = ORIGIN(pflash) + LENGTH(pflash);
+__pflash_size = LENGTH(pflash);
+
+__bflash_begin = ORIGIN(bflash);
+__bflash_end = ORIGIN(bflash) + LENGTH(bflash);
+__bflash_size = LENGTH(bflash);
 
 __ram_begin = ORIGIN(ram);
 __ram_end = ORIGIN(ram) + LENGTH(ram);
@@ -15,20 +19,27 @@ __main_stack_end = ORIGIN(ram) + LENGTH(ram) - 8;
 
 SECTIONS
 {
+    .reset :
+    {
+        KEEP(*(.reset .reset.*))
+    } > bflash
+
     .text :
     {
-        . = 0x1fc;
         __fixed_begin = .;
-        KEEP(*(.startup .startup.*))
-        . = ALIGN(4);
+        __ebase = .;
+        . = ALIGN(0x180);
+        KEEP(*(.general_exception))
+        . = ALIGN(0x200);
         KEEP(*(.vector))
-        . = ALIGN(4);
-        KEEP(*(.ivor))
+        KEEP(*(.startup .startup.*))
+        . = ALIGN(4096);
+        KEEP(*(.interrupt))
         *(.text .text.* .gnu.linkonce.t.*)
         *(.rodata .rodata* .gnu.linkonce.r.*)
         *(.sdata .sdata.*);
         *(.MIPS.abiflags)
-        
+
         /* Support C constructors, and C destructors in both user code
            and the C library. This also provides support for C++ code. */
         . = ALIGN(4);
@@ -65,9 +76,9 @@ SECTIONS
         KEEP (*crtend.o(.dtors))
 
         __fixed_end = .;            /* End of text section */
-    } > flash
+    } > pflash
 
-    /* Non-volatile memory. One DFlash block for each nvm block. */
+    /* Non-volatile memory. One DPflash block for each nvm block. */
     .nvm.eeprom_soft :
     {
         *(.nvm.eeprom_soft.block_0);
@@ -75,7 +86,7 @@ SECTIONS
 
         *(.nvm.eeprom_soft.block_1);
         . = 0x8000;
-    } > flash
+    } > pflash
 
     . = ALIGN(4);
     __text_end = .;
