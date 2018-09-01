@@ -49,11 +49,11 @@ static int uart_port_start(struct uart_driver_t *self_p)
 
     regs_p = self_p->dev_p->regs_p;
 
-    write_reg(&PIC32MM_PINSEL->RPOR[3].VALUE, (4 << 8)); // 4 = UART 2 TX (RP14)
-    write_reg(&regs_p->BRG, 51); // baudrate 9600
-    write_reg(&regs_p->STA, 0);
-    write_reg(&regs_p->MODE, 0x8000);
-    write_reg(&regs_p->STA, 0x0400);
+    pic32mm_reg_write(&PIC32MM_PINSEL->RPOR[3].VALUE, (4 << 8)); // 4 = UART 2 TX (RP14)
+    pic32mm_reg_write(&regs_p->BRG, 51); // baudrate 9600
+    pic32mm_reg_write(&regs_p->STA, 0);
+    pic32mm_reg_write(&regs_p->MODE, 0x8000);
+    pic32mm_reg_write(&regs_p->STA, 0x0400);
 
     // RP18 RX
 
@@ -83,9 +83,9 @@ static ssize_t uart_port_write_cb(void *arg_p,
     mutex_lock(&self_p->mutex);
 
     for (i = 0; i < size; i++) {
-        while ((read_reg(&regs_p->STA) & BIT(8)) == 0);
+        while ((pic32mm_reg_read(&regs_p->STA) & BIT(8)) == 0);
 
-        write_reg(&regs_p->TXREG, u8_buf_p[i]);
+        pic32mm_reg_write(&regs_p->TXREG, u8_buf_p[i]);
     }
 
     mutex_unlock(&self_p->mutex);
@@ -107,11 +107,11 @@ static int uart_port_device_start(struct uart_device_t *dev_p,
 
     regs_p = dev_p->regs_p;
 
-    write_reg(&PIC32MM_PINSEL->RPOR[3].VALUE, (4 << 8)); // 4 = UART 2 TX (RP14)
-    write_reg(&regs_p->BRG, 51); // baudrate 9600
-    write_reg(&regs_p->STA, 0);
-    write_reg(&regs_p->MODE, 0x8000);
-    write_reg(&regs_p->STA, 0x0400);
+    pic32mm_reg_write(&PIC32MM_PINSEL->RPOR[3].VALUE, (4 << 8)); // 4 = UART 2 TX (RP14)
+    pic32mm_reg_write(&regs_p->BRG, 51); // baudrate 9600
+    pic32mm_reg_write(&regs_p->STA, 0);
+    pic32mm_reg_write(&regs_p->MODE, 0x8000);
+    pic32mm_reg_write(&regs_p->STA, 0x0400);
 
     // RP18 RX
 
@@ -142,9 +142,9 @@ static ssize_t uart_port_device_write(struct uart_device_t *dev_p,
     regs_p = dev_p->regs_p;
 
     for (i = 0; i < size; i++) {
-        while ((read_reg(&regs_p->STA) & BIT(8)) == 0);
+        while ((pic32mm_reg_read(&regs_p->STA) & BIT(8)) == 0);
 
-        write_reg(&regs_p->TXREG, u8_buf_p[i]);
+        pic32mm_reg_write(&regs_p->TXREG, *u8_buf_p++);
     }
 
     return (size);

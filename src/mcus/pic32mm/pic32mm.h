@@ -292,8 +292,28 @@ struct pic32mm_conf_t {
 #define ISR(vector)                             \
     void isr_ ## vector(void)
 
-uint32_t read_reg(volatile uint32_t *reg_p);
+/**
+ * Read given register.
+ */
+uint32_t pic32mm_reg_read(volatile uint32_t *reg_p);
 
-void write_reg(volatile uint32_t *reg_p, uint32_t value);
+/**
+ * Write given register.
+ */
+void pic32mm_reg_write(volatile uint32_t *reg_p, uint32_t value);
+
+#define pic32mm_mfc0(reg, select) ({                            \
+            uint32_t UNIQUE(c0);                                \
+            asm volatile("mfc0 %0, $" #reg ", " #select :       \
+                         "=r" (UNIQUE(c0)) : :                  \
+                         "memory");                             \
+            UNIQUE(c0);                                         \
+        })
+
+#define pic32mm_mtc0(reg, select, value)                \
+    asm volatile("mtc0 %0, $" #reg ", " #select : :     \
+                 "r" (value) :                          \
+                 "memory")
+        
 
 #endif
