@@ -62,3 +62,6 @@ LDFLAGS += \
 
 backtrace:
 	$(CROSS_COMPILE)addr2line -f -p -C -a -e $(EXE) $(BACKTRACE)
+
+disassemble:
+	$(CROSS_COMPILE)objdump -d $(EXE)
