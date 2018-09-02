@@ -61,6 +61,8 @@ ASM_FUNC_BEGIN _start, 2
         jal     pic32mm_relocate_init
         jal     pic32mm_bss_init
 
+#if CONFIG_SYSTEM_INTERRUPTS == 1
+
         la      $t1, __ebase
         mtc0    $t1, C0_EBASE
 
@@ -71,6 +73,8 @@ ASM_FUNC_BEGIN _start, 2
         mtc0    $t1, C0_CAUSE
 
         mtc0    $zero, C0_STATUS
+
+#endif
 
         la      $t0, main
         jalr    $t0
