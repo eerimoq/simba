@@ -1,7 +1,7 @@
 Pin functions
 -------------
 
-- Serial port over USB.
+- Serial port in the pairing connector.
 
 - Programming using ICSP pads under battery pack.
 
