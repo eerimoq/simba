@@ -468,6 +468,24 @@ ifeq ($(BOARD), xvisor_raspberry_pi_3)
 	emacs)
 endif
 
+ifeq ($(BOARD), defcon26_badge)
+    TESTS = $(addprefix tst/kernel/, \
+	sys)
+    TESTS += $(addprefix tst/sync/, \
+	event \
+	queue)
+    TESTS += $(addprefix tst/alloc/, \
+	heap \
+	circular_heap)
+    TESTS += $(addprefix tst/debug/, \
+	log)
+    TESTS += $(addprefix tst/encode/, \
+	base64 \
+	json)
+    TESTS += $(addprefix tst/hash/, \
+	crc)
+endif
+
 # List of all application to build
 APPS += $(TESTS)
 
@@ -561,6 +579,9 @@ clean-spc56ddiscovery:
 clean-xvisor-raspberry-pi-3:
 	$(MAKE) BOARD=xvisor_raspberry_pi_3 clean
 
+clean-xvisor-defcon26-badge:
+	$(MAKE) BOARD=defcon26_badge clean
+
 test-arduino-due:
 	@echo "Arduino Due"
 	$(MAKE) BOARD=arduino_due SERIAL_PORT=/dev/simba-arduino_due test
@@ -605,6 +626,10 @@ test-xvisor-raspberry-pi-3:
 	@echo "Xvisor Raspberry Pi 3"
 	$(MAKE) -C tst/kernel/sys BOARD=xvisor_raspberry_pi_3 all
 	$(MAKE) BOARD=xvisor_raspberry_pi_3 SERIAL_PORT=/dev/arduino test
+
+test-xvisor-defon26-badge:
+	@echo "DEF CON 26 Badge"
+	$(MAKE) BOARD=defcon26_badge SERIAL_PORT=/dev/ttyUSB0 test
 
 clean-arduino-due-platformio:
 	@echo "Arduino Due"

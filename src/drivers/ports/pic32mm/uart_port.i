@@ -26,16 +26,36 @@
  * This file is part of the Simba project.
  */
 
-ISR(uart0)
+/**
+ * Fill the tx fifo with data from given uart driver.
+ */
+static void fill_tx_fifo(struct uart_driver_t *drv_p)
 {
-    struct uart_device_t *dev_p = &uart_device[0];
-    struct uart_driver_t *drv_p = dev_p->drv_p;
+    volatile struct pic32mm_uart_t *regs_p;
 
-    if (drv_p == NULL) {
-        return;
+    regs_p = drv_p->dev_p->regs_p;
+
+    while ((drv_p->txsize > 0)
+           && (!(pic32mm_reg_read(&regs_p->STA) & PIC32MM_UART_STA_UTXBF))) {
+        pic32mm_reg_write(&regs_p->TXREG, *drv_p->txbuf_p++);
+        drv_p->txsize--;
     }
 
-    /* TX and/or RX complete. */
+    pic32mm_reg_write(&PIC32MM_INT->IFS[1].CLR, 0x02000000);
+}
+
+ISR(uart2_transmission)
+{
+    struct uart_driver_t *drv_p;
+
+    drv_p = uart_device[1].drv_p;
+
+    if (drv_p->txsize > 0) {
+        fill_tx_fifo(drv_p);
+    } else {
+        pic32mm_reg_write(&PIC32MM_INT->IEC[1].CLR, 0x02000000);
+        thrd_resume_isr(drv_p->thrd_p, 0);
+    }
 }
 
 static int uart_port_module_init()
@@ -52,8 +72,13 @@ static int uart_port_start(struct uart_driver_t *self_p)
     pic32mm_reg_write(&PIC32MM_PINSEL->RPOR[3].VALUE, (4 << 8)); // 4 = UART 2 TX (RP14)
     pic32mm_reg_write(&regs_p->BRG, 51); // baudrate 9600
     pic32mm_reg_write(&regs_p->STA, 0);
-    pic32mm_reg_write(&regs_p->MODE, 0x8000);
-    pic32mm_reg_write(&regs_p->STA, 0x0400);
+    pic32mm_reg_write(&regs_p->MODE, PIC32MM_UART_MODE_ON);
+    pic32mm_reg_write(&regs_p->STA, (PIC32MM_UART_STA_UTXISEL(1)
+                                     | PIC32MM_UART_STA_UTXEN));
+
+    pic32mm_reg_write(&PIC32MM_INT->IPC[14].VALUE, 7 << 10);
+
+    self_p->dev_p->drv_p = self_p;
 
     // RP18 RX
 
@@ -71,22 +96,23 @@ static ssize_t uart_port_write_cb(void *arg_p,
                                   const void *buf_p,
                                   size_t size)
 {
-    size_t i;
     struct uart_driver_t *self_p;
-    volatile struct pic32mm_uart_t *regs_p;
-    const uint8_t *u8_buf_p;
 
     self_p = container_of(arg_p, struct uart_driver_t, base);
-    regs_p = self_p->dev_p->regs_p;
-    u8_buf_p = buf_p;
 
     mutex_lock(&self_p->mutex);
 
-    for (i = 0; i < size; i++) {
-        while ((pic32mm_reg_read(&regs_p->STA) & BIT(8)) == 0);
+    /* Initiate transfer by writing to the fifo. */
+    self_p->txbuf_p = buf_p;
+    self_p->txsize = size;
+    self_p->thrd_p = thrd_self();
 
-        pic32mm_reg_write(&regs_p->TXREG, u8_buf_p[i]);
-    }
+    sys_lock();
+    fill_tx_fifo(self_p);
+    pic32mm_reg_write(&PIC32MM_INT->IEC[1].SET, 0x02000000);
+    thrd_suspend_isr(NULL);
+
+    sys_unlock();
 
     mutex_unlock(&self_p->mutex);
 
@@ -110,8 +136,9 @@ static int uart_port_device_start(struct uart_device_t *dev_p,
     pic32mm_reg_write(&PIC32MM_PINSEL->RPOR[3].VALUE, (4 << 8)); // 4 = UART 2 TX (RP14)
     pic32mm_reg_write(&regs_p->BRG, 51); // baudrate 9600
     pic32mm_reg_write(&regs_p->STA, 0);
-    pic32mm_reg_write(&regs_p->MODE, 0x8000);
-    pic32mm_reg_write(&regs_p->STA, 0x0400);
+    pic32mm_reg_write(&regs_p->MODE, PIC32MM_UART_MODE_ON);
+    pic32mm_reg_write(&regs_p->STA, (PIC32MM_UART_STA_UTXISEL(2)
+                                     | PIC32MM_UART_STA_UTXEN));
 
     // RP18 RX
 

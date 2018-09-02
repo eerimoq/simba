@@ -193,6 +193,10 @@ def format_error(error):
         return 'Failed with {}.'.format(error)
 
 
+def physical_flash_address(address):
+    return address & 0x1fffffff
+
+
 def serial_open(port):
     return serial.Serial(port,
                          baudrate=460800,
@@ -409,7 +413,7 @@ def do_device_status_print(args):
     print(DEVICE_STATUS_FMT.format(status, *unpacked))
 
 
-def do_erase_chip(args):
+def do_flash_erase_chip(args):
     print('Erasing the chip.')
 
     execute_command(serial_open_ensure_connected_to_programmer(args.port),
@@ -451,15 +455,19 @@ def do_flash_write(args):
     erase_segments = []
 
     for address, data in f.segments:
+        address = physical_flash_address(address)
         erase_segments.append((address, len(data)))
 
     if args.erase:
         for address, size in erase_segments:
+            address = physical_flash_address(address)
             erase(serial_connection, address, size)
 
     print('Writing {} to flash.'.format(os.path.abspath(args.binfile)))
 
     for address, data in f.segments:
+        address = physical_flash_address(address)
+        
         print('Writing 0x{:08x}-0x{:08x}.'.format(address,
                                                   address + len(data)))
 
@@ -486,6 +494,8 @@ def do_flash_write(args):
         print('Verifying written data.')
 
         for address, data in f.segments:
+            address = physical_flash_address(address)
+
             print('Verifying 0x{:08x}-0x{:08x}.'.format(address,
                                                         address + len(data)))
 
@@ -682,7 +692,7 @@ def main():
     subparser = subparsers.add_parser(
         'flash_erase_chip',
         help='Erases program flash, boot flash and configuration memory.')
-    subparser.set_defaults(func=do_erase_chip)
+    subparser.set_defaults(func=do_flash_erase_chip)
 
     subparser = subparsers.add_parser('configuration_print',
                                       help='Print the configuration memory.')

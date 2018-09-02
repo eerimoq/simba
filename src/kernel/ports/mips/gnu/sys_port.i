@@ -28,7 +28,7 @@
 
 extern int main();
 
-#define SYS_TICK_COUNT           (F_CPU / CONFIG_SYSTEM_TICK_FREQUENCY)
+#define SYS_TICK_COUNT           (F_CPU / CONFIG_SYSTEM_TICK_FREQUENCY / 4)
 
 /* #if CONFIG_START_CONSOLE_DEVICE_INDEX == 0 */
 /* #    define CONSOLE_UART_REGS                  SPC5_LINFLEX_0 */
@@ -40,11 +40,13 @@ extern int main();
 /* #    error "Bad console UART index." */
 /* #endif */
 
-ISR(stm_match_on_channel_0)
+ISR(core_timer)
 {
-    /* /\* Setup next timeout. *\/ */
-    /* SPC5_STM->CHANNELS[0].CIR = SPC5_STM_CHANNELS_CIR_CIF; */
-    /* SPC5_STM->CHANNELS[0].CMP = (SPC5_STM->CNT + SYS_TICK_COUNT); */
+    pic32mm_reg_write(&PIC32MM_INT->IFS[0].CLR, 1);
+
+    /* Setup next timeout. */
+    pic32mm_mtc0(9, 0, 0);
+    pic32mm_mtc0(11, 0, SYS_TICK_COUNT);
 
     sys_tick_isr();
 }
@@ -59,11 +61,13 @@ static void read_and_clear_reset_cause(void)
 
 static int sys_port_module_init(void)
 {
-    /* /\* Start the system tick timer. *\/ */
-    /* SPC5_STM->CHANNELS[0].CMP = SYS_TICK_COUNT; */
-    /* SPC5_STM->CHANNELS[0].CCR = SPC5_STM_CHANNELS_CCR_CEN; */
-    /* SPC5_STM->CR = SPC5_STM_CR_TEN; */
-    /* SPC5_INTC->PSR[30/4] = 0x00000100; */
+    pic32mm_reg_write(&PIC32MM_INT->IPC[0].VALUE, 7 << 2);
+    pic32mm_reg_write(&PIC32MM_INT->IFS[0].CLR, 1);
+    pic32mm_reg_write(&PIC32MM_INT->IEC[0].SET, 1);
+
+    /* Start the system tick timer. */
+    pic32mm_mtc0(9, 0, 0);
+    pic32mm_mtc0(11, 0, SYS_TICK_COUNT);
 
 #if CONFIG_SYS_RESET_CAUSE == 1
     read_and_clear_reset_cause();
@@ -79,13 +83,11 @@ static void sys_port_stop(int error)
 
 static void sys_port_panic_putc(char c)
 {
-    /* /\* Write the next byte. *\/ */
-    /* CONSOLE_UART_REGS->BDRL[3] = c; */
+    /* Write the next byte. */
+    pic32mm_reg_write(&PIC32MM_UART2->TXREG, c);
 
-    /* /\* Wait for the byte to be transmitted. *\/ */
-    /* while (((CONSOLE_UART_REGS->UARTSR & SPC5_LINFLEX_UARTSR_DTF) == 0)); */
-
-    /* CONSOLE_UART_REGS->UARTSR = SPC5_LINFLEX_UARTSR_DTF; */
+    /* Wait for the byte to be transmitted. */
+    while ((pic32mm_reg_read(&PIC32MM_UART2->STA) & BIT(8)) == 0);
 }
 
 static void sys_port_reboot()

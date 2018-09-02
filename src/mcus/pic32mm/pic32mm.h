@@ -57,11 +57,11 @@ struct pic32mm_flash_t {
     uint32_t NVMBWPINV;
 };
 
-#define PIC32MM_FLASH_NVMCON_WR                       BIT(15)
-#define PIC32MM_FLASH_NVMCON_WREN                     BIT(14)
-#define PIC32MM_FLASH_NVMCON_WRERR                    BIT(13)
-#define PIC32MM_FLASH_NVMCON_LVDERR                   BIT(12)
-#define PIC32MM_FLASH_NVMCON_NVMOP_POS                (0)
+#define PIC32MM_FLASH_NVMCON_WR                              BIT(15)
+#define PIC32MM_FLASH_NVMCON_WREN                            BIT(14)
+#define PIC32MM_FLASH_NVMCON_WRERR                           BIT(13)
+#define PIC32MM_FLASH_NVMCON_LVDERR                          BIT(12)
+#define PIC32MM_FLASH_NVMCON_NVMOP_POS                       (0)
 #define PIC32MM_FLASH_NVMCON_NVMOP_MASK         \
     (0xf << PIC32MM_FLASH_NVMCON_NVMOP_POS)
 #define PIC32MM_FLASH_NVMCON_NVMOP(value)               \
@@ -171,9 +171,9 @@ struct pic32mm_uart_t {
     uint32_t BRG;
 };
 
-#define PIC32MM_UART_MODE_SPLEN       BIT(23)
-#define PIC32MM_UART_MODE_ACTIVE      BIT(22)
-#define PIC32MM_UART_MODE_CLKSEL_POS  (17)
+#define PIC32MM_UART_MODE_SPLEN                              BIT(23)
+#define PIC32MM_UART_MODE_ACTIVE                             BIT(22)
+#define PIC32MM_UART_MODE_CLKSEL_POS                         (17)
 #define PIC32MM_UART_MODE_CLKSEL_MASK           \
     (0x3 << PIC32MM_UART_MODE_CLKSEL_POS)
 #define PIC32MM_UART_MODE_CLKSEL(value)                 \
@@ -186,27 +186,60 @@ struct pic32mm_uart_t {
     PIC32MM_UART_MODE_CLKSEL_PBCLK(2)
 #define PIC32MM_UART_MODE_CLKSEL_REFO1          \
     PIC32MM_UART_MODE_CLKSEL_PBCLK(3)
-#define PIC32MM_UART_MODE_OVFDIS      BIT(16)
-#define PIC32MM_UART_MODE_ON          BIT(15)
-#define PIC32MM_UART_MODE_SIDL        BIT(13)
-#define PIC32MM_UART_MODE_IREN        BIT(12)
-#define PIC32MM_UART_MODE_RTSMD       BIT(11)
-#define PIC32MM_UART_MODE_UEN_POS  (8)
+#define PIC32MM_UART_MODE_OVFDIS                             BIT(16)
+#define PIC32MM_UART_MODE_ON                                 BIT(15)
+#define PIC32MM_UART_MODE_SIDL                               BIT(13)
+#define PIC32MM_UART_MODE_IREN                               BIT(12)
+#define PIC32MM_UART_MODE_RTSMD                              BIT(11)
+#define PIC32MM_UART_MODE_UEN_POS                            (8)
 #define PIC32MM_UART_MODE_UEN_MASK              \
     (0x3 << PIC32MM_UART_MODE_UEN_POS)
 #define PIC32MM_UART_MODE_UEN(value)            \
     BITFIELD_SET(PIC32MM_UART_MODE_UEN, value)
-#define PIC32MM_UART_MODE_WAKE        BIT(7)
-#define PIC32MM_UART_MODE_LPBACK      BIT(6)
-#define PIC32MM_UART_MODE_ABAUD       BIT(5)
-#define PIC32MM_UART_MODE_RXINV       BIT(4)
-#define PIC32MM_UART_MODE_BRGH        BIT(3)
-#define PIC32MM_UART_MODE_PDSEL_POS   (1)
+#define PIC32MM_UART_MODE_WAKE                               BIT(7)
+#define PIC32MM_UART_MODE_LPBACK                             BIT(6)
+#define PIC32MM_UART_MODE_ABAUD                              BIT(5)
+#define PIC32MM_UART_MODE_RXINV                              BIT(4)
+#define PIC32MM_UART_MODE_BRGH                               BIT(3)
+#define PIC32MM_UART_MODE_PDSEL_POS                          (1)
 #define PIC32MM_UART_MODE_PDSEL_MASK            \
     (0x3 << PIC32MM_UART_MODE_PDSEL_POS)
 #define PIC32MM_UART_MODE_PDSEL(value)                  \
     BITFIELD_SET(PIC32MM_UART_MODE_PDSEL, value)
-#define PIC32MM_UART_MODE_STSEL       BIT(0)
+#define PIC32MM_UART_MODE_STSEL                              BIT(0)
+
+#define PIC32MM_UART_STA_MASK_POS                            (24)
+#define PIC32MM_UART_STA_MASK_MASK              \
+    (0xff << PIC32MM_UART_STA_MASK_POS)
+#define PIC32MM_UART_STA_MASK(value)            \
+    BITFIELD_SET(PIC32MM_UART_STA_MASK, value)
+#define PIC32MM_UART_STA_ADDR_POS                            (16)
+#define PIC32MM_UART_STA_ADDR_MASK              \
+    (0xff << PIC32MM_UART_STA_ADDR_POS)
+#define PIC32MM_UART_STA_ADDR(value)            \
+    BITFIELD_SET(PIC32MM_UART_STA_ADDR, value)
+#define PIC32MM_UART_STA_UTXISEL_POS                         (14)
+#define PIC32MM_UART_STA_UTXISEL_MASK           \
+    (0x3 << PIC32MM_UART_STA_UTXISEL_POS)
+#define PIC32MM_UART_STA_UTXISEL(value)                 \
+    BITFIELD_SET(PIC32MM_UART_STA_UTXISEL, value)
+#define PIC32MM_UART_STA_UTXINV                              BIT(13)
+#define PIC32MM_UART_STA_URXEN                               BIT(12)
+#define PIC32MM_UART_STA_UTXBRK                              BIT(11)
+#define PIC32MM_UART_STA_UTXEN                               BIT(10)
+#define PIC32MM_UART_STA_UTXBF                               BIT(9)
+#define PIC32MM_UART_STA_TRMT                                BIT(8)
+#define PIC32MM_UART_STA_URXISEL_POS                         (6)
+#define PIC32MM_UART_STA_URXISEL_MASK           \
+    (0x3 << PIC32MM_UART_STA_URXISEL_POS)
+#define PIC32MM_UART_STA_URXISEL(value)                 \
+    BITFIELD_SET(PIC32MM_UART_STA_URXISEL, value)
+#define PIC32MM_UART_STA_ADDEN                               BIT(5)
+#define PIC32MM_UART_STA_RIDLE                               BIT(4)
+#define PIC32MM_UART_STA_PERR                                BIT(3)
+#define PIC32MM_UART_STA_FERR                                BIT(2)
+#define PIC32MM_UART_STA_OERR                                BIT(1)
+#define PIC32MM_UART_STA_URXDA                               BIT(0)
 
 /* 26. Configuration bits. */
 struct pic32mm_conf_t {
@@ -331,7 +364,7 @@ struct pic32mm_conf_t {
 
 /* Interrupt service routine. */
 #define ISR(vector)                             \
-    void isr_ ## vector(void)
+    void isr_ ## vector(int number)
 
 /**
  * Read given register.
@@ -355,6 +388,6 @@ void pic32mm_reg_write(volatile uint32_t *reg_p, uint32_t value);
     asm volatile("mtc0 %0, $" #reg ", " #select : :     \
                  "r" (value) :                          \
                  "memory")
-        
+
 
 #endif

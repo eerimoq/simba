@@ -78,9 +78,7 @@ static void thrd_port_idle_wait(struct thrd_t *thrd_p)
     sys_unlock();
 
     /* Wait for an interrupt to occur. */
-    PRINT_FILE_LINE();
     asm volatile ("wait");
-    PRINT_FILE_LINE();
 
     /* Add this thread to the ready list and reschedule. */
     sys_lock();

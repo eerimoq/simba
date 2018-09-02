@@ -28,6 +28,7 @@
 
 #include "simba.h"
 
+/* Defined in the linker script. */
 extern uint32_t __text_end;
 extern uint32_t __relocate_begin;
 extern uint32_t __relocate_end;
@@ -35,15 +36,15 @@ extern uint32_t __bss_begin;
 extern uint32_t __bss_end;
 
 #define WEAK_ISR_NONE(name)                                             \
-    void isr_ ## name (void) __attribute__ ((weak, alias("isr_none")));
+    void isr_ ## name (int vector_number) __attribute__ ((weak, alias("isr_none")));
 
 /**
  * Panic if no interrupt service routine is installed in the interrupt
  * vector.
  */
-static void isr_none(void)
+void isr_none(int vector_number)
 {
-    sys_panic(FSTR("unhandled interrupt"));
+    sys_panic(FSTR("unhandled interrupt %d"), vector_number);
 }
 
 WEAK_ISR_NONE(core_timer);
@@ -127,8 +128,7 @@ WEAK_ISR_NONE(dma_channel_2);
 WEAK_ISR_NONE(dma_channel_3);
 
 /* Vector table of unmasked hardware or software interrupt signals. */
-__attribute__ ((section(".vector"), used))
-void (*vector_table[])(void) = {
+void (*const vector_table[])(int vector_number) = {
     isr_core_timer,
     isr_core_software_0,
     isr_core_software_1,
@@ -155,36 +155,6 @@ void (*vector_table[])(void) = {
     isr_comparator_1,
     isr_comparator_2,
     isr_comparator_3,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_usb,
-    isr_none,
-    isr_none,
-    isr_real_time_clock_alarm,
-    isr_adc_conversion,
-    isr_none,
-    isr_none,
-    isr_high_low_voltage_detect,
-    isr_logic_cell_1,
-    isr_logic_cell_2,
-    isr_logic_cell_3,
-    isr_logic_cell_4,
-    isr_spi1_error,
-    isr_spi1_transmission,
-    isr_spi1_reception,
-    isr_spi2_error,
-    isr_spi2_transmission,
-    isr_spi2_reception,
-    isr_spi3_error,
-    isr_spi3_transmission,
-    isr_spi3_reception,
-    isr_none,
-    isr_none,
-    isr_none,
-    isr_uart1_reception,
-    isr_uart1_transmission,
-    isr_uart1_error,
     isr_none,
     isr_none,
     isr_none,
@@ -252,6 +222,7 @@ void (*vector_table[])(void) = {
     isr_ccp9_input_capture_or_output_compare,
     isr_ccp9_timer,
     isr_frc_auto_tune,
+    isr_none,
     isr_nvm_program_or_erase_complete,
     isr_core_performance_counter,
     isr_none,
