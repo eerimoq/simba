@@ -30,8 +30,14 @@
 #include "config_default.h"
 #include "kernel/asm.h"
 
+#define C0_STATUS                              $12
+#define C0_CAUSE                               $13
+#define C0_EBASE                               $15, 1
+#define C0_INTCTL                              $12, 1
+#define INTCON                                 0xbf80f000
+
 .section .reset, "ax", @progbits
-.set micromips
+
 /**
  * Reset entry point in boot flash.
  */
@@ -40,13 +46,6 @@ ASM_FUNC_BEGIN _reset, 2
         jalr $t0
         nop
 ASM_FUNC_END _reset
-
-#define _CP0_STATUS $12
-#define _CP0_CONFIG $16
-#define _CP0_CAUSE  $13
-#define _CP0_EBASE  $15, 1
-#define _CP0_INTCTL $12, 1
-#define INTCON 0xbf80f000
 
 .section .startup
 
@@ -62,20 +61,20 @@ ASM_FUNC_BEGIN _start, 2
         jal     pic32mm_bss_init
 
         la      $t1, __ebase
-        mtc0    $t1, _CP0_EBASE
+        mtc0    $t1, C0_EBASE
 
         li      $t0, INTCON
         li      $t2, 0x00011000
         sw      $t2, 0($t0)
 
         li      $t2, 0x00000020
-        mtc0    $t2, _CP0_INTCTL
+        mtc0    $t2, C0_INTCTL
 
         li      $t1, 0x00800000
-        mtc0    $t1, _CP0_CAUSE
+        mtc0    $t1, C0_CAUSE
 
         li      $t0, 0x00000000
-        mtc0    $t0, _CP0_STATUS
+        mtc0    $t0, C0_STATUS
 
         la      $t0, main
         jalr    $t0
@@ -86,7 +85,7 @@ ASM_FUNC_BEGIN _start, 2
 ASM_FUNC_END _start
 
 /**
- * Beginning of function with given name.
+ * A vector entry.
  */
 .macro VECTOR_ENTRY, number
         .type   vector_entry_\number, @function
@@ -97,7 +96,7 @@ vector_entry_\number:
 .endm
 
 /**
- * Interrupt handler.
+ * The interrupt handler vector.
  */
 .section .vector
 
@@ -211,6 +210,7 @@ ASM_FUNC_BEGIN isr_interrupt, 2
         addiu   $sp, $sp, -76
 
         .set noat
+
         sw      $at, 0($sp)
         sw      $v0, 4($sp)
         sw      $v1, 8($sp)
@@ -261,6 +261,7 @@ ASM_FUNC_BEGIN isr_interrupt, 2
         lw      $t9, 64($sp)
         lw      $fp, 68($sp)
         lw      $ra, 72($sp)
+
         .set at
 
         addiu	$sp, $sp, 76
