@@ -81,7 +81,7 @@ ASM_FUNC_BEGIN thrd_port_main, 4
 
         /* Call thread main function with argument. */
         move   $a0, $s1
-        jrc    $s0
+        jalr   $s0
 
         /* Call termination function. */
         jal    terminate

@@ -470,9 +470,13 @@ endif
 
 ifeq ($(BOARD), defcon26_badge)
     TESTS = $(addprefix tst/kernel/, \
-	sys)
+	sys \
+	thrd \
+	timer)
     TESTS += $(addprefix tst/sync/, \
+	cond \
 	event \
+	mutex \
 	queue)
     TESTS += $(addprefix tst/alloc/, \
 	heap \

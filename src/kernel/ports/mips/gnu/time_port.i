@@ -30,7 +30,7 @@ static void time_port_busy_wait_us(long microseconds)
 {
     volatile int i;
 
-    /* This does not give the correcy time!! Fix it!*/
+    /* This does not give the correcy time!! Fix it! */
     for (i = 0; i < 6 * microseconds; i++);
 }
 
