@@ -43,40 +43,40 @@ extern struct pin_device_t pin_device[PIN_DEVICE_MAX];
 static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
                                            int mode)
 {
-    /* int res; */
-    /* int index; */
+    int res;
 
-    /* index = indexof(dev_p, pin_device); */
-    
-    /* switch (mode) { */
+    switch (mode) {
 
-    /* case PIN_OUTPUT: */
-    /*     dev_p->regs_p->PIN_CNF[index] = NRF5_GPIO_PIN_CNF_DIR_OUTPUT; */
-    /*     break; */
+    case PIN_OUTPUT:
+        dev_p->regs_p->TRISCLR = dev_p->mask;
+        break;
 
-    /* default: */
-    /*     res = -ENOSYS; */
-    /* } */
+    case PIN_INPUT:
+        dev_p->regs_p->TRISSET = dev_p->mask;
+        break;
 
-    /* return (res); */
-    return (-ENOSYS);
+    default:
+        res = -ENOSYS;
+    }
+
+    return (res);
 }
 
 static inline int pin_port_device_read(const struct pin_device_t *dev_p)
 {
-    return (-ENOSYS);
+    return ((dev_p->regs_p->PORT & dev_p->mask) != 0);
 }
 
 static inline int pin_port_device_write_high(const struct pin_device_t *dev_p)
 {
-    /* dev_p->regs_p->OUTCLR = BIT(dev_p->pin); */
+    dev_p->regs_p->LATCLR = dev_p->mask;
 
     return (0);
 }
 
 static inline int pin_port_device_write_low(const struct pin_device_t *dev_p)
 {
-    /* dev_p->regs_p->OUTSET = BIT(dev_p->pin); */
+    dev_p->regs_p->LATSET = dev_p->mask;
 
     return (0);
 }

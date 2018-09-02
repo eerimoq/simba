@@ -120,28 +120,53 @@ struct pic32mm_int_t {
 /* 10. IO. */
 struct pic32mm_port_t {
     uint32_t ANSEL;
-    uint32_t RESERVED0[3];
+    uint32_t ANSELCLR;
+    uint32_t ANSELSET;
+    uint32_t ANSELINV;
     uint32_t TRIS;
-    uint32_t RESERVED1[3];
+    uint32_t TRISCLR;
+    uint32_t TRISSET;
+    uint32_t TRISINV;
     uint32_t PORT;
-    uint32_t RESERVED2[3];
+    uint32_t PORTCLR;
+    uint32_t PORTSET;
+    uint32_t PORTINV;
     uint32_t LAT;
-    uint32_t RESERVED3[3];
+    uint32_t LATCLR;
+    uint32_t LATSET;
+    uint32_t LATINV;
     uint32_t ODC;
-    uint32_t RESERVED4[3];
+    uint32_t ODCCLR;
+    uint32_t ODCSET;
+    uint32_t ODCINV;
     uint32_t CNPU;
-    uint32_t RESERVED5[3];
+    uint32_t CNPUCLR;
+    uint32_t CNPUSET;
+    uint32_t CNPUINV;
     uint32_t CNPD;
-    uint32_t RESERVED6[3];
+    uint32_t CNPDCLR;
+    uint32_t CNPDSET;
+    uint32_t CNPDINV;
     uint32_t CNCON;
-    uint32_t RESERVED7[3];
+    uint32_t CNCONCLR;
+    uint32_t CNCONSET;
+    uint32_t CNCONINV;
     uint32_t CNEN0;
-    uint32_t RESERVED8[3];
+    uint32_t CNEN0CLR;
+    uint32_t CNEN0SET;
+    uint32_t CNEN0INV;
     uint32_t CNSTAT;
-    uint32_t RESERVED9[3];
+    uint32_t CNSTATCLR;
+    uint32_t CNSTATSET;
+    uint32_t CNSTATINV;
     uint32_t CNEN1;
-    uint32_t RESERVED10[3];
+    uint32_t CNEN1CLR;
+    uint32_t CNEN1SET;
+    uint32_t CNEN1INV;
     uint32_t CNF;
+    uint32_t CNFCLR;
+    uint32_t CNFSET;
+    uint32_t CNFINV;
 };
 
 struct pic32mm_pinsel_t {
@@ -364,7 +389,7 @@ struct pic32mm_conf_t {
 
 /* Interrupt service routine. */
 #define ISR(vector)                             \
-    void isr_ ## vector(int number)
+    void isr_ ## vector(int vector_number)
 
 /**
  * Read given register.

@@ -72,6 +72,8 @@
 
 #define pin_rd0_dev  pin_device[38]
 
+#define pin_led_dev  pin_ra10_dev
+
 #define flash_dev    flash_device[0]
 
 /**

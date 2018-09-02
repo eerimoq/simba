@@ -40,7 +40,7 @@ static int pin_port_init(struct pin_driver_t *self_p,
 
 static int pin_port_read(struct pin_driver_t *self_p)
 {
-    return (-ENOSYS);
+    return (pin_port_device_read(self_p->dev_p));
 }
 
 static int pin_port_write(struct pin_driver_t *self_p, int value)
@@ -50,18 +50,19 @@ static int pin_port_write(struct pin_driver_t *self_p, int value)
     } else {
         pin_device_write_high(self_p->dev_p);
     }
-    
+
     return (0);
 }
 
 static int pin_port_toggle(struct pin_driver_t *self_p)
 {
-    /* int value; */
+    const struct pin_device_t *dev_p;
+    int value;
 
-    /* value = (self_p->dev_p->regs_p->OUT & BIT(self_p->dev_p->pin)); */
+    dev_p = self_p->dev_p;
+    value = (dev_p->regs_p->LAT & dev_p->mask);
 
-    /* return (pin_port_write(self_p, value)); */
-    return (-ENOSYS);
+    return (pin_port_write(self_p, value));
 }
 
 static int pin_port_set_mode(struct pin_driver_t *self_p, int mode)
