@@ -41,7 +41,7 @@ PROGRAMMER_PORT ?= /dev/arduino
 SERIAL_PORT ?= /dev/arduino
 BOARD_PY = $(SIMBA_ROOT)/src/boards/defcon26_badge/board.py
 TIMEOUT ?= 10
-BAUDRATE ?= 9600
+BAUDRATE ?= 76800
 
 upload:
 	@echo "Uploading '$(EXE)'."

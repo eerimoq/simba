@@ -114,12 +114,12 @@
 /**
  * Integer division that rounds the result up.
  */
-#define DIV_CEIL(n, d) (((n) + (d) - 1) / d)
+#define DIV_CEIL(n, d) (((n) + (d) - 1) / (d))
 
 /**
  * Integer division that rounds the result to the closest integer.
  */
-#define DIV_ROUND(n, d) (((n) + (d / 2)) / d)
+#define DIV_ROUND(n, d) (((n) + (d / 2)) / (d))
 
 /**
  * Get the minimum value of the two.

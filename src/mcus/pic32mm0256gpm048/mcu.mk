@@ -37,8 +37,7 @@ SRC += \
 	$(SIMBA_ROOT)/src/mcus/pic32mm0256gpm048/mcu.c \
 	$(SIMBA_ROOT)/3pp/libc/string0.c
 
-F_CPU = 25000000
-MCPU = e200z0
+F_CPU = 8000000
 
 LIBPATH += "$(SIMBA_ROOT)/src/mcus/pic32mm0256gpm048"
 LINKER_SCRIPT ?= script.ld
@@ -48,6 +47,6 @@ FAMILY = pic32mm
 
 MCU_HOMEPAGE = ""
 MCU_NAME = ""
-MCU_DESC = "PIC32MM0256GPM048 @ 25MHz, 32k RAM, 256k Flash"
+MCU_DESC = "PIC32MM0256GPM048 @ 8MHz, 32k RAM, 256k Flash"
 
 include $(SIMBA_ROOT)/make/$(TOOLCHAIN)/mips.mk

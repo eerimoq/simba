@@ -28,7 +28,7 @@
 
 extern int main();
 
-#define SYS_TICK_COUNT           (F_CPU / CONFIG_SYSTEM_TICK_FREQUENCY / 4)
+#define SYS_TICK_COUNT           (F_CPU / CONFIG_SYSTEM_TICK_FREQUENCY / 2)
 
 /* #if CONFIG_START_CONSOLE_DEVICE_INDEX == 0 */
 /* #    define CONSOLE_UART_REGS                  SPC5_LINFLEX_0 */

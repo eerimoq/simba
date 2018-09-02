@@ -1937,12 +1937,10 @@
  * Console UART baudrate.
  */
 #ifndef CONFIG_START_CONSOLE_UART_BAUDRATE
-#    if defined(FAMILY_ESP)
+#    if defined(FAMILY_ESP) || defined(FAMILY_PIC32MM)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      76800
 #    elif defined(FAMILY_ESP32) || defined(FAMILY_SPC5) || defined(BOARD_ARDUINO_DUE)
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE     115200
-#    elif defined(FAMILY_PIC32MM)
-#        define CONFIG_START_CONSOLE_UART_BAUDRATE       9600
 #    else
 #        define CONFIG_START_CONSOLE_UART_BAUDRATE      38400
 #    endif

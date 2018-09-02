@@ -289,6 +289,7 @@ int test_div_ceil(void)
     BTASSERT(DIV_CEIL(0, 1) == 0);
     BTASSERT(DIV_CEIL(11, 5) == 3);
     BTASSERT(DIV_CEIL(11, 6) == 2);
+    BTASSERT(DIV_CEIL(6 + 5, 2 + 4) == 2);
 
     return (0);
 }
@@ -306,6 +307,7 @@ int test_div_round(void)
     BTASSERT(DIV_ROUND(11, 9) == 1);
     BTASSERT(DIV_ROUND(11, 10) == 1);
     BTASSERT(DIV_ROUND(11, 11) == 1);
+    BTASSERT(DIV_ROUND(4 + 7, 5 + 6) == 1);
 
     return (0);
 }

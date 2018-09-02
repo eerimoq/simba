@@ -66,13 +66,17 @@ static int uart_port_module_init()
 static int uart_port_start(struct uart_driver_t *self_p)
 {
     volatile struct pic32mm_uart_t *regs_p;
+    uint16_t brg;
 
     regs_p = self_p->dev_p->regs_p;
+    brg = (DIV_ROUND(F_CPU, 4 * self_p->baudrate) - 1);
 
-    pic32mm_reg_write(&PIC32MM_PINSEL->RPOR[3].VALUE, (4 << 8)); // 4 = UART 2 TX (RP14)
-    pic32mm_reg_write(&regs_p->BRG, 51); // baudrate 9600
+    /* 4 = UART 2 TX (RP14) */
+    pic32mm_reg_write(&PIC32MM_PINSEL->RPOR[3].VALUE, (4 << 8));
+    pic32mm_reg_write(&regs_p->BRG, brg);
     pic32mm_reg_write(&regs_p->STA, 0);
-    pic32mm_reg_write(&regs_p->MODE, PIC32MM_UART_MODE_ON);
+    pic32mm_reg_write(&regs_p->MODE, (PIC32MM_UART_MODE_ON
+                                      | PIC32MM_UART_MODE_BRGH));
     pic32mm_reg_write(&regs_p->STA, (PIC32MM_UART_STA_UTXISEL(1)
                                      | PIC32MM_UART_STA_UTXEN));
 
