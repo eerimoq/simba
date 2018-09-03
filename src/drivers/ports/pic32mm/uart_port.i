@@ -26,6 +26,10 @@
  * This file is part of the Simba project.
  */
 
+#if CONFIG_UART_FS_COUNTERS == 1
+static struct fs_counter_t rx_channel_overflow;
+#endif
+
 /**
  * Fill the tx fifo with data from given uart driver.
  */
@@ -58,8 +62,38 @@ ISR(uart2_transmission)
     }
 }
 
+ISR(uart2_reception)
+{
+    struct uart_driver_t *drv_p;
+    volatile struct pic32mm_uart_t *regs_p;
+    uint8_t data;
+
+    drv_p = uart_device[1].drv_p;
+    regs_p = uart_device[1].regs_p;
+
+    while (pic32mm_reg_read(&regs_p->STA) & 1) {
+        data = pic32mm_reg_read(&regs_p->RXREG);
+
+        /* Write data to input queue. */
+        if (queue_write_isr(&drv_p->base, &data, 1) != 1) {
+#if CONFIG_UART_FS_COUNTERS == 1
+            fs_counter_increment(&rx_channel_overflow, 1);
+#endif
+        }
+    }
+
+    pic32mm_reg_write(&PIC32MM_INT->IFS[1].CLR, 0x01000000);
+}
+
 static int uart_port_module_init()
 {
+#if CONFIG_UART_FS_COUNTERS == 1
+    fs_counter_init(&rx_channel_overflow,
+                    FSTR("/drivers/uart/rx_channel_overflow"),
+                    0);
+    fs_counter_register(&rx_channel_overflow);
+#endif
+
     return (0);
 }
 
@@ -68,32 +102,44 @@ static int uart_port_start(struct uart_driver_t *self_p)
     volatile struct pic32mm_uart_t *regs_p;
     uint16_t brg;
 
+    self_p->dev_p->drv_p = self_p;
     regs_p = self_p->dev_p->regs_p;
     brg = (DIV_ROUND(F_CPU, 4 * self_p->baudrate) - 1);
 
     /* 4 = UART 2 TX (RP14) */
-    pic32mm_reg_write(&PIC32MM_PINSEL->RPOR[3].VALUE, (4 << 8));
+    pic32mm_reg_write(&PIC32MM_PINSEL->RPOR[3].CLR, (0x1f << 8));
+    pic32mm_reg_write(&PIC32MM_PINSEL->RPOR[3].SET, (4 << 8));
+
+    /* 18 = RP18 (UART 2 RX) */
+    pic32mm_reg_write(&PIC32MM_PINSEL->RPINR[8].CLR, (0x1f << 16));
+    pic32mm_reg_write(&PIC32MM_PINSEL->RPINR[8].SET, (18 << 16));
+
     pic32mm_reg_write(&regs_p->BRG, brg);
     pic32mm_reg_write(&regs_p->STA, 0);
     pic32mm_reg_write(&regs_p->MODE, (PIC32MM_UART_MODE_ON
                                       | PIC32MM_UART_MODE_BRGH));
     pic32mm_reg_write(&regs_p->STA, (PIC32MM_UART_STA_UTXISEL(1)
-                                     | PIC32MM_UART_STA_UTXEN));
+                                     | PIC32MM_UART_STA_URXEN
+                                     | PIC32MM_UART_STA_UTXEN
+                                     | PIC32MM_UART_STA_URXISEL(0)));
 
-    pic32mm_reg_write(&PIC32MM_INT->IPC[14].VALUE, 7 << 10);
+    /* TX/ */
+    pic32mm_reg_write(&PIC32MM_INT->IPC[14].CLR, 0x1f << 8);
+    pic32mm_reg_write(&PIC32MM_INT->IPC[14].SET, 7 << 10);
 
-    self_p->dev_p->drv_p = self_p;
-
-    // RP18 RX
+    /* RX. */
+    pic32mm_reg_write(&PIC32MM_INT->IPC[14].CLR, 0x1f);
+    pic32mm_reg_write(&PIC32MM_INT->IPC[14].SET, 7 << 2);
+    pic32mm_reg_write(&PIC32MM_INT->IEC[1].SET, 0x01000000);
 
     return (0);
 }
 
 static int uart_port_stop(struct uart_driver_t *self_p)
 {
-    /* self_p->dev_p->regs_p->TASKS.SUSPEND = 1; */
+    pic32mm_reg_write(&self_p->dev_p->regs_p->MODE, 0);
 
-    return (-ENOSYS);
+    return (0);
 }
 
 static ssize_t uart_port_write_cb(void *arg_p,
@@ -112,6 +158,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
     self_p->thrd_p = thrd_self();
 
     sys_lock();
+
     fill_tx_fifo(self_p);
     pic32mm_reg_write(&PIC32MM_INT->IEC[1].SET, 0x02000000);
     thrd_suspend_isr(NULL);

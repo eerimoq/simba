@@ -1389,7 +1389,7 @@
  * Initialize the inet module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_INET
-#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC) || defined(ARCH_ARM64)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC) || defined(ARCH_ARM64) || defined(ARCH_MIPS)
 #        define CONFIG_MODULE_INIT_INET                     0
 #    else
 #        define CONFIG_MODULE_INIT_INET                     1
@@ -1400,7 +1400,7 @@
  * Initialize the ping module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_PING
-#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC) || defined(ARCH_ARM64)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC) || defined(ARCH_ARM64) || defined(ARCH_MIPS)
 #        define CONFIG_MODULE_INIT_PING                     0
 #    else
 #        define CONFIG_MODULE_INIT_PING                     1
@@ -1411,7 +1411,7 @@
  * Initialize the socket module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_SOCKET
-#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC) || defined(ARCH_ARM64)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC) || defined(ARCH_ARM64) || defined(ARCH_MIPS)
 #        define CONFIG_MODULE_INIT_SOCKET                   0
 #    else
 #        define CONFIG_MODULE_INIT_SOCKET                   1
@@ -1422,7 +1422,7 @@
  * Initialize the network_interface module at system startup.
  */
 #ifndef CONFIG_MODULE_INIT_NETWORK_INTERFACE
-#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC) || defined(ARCH_ARM64)
+#    if defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM) || defined(ARCH_AVR) || defined(ARCH_PPC) || defined(ARCH_ARM64) || defined(ARCH_MIPS)
 #        define CONFIG_MODULE_INIT_NETWORK_INTERFACE        0
 #    else
 #        define CONFIG_MODULE_INIT_NETWORK_INTERFACE        1
@@ -1514,7 +1514,7 @@
  * Debug file system command to list all network interfaces.
  */
 #ifndef CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM64)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(CONFIG_MINIMAL_SYSTEM) || defined(ARCH_ARM64) || defined(ARCH_MIPS)
 #        define CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST    0
 #    else
 #        define CONFIG_NETWORK_INTERFACE_FS_COMMAND_LIST    1
@@ -1781,7 +1781,7 @@
  * Start the monitor thread to gather statistics of the scheulder.
  */
 #ifndef CONFIG_MONITOR_THREAD
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_ESP) || defined(FAMILY_ESP32) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_ESP) || defined(FAMILY_ESP32) || defined(ARCH_MIPS) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_MONITOR_THREAD                       0
 #    else
 #        define CONFIG_MONITOR_THREAD                       1
@@ -2196,7 +2196,7 @@
  * Shell thread stack size in words.
  */
 #ifndef CONFIG_START_SHELL_STACK_SIZE
-#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_ESP) || defined(ARCH_PPC)
+#    if defined(BOARD_ARDUINO_DUE) || defined(ARCH_ESP) || defined(ARCH_PPC) || defined(ARCH_MIPS)
 #        define CONFIG_START_SHELL_STACK_SIZE            1536
 #    elif defined(ARCH_ESP32) || defined(ARCH_ARM64)
 #        define CONFIG_START_SHELL_STACK_SIZE            4096

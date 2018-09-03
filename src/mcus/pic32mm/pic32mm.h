@@ -174,26 +174,41 @@ struct pic32mm_pinsel_t {
     uint32_t RESERVED0[7];
     struct {
         uint32_t VALUE;
-        uint32_t RESERVED0[3];
+        uint32_t CLR;
+        uint32_t SET;
+        uint32_t INV;
     } RPINR[12];
     uint32_t RESERVED1[12];
     struct {
         uint32_t VALUE;
-        uint32_t RESERVED0[3];
+        uint32_t CLR;
+        uint32_t SET;
+        uint32_t INV;
     } RPOR[6];
 };
 
 /* 17. UART. */
 struct pic32mm_uart_t {
     uint32_t MODE;
-    uint32_t RESERVED0[3];
+    uint32_t MODECLR;
+    uint32_t MODESET;
+    uint32_t MODEINV;
     uint32_t STA;
-    uint32_t RESERVED1[3];
+    uint32_t STACLR;
+    uint32_t STASET;
+    uint32_t STAINV;
     uint32_t TXREG;
-    uint32_t RESERVED2[3];
+    uint32_t TXREGCLR;
+    uint32_t TXREGSET;
+    uint32_t TXREGINV;
     uint32_t RXREG;
-    uint32_t RESERVED3[3];
+    uint32_t RXREGCLR;
+    uint32_t RXREGSET;
+    uint32_t RXREGINV;
     uint32_t BRG;
+    uint32_t BRGCLR;
+    uint32_t BRGSET;
+    uint32_t BRGINV;
 };
 
 #define PIC32MM_UART_MODE_SPLEN                              BIT(23)
