@@ -30,5 +30,13 @@
 
 int board_pin_string_to_device_index(const char *str_p)
 {
-    return (-ENOSYS);
+    long pin;
+
+    if (strcmp(str_p, "led") == 0) {
+        pin = 9;
+    } else {
+        return (-ENODEV);
+    }
+
+    return (pin);
 }
