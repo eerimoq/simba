@@ -40,12 +40,12 @@
 
 static inline int clock_low(struct icsp_soft_driver_t *self_p)
 {
-    return (pin_device_write_low(self_p->pgec_p));
+    return (pin_device_write_low(&pin_d2_dev));
 }
 
 static inline int clock_high(struct icsp_soft_driver_t *self_p)
 {
-    return (pin_device_write_high(self_p->pgec_p));
+    return (pin_device_write_high(&pin_d2_dev));
 }
 
 static inline int clock_pulse(struct icsp_soft_driver_t *self_p)
