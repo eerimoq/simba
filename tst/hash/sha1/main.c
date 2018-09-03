@@ -92,10 +92,10 @@ int test_sha1(void)
 
         BTASSERT(sha1_init(&foo) == 0);
         BTASSERT(sha1_update(&foo,
-                                  testdata[i].input_p,
-                                  strlen(testdata[i].input_p)) == 0);
+                             testdata[i].input_p,
+                             strlen(testdata[i].input_p)) == 0);
         BTASSERT(sha1_digest(&foo, hash) == 0);
-        
+
         BTASSERT(memcmp(hash, testdata[i].hash_p, 20) == 0);
     }
 

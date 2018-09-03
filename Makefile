@@ -487,7 +487,8 @@ ifeq ($(BOARD), defcon26_badge)
 	base64 \
 	json)
     TESTS += $(addprefix tst/hash/, \
-	crc)
+	crc \
+	sha1)
 endif
 
 # List of all application to build
