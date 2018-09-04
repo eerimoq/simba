@@ -61,7 +61,7 @@ static void read_and_clear_reset_cause(void)
 
 static int sys_port_module_init(void)
 {
-    pic32mm_reg_write(&PIC32MM_INT->IPC[0].VALUE, 7 << 2);
+    pic32mm_reg_write(&PIC32MM_INT->IPC[0], 7 << 2);
     pic32mm_reg_write(&PIC32MM_INT->IFS[0].CLR, 1);
     pic32mm_reg_write(&PIC32MM_INT->IEC[0].SET, 1);
 

@@ -50,7 +50,7 @@ static int commit(volatile struct pic32mm_flash_t *regs_p)
 
     write_protect_unlock(regs_p);
 
-    pic32mm_reg_write(&regs_p->NVMCONSET, PIC32MM_FLASH_NVMCON_WR);
+    pic32mm_reg_set(&regs_p->NVMCON, PIC32MM_FLASH_NVMCON_WR);
 
     wait_for_operation_completed(regs_p);
 
@@ -58,7 +58,7 @@ static int commit(volatile struct pic32mm_flash_t *regs_p)
         res = -1;
     }
 
-    pic32mm_reg_write(&regs_p->NVMCONCLR, PIC32MM_FLASH_NVMCON_WREN);
+    pic32mm_reg_clr(&regs_p->NVMCON, PIC32MM_FLASH_NVMCON_WREN);
 
     write_protect_lock(regs_p);
 
@@ -69,8 +69,8 @@ static int flash_port_module_init(void)
 {
     /* Unlock boot flash. */
     write_protect_unlock(PIC32MM_FLASH);
-    pic32mm_reg_write(&PIC32MM_FLASH->NVMBWPSET, 0x8000);
-    pic32mm_reg_write(&PIC32MM_FLASH->NVMBWPCLR, 0x0700);
+    pic32mm_reg_set(&PIC32MM_FLASH->NVMBWP, 0x8000);
+    pic32mm_reg_clr(&PIC32MM_FLASH->NVMBWP, 0x0700);
     write_protect_lock(PIC32MM_FLASH);
 
     return (0);

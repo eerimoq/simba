@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018, Erik Moqvist
+ * Copyright (c) 2018, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -45,7 +45,7 @@ static void fill_tx_fifo(struct uart_driver_t *drv_p)
         drv_p->txsize--;
     }
 
-    pic32mm_reg_write(&PIC32MM_INT->IFS[1].CLR, 0x02000000);
+    pic32mm_reg_clr(&PIC32MM_INT->IFS[1], 0x02000000);
 }
 
 ISR(uart2_transmission)
@@ -82,7 +82,7 @@ ISR(uart2_reception)
         }
     }
 
-    pic32mm_reg_write(&PIC32MM_INT->IFS[1].CLR, 0x01000000);
+    pic32mm_reg_clr(&PIC32MM_INT->IFS[1], 0x01000000);
 }
 
 static int uart_port_module_init()
@@ -99,21 +99,32 @@ static int uart_port_module_init()
 
 static int uart_port_start(struct uart_driver_t *self_p)
 {
+    struct uart_device_t *dev_p;
     volatile struct pic32mm_uart_t *regs_p;
     uint16_t brg;
 
     self_p->dev_p->drv_p = self_p;
-    regs_p = self_p->dev_p->regs_p;
+    dev_p = self_p->dev_p;
+    regs_p = dev_p->regs_p;
+
+    /* TX pin mapping. */
+    if (dev_p->rpor != -1) {
+        pic32mm_reg_insert(&PIC32MM_PINSEL->RPOR[dev_p->rpor_offset / 32],
+                           dev_p->rpor,
+                           5,
+                           dev_p->rpor_offset % 32);
+    }
+
+    /* RX pin mapping. */
+    if (dev_p->rpinr != -1) {
+        pic32mm_reg_insert(&PIC32MM_PINSEL->RPINR[dev_p->rpinr_offset / 32],
+                           dev_p->rpinr,
+                           5,
+                           dev_p->rpinr_offset % 32);
+    }
+
+    /* General setup. */
     brg = (DIV_ROUND(F_CPU, 4 * self_p->baudrate) - 1);
-
-    /* 4 = UART 2 TX (RP14) */
-    pic32mm_reg_write(&PIC32MM_PINSEL->RPOR[3].CLR, (0x1f << 8));
-    pic32mm_reg_write(&PIC32MM_PINSEL->RPOR[3].SET, (4 << 8));
-
-    /* 18 = RP18 (UART 2 RX) */
-    pic32mm_reg_write(&PIC32MM_PINSEL->RPINR[8].CLR, (0x1f << 16));
-    pic32mm_reg_write(&PIC32MM_PINSEL->RPINR[8].SET, (18 << 16));
-
     pic32mm_reg_write(&regs_p->BRG, brg);
     pic32mm_reg_write(&regs_p->STA, 0);
     pic32mm_reg_write(&regs_p->MODE, (PIC32MM_UART_MODE_ON
@@ -123,14 +134,18 @@ static int uart_port_start(struct uart_driver_t *self_p)
                                      | PIC32MM_UART_STA_UTXEN
                                      | PIC32MM_UART_STA_URXISEL(0)));
 
-    /* TX/ */
-    pic32mm_reg_write(&PIC32MM_INT->IPC[14].CLR, 0x1f << 8);
-    pic32mm_reg_write(&PIC32MM_INT->IPC[14].SET, 7 << 10);
+    /* TX interrupt priority. */
+    pic32mm_reg_insert(dev_p->ipc_p,
+                       7 << 2,
+                       5,
+                       8);
 
-    /* RX. */
-    pic32mm_reg_write(&PIC32MM_INT->IPC[14].CLR, 0x1f);
-    pic32mm_reg_write(&PIC32MM_INT->IPC[14].SET, 7 << 2);
-    pic32mm_reg_write(&PIC32MM_INT->IEC[1].SET, 0x01000000);
+    /* RX interrupt priority and enabling. */
+    pic32mm_reg_insert(dev_p->ipc_p,
+                       7 << 2,
+                       5,
+                       0);
+    pic32mm_reg_set(dev_p->iec_p, 0x01000000);
 
     return (0);
 }
@@ -160,7 +175,7 @@ static ssize_t uart_port_write_cb(void *arg_p,
     sys_lock();
 
     fill_tx_fifo(self_p);
-    pic32mm_reg_write(&PIC32MM_INT->IEC[1].SET, 0x02000000);
+    pic32mm_reg_set(self_p->dev_p->iec_p, 0x02000000);
     thrd_suspend_isr(NULL);
 
     sys_unlock();
@@ -184,8 +199,16 @@ static int uart_port_device_start(struct uart_device_t *dev_p,
 
     regs_p = dev_p->regs_p;
 
-    pic32mm_reg_write(&PIC32MM_PINSEL->RPOR[3].VALUE, (4 << 8)); // 4 = UART 2 TX (RP14)
-    pic32mm_reg_write(&regs_p->BRG, 51); // baudrate 9600
+    /* TX pin mapping. */
+    if (dev_p->rpor != -1) {
+        pic32mm_reg_insert(&PIC32MM_PINSEL->RPOR[dev_p->rpor_offset / 32],
+                           dev_p->rpor,
+                           5,
+                           dev_p->rpor_offset % 32);
+    }
+
+    /* General setup. */
+    pic32mm_reg_write(&regs_p->BRG, 51);
     pic32mm_reg_write(&regs_p->STA, 0);
     pic32mm_reg_write(&regs_p->MODE, PIC32MM_UART_MODE_ON);
     pic32mm_reg_write(&regs_p->STA, (PIC32MM_UART_STA_UTXISEL(2)

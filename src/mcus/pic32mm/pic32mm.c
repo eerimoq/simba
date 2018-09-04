@@ -290,13 +290,3 @@ void pic32mm_bss_init(void)
         (&__bss_begin)[i] = 0;
     }
 }
-
-uint32_t pic32mm_reg_read(volatile uint32_t *reg_p)
-{
-    return (*reg_p);
-}
-
-void pic32mm_reg_write(volatile uint32_t *reg_p, uint32_t value)
-{
-    *reg_p = value;
-}

@@ -29,32 +29,23 @@
 #ifndef __PIC32MM_H__
 #define __PIC32MM_H__
 
+struct pic32mm_reg_t {
+    uint32_t VAL;
+    uint32_t CLR;
+    uint32_t SET;
+    uint32_t INV;
+};
+
 /* 5. Flash. */
 struct pic32mm_flash_t {
-    uint32_t NVMCON;
-    uint32_t NVMCONCLR;
-    uint32_t NVMCONSET;
-    uint32_t NVMCONINV;
-    uint32_t NVMKEY;
-    uint32_t RESERVED0[3];
-    uint32_t NVMADDR;
-    uint32_t NVMADDRCLR;
-    uint32_t NVMADDRSET;
-    uint32_t NVMADDRINV;
-    uint32_t NVMDATA0;
-    uint32_t RESERVED1[3];
-    uint32_t NVMDATA1;
-    uint32_t RESERVED2[3];
-    uint32_t NVMSRCADDR;
-    uint32_t RESERVED3[3];
-    uint32_t NVMPWP;
-    uint32_t NVMPWPCLR;
-    uint32_t NVMPWPSET;
-    uint32_t NVMPWPINV;
-    uint32_t NVMBWP;
-    uint32_t NVMBWPCLR;
-    uint32_t NVMBWPSET;
-    uint32_t NVMBWPINV;
+    struct pic32mm_reg_t NVMCON;
+    struct pic32mm_reg_t NVMKEY;
+    struct pic32mm_reg_t NVMADDR;
+    struct pic32mm_reg_t NVMDATA0;
+    struct pic32mm_reg_t NVMDATA1;
+    struct pic32mm_reg_t NVMSRCADDR;
+    struct pic32mm_reg_t NVMPWP;
+    struct pic32mm_reg_t NVMBWP;
 };
 
 #define PIC32MM_FLASH_NVMCON_WR                              BIT(15)
@@ -79,136 +70,48 @@ struct pic32mm_flash_t {
 
 /* 8. Interrupts. */
 struct pic32mm_int_t {
-    uint32_t INTCON;
-    uint32_t INTCONCLR;
-    uint32_t INTCONSET;
-    uint32_t INTCONINV;
-    uint32_t PRISS;
-    uint32_t PRISSCLR;
-    uint32_t PRISSSET;
-    uint32_t PRISSINV;
-    uint32_t INTSTAT;
-    uint32_t INTSTATCLR;
-    uint32_t INTSTATSET;
-    uint32_t INTSTATINV;
-    uint32_t IPTMR;
-    uint32_t IPTMRCLR;
-    uint32_t IPTMRSET;
-    uint32_t IPTMRINV;
-    struct {
-        uint32_t VALUE;
-        uint32_t CLR;
-        uint32_t SET;
-        uint32_t INV;
-    } IFS[4];
+    struct pic32mm_reg_t INTCON;
+    struct pic32mm_reg_t PRISS;
+    struct pic32mm_reg_t INTSTAT;
+    struct pic32mm_reg_t IPTMR;
+    struct pic32mm_reg_t IFS[4];
     uint32_t RESERVED0[16];
-    struct {
-        uint32_t VALUE;
-        uint32_t CLR;
-        uint32_t SET;
-        uint32_t INV;
-    } IEC[4];
+    struct pic32mm_reg_t IEC[4];
     uint32_t RESERVED1[16];
-    struct {
-        uint32_t VALUE;
-        uint32_t CLR;
-        uint32_t SET;
-        uint32_t INV;
-    } IPC[26];
+    struct pic32mm_reg_t IPC[26];
 };
 
 /* 10. IO. */
 struct pic32mm_port_t {
-    uint32_t ANSEL;
-    uint32_t ANSELCLR;
-    uint32_t ANSELSET;
-    uint32_t ANSELINV;
-    uint32_t TRIS;
-    uint32_t TRISCLR;
-    uint32_t TRISSET;
-    uint32_t TRISINV;
-    uint32_t PORT;
-    uint32_t PORTCLR;
-    uint32_t PORTSET;
-    uint32_t PORTINV;
-    uint32_t LAT;
-    uint32_t LATCLR;
-    uint32_t LATSET;
-    uint32_t LATINV;
-    uint32_t ODC;
-    uint32_t ODCCLR;
-    uint32_t ODCSET;
-    uint32_t ODCINV;
-    uint32_t CNPU;
-    uint32_t CNPUCLR;
-    uint32_t CNPUSET;
-    uint32_t CNPUINV;
-    uint32_t CNPD;
-    uint32_t CNPDCLR;
-    uint32_t CNPDSET;
-    uint32_t CNPDINV;
-    uint32_t CNCON;
-    uint32_t CNCONCLR;
-    uint32_t CNCONSET;
-    uint32_t CNCONINV;
-    uint32_t CNEN0;
-    uint32_t CNEN0CLR;
-    uint32_t CNEN0SET;
-    uint32_t CNEN0INV;
-    uint32_t CNSTAT;
-    uint32_t CNSTATCLR;
-    uint32_t CNSTATSET;
-    uint32_t CNSTATINV;
-    uint32_t CNEN1;
-    uint32_t CNEN1CLR;
-    uint32_t CNEN1SET;
-    uint32_t CNEN1INV;
-    uint32_t CNF;
-    uint32_t CNFCLR;
-    uint32_t CNFSET;
-    uint32_t CNFINV;
+    struct pic32mm_reg_t ANSEL;
+    struct pic32mm_reg_t TRIS;
+    struct pic32mm_reg_t PORT;
+    struct pic32mm_reg_t LAT;
+    struct pic32mm_reg_t ODC;
+    struct pic32mm_reg_t CNPU;
+    struct pic32mm_reg_t CNPD;
+    struct pic32mm_reg_t CNCON;
+    struct pic32mm_reg_t CNEN0;
+    struct pic32mm_reg_t CNSTAT;
+    struct pic32mm_reg_t CNEN1;
+    struct pic32mm_reg_t CNF;
 };
 
 struct pic32mm_pinsel_t {
     uint32_t RPCON;
     uint32_t RESERVED0[7];
-    struct {
-        uint32_t VALUE;
-        uint32_t CLR;
-        uint32_t SET;
-        uint32_t INV;
-    } RPINR[12];
+    struct pic32mm_reg_t RPINR[12];
     uint32_t RESERVED1[12];
-    struct {
-        uint32_t VALUE;
-        uint32_t CLR;
-        uint32_t SET;
-        uint32_t INV;
-    } RPOR[6];
+    struct pic32mm_reg_t RPOR[6];
 };
 
 /* 17. UART. */
 struct pic32mm_uart_t {
-    uint32_t MODE;
-    uint32_t MODECLR;
-    uint32_t MODESET;
-    uint32_t MODEINV;
-    uint32_t STA;
-    uint32_t STACLR;
-    uint32_t STASET;
-    uint32_t STAINV;
-    uint32_t TXREG;
-    uint32_t TXREGCLR;
-    uint32_t TXREGSET;
-    uint32_t TXREGINV;
-    uint32_t RXREG;
-    uint32_t RXREGCLR;
-    uint32_t RXREGSET;
-    uint32_t RXREGINV;
-    uint32_t BRG;
-    uint32_t BRGCLR;
-    uint32_t BRGSET;
-    uint32_t BRGINV;
+    struct pic32mm_reg_t MODE;
+    struct pic32mm_reg_t STA;
+    struct pic32mm_reg_t TXREG;
+    struct pic32mm_reg_t RXREG;
+    struct pic32mm_reg_t BRG;
 };
 
 #define PIC32MM_UART_MODE_SPLEN                              BIT(23)
@@ -409,20 +312,57 @@ struct pic32mm_conf_t {
 /**
  * Read given register.
  */
-uint32_t pic32mm_reg_read(volatile uint32_t *reg_p);
+#define pic32mm_reg_read(reg_p)                 \
+    ({                                          \
+        uint32_t UNIQUE(value);                 \
+        asm volatile("lw %0, 0(%1)" :           \
+                     "=r" (UNIQUE(value)) :     \
+                     "r" (reg_p));              \
+        UNIQUE(value);                          \
+    })
+
 
 /**
- * Write given register.
+ * Write given value to given register.
  */
-void pic32mm_reg_write(volatile uint32_t *reg_p, uint32_t value);
+#define pic32mm_reg_write(reg_p, value)                        \
+    asm volatile ("sw %0, 0(%1)" : : "r" (value), "r" (reg_p));
 
-#define pic32mm_mfc0(reg, select) ({                            \
-            uint32_t UNIQUE(c0);                                \
-            asm volatile("mfc0 %0, $" #reg ", " #select :       \
-                         "=r" (UNIQUE(c0)) : :                  \
-                         "memory");                             \
-            UNIQUE(c0);                                         \
-        })
+/**
+ * Clear given bits in given register.
+ */
+#define pic32mm_reg_clr(reg_p, value)                                   \
+    asm volatile ("sw %0, 0(%1)" : : "r" (value), "r" (&(reg_p)->CLR));
+
+/**
+ * Invert given bits in given register.
+ */
+#define pic32mm_reg_inv(reg_p, value)                                   \
+    asm volatile ("sw %0, 0(%1)" : : "r" (value), "r" (&(reg_p)->INV));
+
+/**
+ * Set given bits in given register.
+ */
+#define pic32mm_reg_set(reg_p, value)                        \
+    asm volatile ("sw %0, 0(%1)" : : "r" (value), "r" (&(reg_p)->SET));
+
+/**
+ * Insert given value at given offset using CLR and SET registers.
+ */
+#define pic32mm_reg_insert(reg_p, value, width, offset)         \
+    do {                                                        \
+        pic32mm_reg_clr(reg_p, bits_mask_32(width) << (offset));   \
+        pic32mm_reg_set(reg_p, (value) << (offset));            \
+    } while (0);
+
+#define pic32mm_mfc0(reg, select)                       \
+    ({                                                  \
+        uint32_t UNIQUE(c0);                            \
+        asm volatile("mfc0 %0, $" #reg ", " #select :   \
+                     "=r" (UNIQUE(c0)) : :              \
+                     "memory");                         \
+        UNIQUE(c0);                                     \
+    })
 
 #define pic32mm_mtc0(reg, select, value)                \
     asm volatile("mtc0 %0, $" #reg ", " #select : :     \

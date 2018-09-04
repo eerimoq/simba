@@ -77,9 +77,40 @@ struct pin_device_t pin_device[PIN_DEVICE_MAX] = {
 };
 
 struct uart_device_t uart_device[UART_DEVICE_MAX] = {
-    { .drv_p = NULL, .regs_p = PIC32MM_UART1 },
-    { .drv_p = NULL, .regs_p = PIC32MM_UART2 },
-    { .drv_p = NULL, .regs_p = PIC32MM_UART3 }
+    {
+        .drv_p = NULL,
+        .regs_p = PIC32MM_UART1,
+        .rpor = -1,
+        .rpor_offset = -1,
+        .rpinr = -1,
+        .rpinr_offset = -1,
+        .ifs_p = NULL,
+        .iec_p = NULL,
+        .ifs_p = NULL
+
+    },
+    {
+        .drv_p = NULL,
+        .regs_p = PIC32MM_UART2,
+        .rpor = 4,
+        .rpor_offset = 3 * 32 + 8,
+        .rpinr = 18,
+        .rpinr_offset = 8 * 32 + 16,
+        .ifs_p = &PIC32MM_INT->IFS[1],
+        .iec_p = &PIC32MM_INT->IEC[1],
+        .ipc_p = &PIC32MM_INT->IPC[14]
+    },
+    {
+        .drv_p = NULL,
+        .regs_p = PIC32MM_UART3,
+        .rpor = -1,
+        .rpor_offset = -1,
+        .rpinr = -1,
+        .rpinr_offset = -1,
+        .ifs_p = NULL,
+        .iec_p = NULL,
+        .ifs_p = NULL
+    }
 };
 
 struct flash_device_t flash_device[FLASH_DEVICE_MAX] = {

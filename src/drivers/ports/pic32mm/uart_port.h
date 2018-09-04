@@ -37,6 +37,13 @@
 struct uart_device_t {
     struct uart_driver_t *drv_p;
     volatile struct pic32mm_uart_t *regs_p;
+    int rpor;
+    int rpor_offset;
+    int rpinr;
+    int rpinr_offset;
+    volatile struct pic32mm_reg_t *ifs_p;
+    volatile struct pic32mm_reg_t *iec_p;
+    volatile struct pic32mm_reg_t *ipc_p;
 };
 
 struct uart_driver_t {

@@ -32,6 +32,18 @@
 #include "simba.h"
 
 /**
+ * Create a bit mask of given width.
+ *
+ * @param[in] width Width in bits.
+ *
+ * @return The bit mask.
+ */
+static inline uint32_t bits_mask_32(int width)
+{
+    return ((1 << width) - 1);
+}
+
+/**
  * Insert given number of bits into another value at given position.
  *
  * For example, `bits_insert_32(0xffffffff, 4, 8, 0x12)` would return

@@ -48,11 +48,11 @@ static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
     switch (mode) {
 
     case PIN_OUTPUT:
-        dev_p->regs_p->TRISCLR = dev_p->mask;
+        pic32mm_reg_clr(&dev_p->regs_p->TRIS, dev_p->mask);
         break;
 
     case PIN_INPUT:
-        dev_p->regs_p->TRISSET = dev_p->mask;
+        pic32mm_reg_set(&dev_p->regs_p->TRIS, dev_p->mask);
         break;
 
     default:
@@ -64,19 +64,19 @@ static inline int pin_port_device_set_mode(const struct pin_device_t *dev_p,
 
 static inline int pin_port_device_read(const struct pin_device_t *dev_p)
 {
-    return ((dev_p->regs_p->PORT & dev_p->mask) != 0);
+    return ((pic32mm_reg_read(&dev_p->regs_p->PORT) & dev_p->mask) != 0);
 }
 
 static inline int pin_port_device_write_high(const struct pin_device_t *dev_p)
 {
-    dev_p->regs_p->LATCLR = dev_p->mask;
+    pic32mm_reg_clr(&dev_p->regs_p->LAT, dev_p->mask);
 
     return (0);
 }
 
 static inline int pin_port_device_write_low(const struct pin_device_t *dev_p)
 {
-    dev_p->regs_p->LATSET = dev_p->mask;
+    pic32mm_reg_set(&dev_p->regs_p->LAT, dev_p->mask);
 
     return (0);
 }

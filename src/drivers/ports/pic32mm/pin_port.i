@@ -56,13 +56,9 @@ static int pin_port_write(struct pin_driver_t *self_p, int value)
 
 static int pin_port_toggle(struct pin_driver_t *self_p)
 {
-    const struct pin_device_t *dev_p;
-    int value;
+    pic32mm_reg_inv(&self_p->dev_p->regs_p->LAT, self_p->dev_p->mask);
 
-    dev_p = self_p->dev_p;
-    value = (dev_p->regs_p->LAT & dev_p->mask);
-
-    return (pin_port_write(self_p, value));
+    return (0);
 }
 
 static int pin_port_set_mode(struct pin_driver_t *self_p, int mode)

@@ -66,10 +66,19 @@ static int test_insert(void)
     return (0);
 }
 
+static int test_mask(void)
+{
+    BTASSERT(bits_mask_32(1) == 0x1);
+    BTASSERT(bits_mask_32(5) == 0x1f);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_testcase_t testcases[] = {
         { test_insert, "test_insert" },
+        { test_mask, "test_mask" },
         { NULL, NULL }
     };
 
