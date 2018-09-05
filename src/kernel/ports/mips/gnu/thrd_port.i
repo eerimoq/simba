@@ -98,12 +98,12 @@ static void thrd_port_tick(void)
 
 static void thrd_port_cpu_usage_start(struct thrd_t *thrd_p)
 {
-    /* thrd_p->port.cpu.start = SPC5_STM->CNT; */
+    thrd_p->port.cpu.start = pic32mm_mfc0(9, 0);
 }
 
 static void thrd_port_cpu_usage_stop(struct thrd_t *thrd_p)
 {
-    /* thrd_p->port.cpu.period.time += (SPC5_STM->CNT - thrd_p->port.cpu.start); */
+    thrd_p->port.cpu.period.time += (pic32mm_mfc0(9, 0) - thrd_p->port.cpu.start);
 }
 
 #if CONFIG_MONITOR_THREAD == 1
@@ -112,8 +112,6 @@ static void thrd_port_cpu_usage_stop(struct thrd_t *thrd_p)
 
 static cpu_usage_t thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
 {
-    /* return (((cpu_usage_t)100 * thrd_p->port.cpu.period.time) */
-    /*         / (SPC5_STM->CNT - thrd_p->port.cpu.period.start)); */
     return (0);
 }
 
@@ -121,22 +119,20 @@ static cpu_usage_t thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
 
 static cpu_usage_t thrd_port_cpu_usage_get(struct thrd_t *thrd_p)
 {
-    /* uint32_t time; */
-    /* uint32_t period; */
+    uint32_t time;
+    uint32_t period;
 
-    /* time = (thrd_p->port.cpu.period.time / 128); */
-    /* period = ((SPC5_STM->CNT - thrd_p->port.cpu.period.start) / 128); */
+    time = thrd_p->port.cpu.period.time;
+    period = (pic32mm_mfc0(9, 0) - thrd_p->port.cpu.period.start);
 
-    /* return DIV_ROUND(((cpu_usage_t)100 * time), period); */
-    return (0);
+    return DIV_ROUND(((cpu_usage_t)100 * time), period);
 }
 
 #    endif
 
 static void thrd_port_cpu_usage_reset(struct thrd_t *thrd_p)
 {
-    /* thrd_p->port.cpu.period.start = SPC5_STM->CNT; */
-    thrd_p->port.cpu.period.start = 0;
+    thrd_p->port.cpu.period.start = pic32mm_mfc0(9, 0);
     thrd_p->port.cpu.period.time = 0;
 }
 

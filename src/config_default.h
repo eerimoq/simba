@@ -1781,7 +1781,7 @@
  * Start the monitor thread to gather statistics of the scheulder.
  */
 #ifndef CONFIG_MONITOR_THREAD
-#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_ESP) || defined(FAMILY_ESP32) || defined(ARCH_MIPS) || defined(CONFIG_MINIMAL_SYSTEM)
+#    if defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO) || defined(FAMILY_ESP) || defined(FAMILY_ESP32) || defined(CONFIG_MINIMAL_SYSTEM)
 #        define CONFIG_MONITOR_THREAD                       0
 #    else
 #        define CONFIG_MONITOR_THREAD                       1
@@ -2348,7 +2348,7 @@
  * Stack size of the monitor thread.
  */
 #ifndef CONFIG_THRD_MONITOR_STACK_SIZE
-#    if defined(ARCH_PPC) || defined(ARCH_ESP) || defined(ARCH_ESP32)
+#    if defined(ARCH_PPC) || defined(ARCH_ESP) || defined(ARCH_ESP32) || defined(ARCH_MIPS)
 #        define CONFIG_THRD_MONITOR_STACK_SIZE            768
 #    elif defined(ARCH_ARM)
 #        define CONFIG_THRD_MONITOR_STACK_SIZE            512

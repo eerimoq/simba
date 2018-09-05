@@ -42,11 +42,14 @@ extern int main();
 
 ISR(core_timer)
 {
+    uint32_t compare;
+
     pic32mm_reg_write(&PIC32MM_INT->IFS[0].CLR, 1);
 
     /* Setup next timeout. */
-    pic32mm_mtc0(9, 0, 0);
-    pic32mm_mtc0(11, 0, SYS_TICK_COUNT);
+    compare = pic32mm_mfc0(11, 0);
+    compare += SYS_TICK_COUNT;
+    pic32mm_mtc0(11, 0, compare);
 
     sys_tick_isr();
 }
@@ -101,47 +104,11 @@ static void sys_port_reboot()
 
 static int sys_port_backtrace(void **buf_pp, size_t size)
 {
-    void *return_address_p;
-    void *frame_address_p;
-    void **frame_address_pp;
-    int depth;
-    int depth_max;
-
-    return_address_p = __builtin_return_address(0);
-    frame_address_p = __builtin_frame_address(1);
-    depth = 0;
-    depth_max = (size / sizeof(void*) / 2);
-
-    buf_pp[depth] = return_address_p;
-    buf_pp[depth + 1] = frame_address_p;
-    depth++;
-
-    frame_address_pp = (void **)frame_address_p;
-
-    while ((frame_address_p != NULL) && (depth < depth_max)) {
-        frame_address_p = *frame_address_pp;
-        frame_address_pp = (void **)frame_address_p;
-
-        if (*frame_address_pp == NULL) {
-            break;
-        }
-
-        return_address_p = *(frame_address_pp + 1);
-        buf_pp[2 * depth] = return_address_p;
-        buf_pp[2 * depth + 1] = frame_address_p;
-        depth++;
-    }
-
-    return (depth);
+    return (-ENOSYS);
 }
 
 static int32_t sys_port_get_time_into_tick()
 {
-    /* uint32_t count; */
-
-    /* count = (SPC5_STM->CNT - (SPC5_STM->CHANNELS[0].CMP - SYS_TICK_COUNT)); */
-
-    /* return (1000 * (count / (F_CPU / 1000000))); */
     return (0);
 }
 

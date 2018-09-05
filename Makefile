@@ -470,6 +470,7 @@ endif
 
 ifeq ($(BOARD), defcon26_badge)
     TESTS = $(addprefix tst/kernel/, \
+	stress \
 	sys \
 	thrd \
 	timer)
