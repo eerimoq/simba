@@ -174,9 +174,9 @@ else
 	soam.py serial --port $(SERIAL_PORT) --baudrate $(BAUDRATE) $(SOAMDBAPP)
 endif
 else
-	python -u $(CONSOLESCRIPT) --port $(SERIAL_PORT) \
-				   $(CONSOLE_RESET_TYPE:%=--reset-type %) \
-			           --baudrate $(BAUDRATE)
+	python $(CONSOLESCRIPT) --port $(SERIAL_PORT) \
+				$(CONSOLE_RESET_TYPE:%=--reset-type %) \
+			        --baudrate $(BAUDRATE)
 endif
 
 monitor:
