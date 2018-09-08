@@ -62,6 +62,17 @@ static inline int clock_pulse(struct icsp_soft_driver_t *self_p)
     return (0);
 }
 
+static inline int clock_bit(struct icsp_soft_driver_t *self_p)
+{
+    pin_device_write_low(self_p->pged_p);
+    clock_pulse(self_p);
+    clock_pulse(self_p);
+    clock_pulse(self_p);
+    clock_pulse(self_p);
+
+    return (0);
+}
+
 static inline int clock_bit_in(struct icsp_soft_driver_t *self_p)
 {
     int tdo;
@@ -209,6 +220,24 @@ static int send_key(struct icsp_soft_driver_t *self_p)
     return (0);
 }
 
+static void wait_for_pracc_set(struct icsp_soft_driver_t *self_p)
+{
+    int pracc;
+
+    move_to_capture_dr_from_idle(self_p);
+
+    /* PrACC must be 1 for a successful transfer. */
+    while (1) {
+        pracc = clock_bit_in(self_p);
+
+        if (pracc == 1) {
+            break;
+        }
+
+        move_to_capture_dr_from_shift_dr(self_p);
+    }
+}
+
 int icsp_soft_module_init(void)
 {
     return (0);
@@ -341,25 +370,92 @@ int icsp_soft_fast_data_transfer(struct icsp_soft_driver_t *self_p,
     ASSERTN(self_p != NULL, EINVAL);
 
     int value;
-    int pracc;
 
-    move_to_capture_dr_from_idle(self_p);
-
-    /* PrACC must be 1 for a successful transfer. */
-    while (1) {
-        pracc = clock_bit_in(self_p);
-
-        if (pracc == 1) {
-            break;
-        }
-
-        move_to_capture_dr_from_shift_dr(self_p);
-    }
+    wait_for_pracc_set(self_p);
 
     /* First read bit in the data transfer. */
     value = clock_bit_in(self_p);
 
     return (transfer(self_p, rxbuf_p, txbuf_p, number_of_bits, value));
+}
+
+int icsp_soft_fast_data_read(struct icsp_soft_driver_t *self_p,
+                             uint32_t *data_p)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    size_t i;
+
+    wait_for_pracc_set(self_p);
+
+    /* First read bit in the data transfer. */
+    *data_p = clock_bit_in(self_p);
+
+    for (i = 1; i < 32; i++) {
+        /* TDI. */
+        clock_pulse(self_p);
+
+        /* TMS. */
+        clock_pulse(self_p);
+
+        /* TDO. */
+        clock_pulse(self_p);
+
+        pin_device_set_mode(self_p->pged_p, PIN_INPUT);
+        asm volatile ("nop");
+        asm volatile ("nop");
+        asm volatile ("nop");
+        *data_p |= (pin_device_read(self_p->pged_p) << i);
+        pin_device_set_mode(self_p->pged_p, PIN_OUTPUT);
+
+        clock_pulse(self_p);
+    }
+
+    clock_bit_tms(self_p, 1);
+
+    return (move_to_idle_from_shift(self_p));
+}
+
+int icsp_soft_fast_data_write(struct icsp_soft_driver_t *self_p,
+                              uint32_t data)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+
+    size_t i;
+
+    wait_for_pracc_set(self_p);
+
+    /* First read bit in the data transfer. */
+    clock_bit(self_p);
+
+    for (i = 0; i < 31; i++) {
+        /* TDI. */
+        pin_device_write(self_p->pged_p, data & 1);
+        data >>= 1;
+        clock_pulse(self_p);
+
+        /* TMS. */
+        pin_device_write_low(self_p->pged_p);
+        clock_pulse(self_p);
+
+        /* TDO. */
+        clock_pulse(self_p);
+        clock_pulse(self_p);
+    }
+
+    /* TDI. */
+    pin_device_write(self_p->pged_p, data & 1);
+    clock_pulse(self_p);
+
+    /* TMS. */
+    pin_device_write_high(self_p->pged_p);
+    clock_pulse(self_p);
+
+    /* TDO. */
+    clock_pulse(self_p);
+    clock_pulse(self_p);
+
+    return (move_to_idle_from_shift(self_p));
 }
 
 int icsp_soft_make_transition(struct icsp_soft_driver_t *self_p,

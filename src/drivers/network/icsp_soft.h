@@ -163,6 +163,28 @@ int icsp_soft_fast_data_transfer(struct icsp_soft_driver_t *self_p,
                                  size_t number_of_bits);
 
 /**
+ * Fast read data from given ICSP device.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[out] data_p Read data.
+ *
+ * @return zero(0) or negative error code.
+ */
+int icsp_soft_fast_data_read(struct icsp_soft_driver_t *self_p,
+                             uint32_t *data_p);
+
+/**
+ * Fast write given data to the ICSP device.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] data Dat ato write.
+ *
+ * @return zero(0) or negative error code.
+ */
+int icsp_soft_fast_data_write(struct icsp_soft_driver_t *self_p,
+                              uint32_t data);
+
+/**
  * Make given transition in the ICSP TAP controller state machine.
  *
  * @param[in] self_p Initialized driver object.
