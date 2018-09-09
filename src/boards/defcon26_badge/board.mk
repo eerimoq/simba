@@ -44,7 +44,7 @@ BAUDRATE ?= 76800
 
 upload:
 	@echo "Uploading '$(EXE)'."
-	pictools -p $(PROGRAMMER_PORT) flash_write -e -v $(S19)
+	pictools -p $(PROGRAMMER_PORT) flash_write --chip-erase $(S19)
 
 rerun:
 	@echo "Running '$(EXE)'."
