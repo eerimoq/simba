@@ -305,6 +305,8 @@ struct pic32mm_conf_t {
 #define PIC32MM_UDID_SIZE                   0x00000014
 #define PIC32MM_UDID_END                    0x1fc41854
 
+#define PIC32MM_PHYSICAL_ADDRESS(address) ((address) & 0x1fffffff)
+
 /* Interrupt service routine. */
 #define ISR(vector)                             \
     void isr_ ## vector(int vector_number)
@@ -368,6 +370,5 @@ struct pic32mm_conf_t {
     asm volatile("mtc0 %0, $" #reg ", " #select : :     \
                  "r" (value) :                          \
                  "memory")
-
 
 #endif

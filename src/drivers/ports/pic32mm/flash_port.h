@@ -38,4 +38,16 @@ struct flash_driver_t {
     struct flash_device_t *dev_p;
 };
 
+/**
+ * Start an asynchronous flash row operations of 256 bytes.
+ */
+int flash_async_write_row(struct flash_driver_t *self_p,
+                          uintptr_t dst,
+                          const void *src_p);
+
+/**
+ * Start for current asynchronous flash operations to finish.
+ */
+int flash_async_wait(struct flash_driver_t *self_p);
+
 #endif

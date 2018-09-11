@@ -145,3 +145,46 @@ static int flash_port_erase(struct flash_driver_t *self_p,
 
     return (res);
 }
+
+int flash_async_write_row(struct flash_driver_t *self_p,
+                          uintptr_t dst,
+                          const void *src_p)
+{
+    volatile struct pic32mm_flash_t *regs_p;
+
+    regs_p = self_p->dev_p->regs_p;
+    regs_p = PIC32MM_FLASH;
+
+    pic32mm_reg_write(&regs_p->NVMADDR, dst);
+    pic32mm_reg_write(&regs_p->NVMSRCADDR,
+                      PIC32MM_PHYSICAL_ADDRESS((uint32_t)src_p));
+    pic32mm_reg_write(&regs_p->NVMCON,
+                      (PIC32MM_FLASH_NVMCON_WREN
+                       | PIC32MM_FLASH_NVMCON_NVMOP_ROW_PROGRAM));
+    write_protect_unlock(regs_p);
+    pic32mm_reg_set(&regs_p->NVMCON, PIC32MM_FLASH_NVMCON_WR);
+
+    return (0);
+}
+
+int flash_async_wait(struct flash_driver_t *self_p)
+{
+    int res;
+    volatile struct pic32mm_flash_t *regs_p;
+
+    res = 0;
+    regs_p = self_p->dev_p->regs_p;
+    regs_p = PIC32MM_FLASH;
+
+    wait_for_operation_completed(regs_p);
+
+    if (pic32mm_reg_read(&regs_p->NVMCON) & PIC32MM_FLASH_NVMCON_WRERR) {
+        res = -1;
+    }
+
+    pic32mm_reg_clr(&regs_p->NVMCON, PIC32MM_FLASH_NVMCON_WREN);
+
+    write_protect_lock(regs_p);
+
+    return (res);
+}
