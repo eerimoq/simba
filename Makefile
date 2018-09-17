@@ -585,7 +585,7 @@ clean-spc56ddiscovery:
 clean-xvisor-raspberry-pi-3:
 	$(MAKE) BOARD=xvisor_raspberry_pi_3 clean
 
-clean-xvisor-defcon26-badge:
+clean-defcon26-badge:
 	$(MAKE) BOARD=defcon26_badge clean
 
 test-arduino-due:
@@ -633,7 +633,7 @@ test-xvisor-raspberry-pi-3:
 	$(MAKE) -C tst/kernel/sys BOARD=xvisor_raspberry_pi_3 all
 	$(MAKE) BOARD=xvisor_raspberry_pi_3 SERIAL_PORT=/dev/arduino test
 
-test-xvisor-defon26-badge:
+test-defon26-badge:
 	@echo "DEF CON 26 Badge"
 	$(MAKE) BOARD=defcon26_badge SERIAL_PORT=/dev/ttyUSB0 test
 

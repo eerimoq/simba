@@ -156,6 +156,22 @@ ssize_t chan_read(void *self_p,
     return (((struct chan_t *)self_p)->read(self_p, buf_p, size));
 }
 
+ssize_t chan_read_with_timeout(void *self_p,
+                               void *buf_p,
+                               size_t size,
+                               const struct time_t *timeout_p)
+{
+    void *chan_p;
+    
+    chan_p = chan_poll(self_p, timeout_p);
+
+    if (chan_p == NULL) {
+        return (-ETIMEDOUT);
+    }
+    
+    return (chan_read(self_p, buf_p, size));
+}
+
 ssize_t chan_write(void *v_self_p,
                    const void *buf_p,
                    size_t size)

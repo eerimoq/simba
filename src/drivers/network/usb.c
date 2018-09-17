@@ -30,6 +30,8 @@
 
 #if CONFIG_USB == 1
 
+#include "usb_port.i"
+
 struct id_str_t {
     int id;
     char *str_p;

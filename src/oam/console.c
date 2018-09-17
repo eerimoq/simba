@@ -34,7 +34,7 @@ struct module_t {
     int8_t initialized;
     struct {
         struct uart_driver_t uart;
-        char rxbuf[CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE];
+        char rxbuf[CONFIG_START_CONSOLE_RX_BUFFER_SIZE];
     } console;
 };
 
@@ -92,7 +92,7 @@ struct module_t {
         struct usb_device_driver_t usb;
         struct usb_device_driver_base_t *drivers[1];
         struct usb_device_class_cdc_driver_t cdc;
-        uint8_t rxbuf[32];
+        uint8_t rxbuf[CONFIG_START_CONSOLE_RX_BUFFER_SIZE];
     } console;
 };
 
@@ -100,9 +100,6 @@ static struct module_t module;
 
 int console_module_init(void)
 {
-    usb_device_module_init();
-    usb_device_class_cdc_module_init();
-
     return (0);
 }
 
@@ -110,9 +107,9 @@ int console_init(void)
 {
     /* Initialize the CDC driver object. */
     usb_device_class_cdc_init(&module.console.cdc,
-                              0,
-                              2,
-                              3,
+                              CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE,
+                              CONFIG_START_CONSOLE_USB_CDC_ENDPOINT_IN,
+                              CONFIG_START_CONSOLE_USB_CDC_ENDPOINT_OUT,
                               module.console.rxbuf,
                               sizeof(module.console.rxbuf));
     module.console.drivers[0] = &module.console.cdc.base;

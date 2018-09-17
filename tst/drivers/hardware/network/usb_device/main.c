@@ -34,16 +34,22 @@
 #define ECHO_ENDPOINT_OUT       6
 
 static struct usb_device_driver_t usb;
-static struct usb_device_driver_base_t *drivers[2];
+
+/* The echo serial port will likely be /dev/ttyACM1 in linux. */
+struct usb_device_class_cdc_driver_t echo;
+static uint8_t echo_rxbuf[312];
+
+#if CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_NONE
 
 /* The console serial port will likely be /dev/ttyACM0 in linux. */
 static struct usb_device_class_cdc_driver_t console;
 static uint8_t console_rxbuf[8];
 
-/* The echo serial port will likely be /dev/ttyACM1 in linux. */
-static struct usb_device_class_cdc_driver_t echo;
-static uint8_t echo_rxbuf[8];
+static struct usb_device_driver_base_t *drivers[2];
 
+/**
+ * For boards with the console over USB.
+ */
 static int test_start(void)
 {
     BTASSERT(usb_device_module_init() == 0);
@@ -87,11 +93,50 @@ static int test_start(void)
 
     /* Wait for the host to connect. */
     while (usb_device_class_cdc_is_connected(&console) == 0) {
+        std_printf(OSTR("Not yet connected to the host...\r\n"));
         thrd_sleep_us(100000);
     }
 
     return (0);
 }
+
+#else
+
+static struct usb_device_driver_base_t *drivers[1];
+
+/**
+ * For boards with the console over the UART.
+ */
+static int test_start(void)
+{
+    BTASSERT(usb_device_module_init() == 0);
+    BTASSERT(usb_device_class_cdc_module_init() == 0);
+
+    /* Initialize the second CDC driver object. */
+    BTASSERT(usb_device_class_cdc_init(&echo,
+                                       CONFIG_START_CONSOLE_USB_CDC_CONTROL_INTERFACE,
+                                       CONFIG_START_CONSOLE_USB_CDC_ENDPOINT_IN,
+                                       CONFIG_START_CONSOLE_USB_CDC_ENDPOINT_OUT,
+                                       &echo_rxbuf[0],
+                                       sizeof(echo_rxbuf)) == 0);
+    drivers[0] = &echo.base;
+
+    /* Initialize the USB device driver. */
+    BTASSERT(usb_device_init(&usb,
+                             &usb_device[0],
+                             drivers,
+                             membersof(drivers),
+                             usb_device_descriptors) == 0);
+
+    /* Start the USB device driver. */
+    BTASSERT(usb_device_start(&usb) == 0);
+
+    std_printf("0x%08x\r\n", echo.base.drv_p);
+
+    return (0);
+}
+
+#endif
 
 static int test_echo(void)
 {

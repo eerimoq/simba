@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018, Erik Moqvist
+ * Copyright (c) 2018, Erik Moqvist
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,27 +26,40 @@
  * This file is part of the Simba project.
  */
 
-#ifndef __DRIVERS_USB_PORT_H__
-#define __DRIVERS_USB_PORT_H__
+#include "usb_port.h"
 
-#define USB_PIPE_STATE_FREE      0
-#define USB_PIPE_STATE_ALLOCATED 1
-
-struct usb_pipe_t {
-    int id;
-    int state;
-    struct thrd_t *thrd_p;
-};
-
-struct usb_driver_base_t {
-    void (*isr)(struct usb_driver_base_t *drv_p);
-};
-
-struct usb_device_t {
+ISR(uotghs)
+{
     struct usb_driver_base_t *drv_p;
-    volatile struct sam_uotghs_t *regs_p;
-    int id;
-    struct usb_pipe_t pipes[10];
-};
+
+    drv_p = usb_device[0].drv_p;
+
+    drv_p->isr(drv_p);
+
+#if 0
+
+    isr = dev_p->regs_p->HOST.ISR;
+
+    /* Connection interrupt. */
+    if (isr & SAM_UOTGHS_HOST_ISR_DCONNI) {
+        /* Clear the connection interrupt since it's handled now. */
+        dev_p->regs_p->HOST.ICR = SAM_UOTGHS_HOST_ICR_DCONNIC;
+
+        /* Notify the USB thread about the interrupt. */
+        mask = USB_HOST_PORT_EVENT_CONNECT;
+        event_write_isr(&drv_p->event, &mask, sizeof(mask));
+    }
+
+    /* Pipe interrupts. */
+    for (i = 0; i < 10; i++) {
+        if (isr & (SAM_UOTGHS_HOST_ISR_PEP_0 << i)) {
+            dev_p->regs_p->HOST.IDR = (SAM_UOTGHS_HOST_IDR_PEP_0 << i);
+
+            if (dev_p->pipes[i].thrd_p != NULL) {
+                thrd_resume_isr(dev_p->pipes[i].thrd_p, 0);
+            }
+        }
+    }
 
 #endif
+}

@@ -339,7 +339,7 @@ usb_desc_get_interface(uint8_t *desc_p,
  * @param[in] interface Interface to find.
  * @param[in] endpoint Endpoint to find.
  *
- * @return Endpoint or NULL on failure.
+ * @return Endpoint or NULL on if the endpoint was not found.
  */
 struct usb_descriptor_endpoint_t *
 usb_desc_get_endpoint(uint8_t *desc_p,

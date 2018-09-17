@@ -81,6 +81,50 @@ struct pic32mm_int_t {
     struct pic32mm_reg_t IPC[26];
 };
 
+/* 9. Oscillator. */
+struct pic32mm_osc_t {
+    struct pic32mm_reg_t OSCCON;
+    uint32_t RESERVED0[4];
+    struct pic32mm_reg_t SPLLCON;
+    uint32_t RESERVED1[24];
+    struct pic32mm_reg_t REFO1CON;
+    struct pic32mm_reg_t REFO1TRIM;
+    uint32_t RESERVED2[12];
+    struct pic32mm_reg_t CLKSTAT;
+    struct pic32mm_reg_t OSCTUN;
+};
+
+#define PIC32MM_OSC_OSCCON_NOSC_POS                          (8)
+#define PIC32MM_OSC_OSCCON_NOSC_MASK            \
+    (0x7 << PIC32MM_OSC_OSCCON_NOSC_POS)
+#define PIC32MM_OSC_OSCCON_NOSC(value)                  \
+    BITFIELD_SET(PIC32MM_OSC_OSCCON_NOSC, value)
+#define PIC32MM_OSC_OSCCON_NOSC_LPRC            \
+    PIC32MM_OSC_OSCCON_NOSC(5)
+#define PIC32MM_OSC_OSCCON_NOSC_SOSC            \
+    PIC32MM_OSC_OSCCON_NOSC(4)
+#define PIC32MM_OSC_OSCCON_NOSC_POSC            \
+    PIC32MM_OSC_OSCCON_NOSC(2)
+#define PIC32MM_OSC_OSCCON_NOSC_SPLL            \
+    PIC32MM_OSC_OSCCON_NOSC(1)
+#define PIC32MM_OSC_OSCCON_NOSC_FRC             \
+    PIC32MM_OSC_OSCCON_NOSC(0)
+#define PIC32MM_OSC_OSCCON_OSWEN                             BIT(0)
+
+#define PIC32MM_OSC_SPLLCON_PLLODIV_POS                      (24)
+#define PIC32MM_OSC_SPLLCON_PLLODIV_MASK        \
+    (0x7 << PIC32MM_OSC_SPLLCON_PLLODIV_POS)
+#define PIC32MM_OSC_SPLLCON_PLLODIV(value)              \
+    BITFIELD_SET(PIC32MM_OSC_SPLLCON_PLLODIV, value)
+#define PIC32MM_OSC_SPLLCON_PLLMULT_POS                      (16)
+#define PIC32MM_OSC_SPLLCON_PLLMULT_MASK        \
+    (0x7f << PIC32MM_OSC_SPLLCON_PLLMULT_POS)
+#define PIC32MM_OSC_SPLLCON_PLLMULT(value)              \
+    BITFIELD_SET(PIC32MM_OSC_SPLLCON_PLLMULT, value)
+#define PIC32MM_OSC_SPLLCON_PLLMULT_3           \
+    PIC32MM_OSC_SPLLCON_PLLMULT(1)
+#define PIC32MM_OSC_SPLLCON_PLLICLK                          BIT(7)
+    
 /* 10. IO. */
 struct pic32mm_port_t {
     struct pic32mm_reg_t ANSEL;
@@ -184,7 +228,9 @@ struct pic32mm_uart_t {
 #define PIC32MM_UART_STA_OERR                                BIT(1)
 #define PIC32MM_UART_STA_URXDA                               BIT(0)
 
-/* 26. Configuration bits. */
+/* 26. Special features. */
+
+/* Configuration bits. */
 struct pic32mm_conf_t {
     uint32_t RESERVED0;
     uint32_t FDEVOPT;
@@ -196,7 +242,7 @@ struct pic32mm_conf_t {
 };
 
 #define PIC32MM_CONF_FDEVOPT_RESERVED                        0x00003fe7
-#define PIC32MM_CONF_FDEVOPT_USERID_POS                      16
+#define PIC32MM_CONF_FDEVOPT_USERID_POS                      (16)
 #define PIC32MM_CONF_FDEVOPT_USERID_MASK        \
     (0xffff << PIC32MM_CONF_FDEVOPT_USERID_POS)
 #define PIC32MM_CONF_FDEVOPT_USERID(value)              \
@@ -207,7 +253,7 @@ struct pic32mm_conf_t {
 #define PIC32MM_CONF_FDEVOPT_SOSCHP                          BIT(3)
 
 #define PIC32MM_CONF_FICD_RESERVED                           0xffffffe3
-#define PIC32MM_CONF_FICD_ICS_POS                            3
+#define PIC32MM_CONF_FICD_ICS_POS                            (3)
 #define PIC32MM_CONF_FICD_ICS_MASK              \
     (0x3 << PIC32MM_CONF_FICD_ICS_POS)
 #define PIC32MM_CONF_FICD_ICS(value)            \
@@ -217,7 +263,7 @@ struct pic32mm_conf_t {
 #define PIC32MM_CONF_FPOR_RESERVED                           0xfffffff0
 #define PIC32MM_CONF_FPOR_LPBOREN                            BIT(3)
 #define PIC32MM_CONF_FPOR_RETVR                              BIT(2)
-#define PIC32MM_CONF_FPOR_BOREN_POS                          0
+#define PIC32MM_CONF_FPOR_BOREN_POS                          (0)
 #define PIC32MM_CONF_FPOR_BOREN_MASK            \
     (0x3 << PIC32MM_CONF_FPOR_BOREN_POS)
 #define PIC32MM_CONF_FPOR_BOREN(value)                  \
@@ -225,37 +271,37 @@ struct pic32mm_conf_t {
 
 #define PIC32MM_CONF_FWDT_RESERVED                           0xffff0000
 #define PIC32MM_CONF_FWDT_FWDTEN                             BIT(15)
-#define PIC32MM_CONF_FWDT_RCLKSEL_POS                        13
+#define PIC32MM_CONF_FWDT_RCLKSEL_POS                        (13)
 #define PIC32MM_CONF_FWDT_RCLKSEL_MASK          \
     (0x3 << PIC32MM_CONF_FWDT_RCLKSEL_POS)
 #define PIC32MM_CONF_FWDT_RCLKSEL(value)                \
     BITFIELD_SET(PIC32MM_CONF_FWDT_RCLKSEL, value)
-#define PIC32MM_CONF_FWDT_RWDTPS_POS                         8
+#define PIC32MM_CONF_FWDT_RWDTPS_POS                         (8)
 #define PIC32MM_CONF_FWDT_RWDTPS_MASK           \
     (0x1f << PIC32MM_CONF_FWDT_RWDTPS_POS)
 #define PIC32MM_CONF_FWDT_RWDTPS(value)                 \
     BITFIELD_SET(PIC32MM_CONF_FWDT_RWDTPS, value)
 #define PIC32MM_CONF_FWDT_WINDIS                             BIT(7)
-#define PIC32MM_CONF_FWDT_FWDTWINSZ_POS                      5
+#define PIC32MM_CONF_FWDT_FWDTWINSZ_POS                      (5)
 #define PIC32MM_CONF_FWDT_FWDTWINSZ_MASK        \
     (0x3 << PIC32MM_CONF_FWDT_FWDTWINSZ_POS)
 #define PIC32MM_CONF_FWDT_FWDTWINSZ(value)              \
     BITFIELD_SET(PIC32MM_CONF_FWDT_FWDTWINSZ, value)
-#define PIC32MM_CONF_FWDT_SWDTPS_POS                         0
+#define PIC32MM_CONF_FWDT_SWDTPS_POS                         (0)
 #define PIC32MM_CONF_FWDT_SWDTPS_MASK           \
     (0x1f << PIC32MM_CONF_FWDT_SWDTPS_POS)
 #define PIC32MM_CONF_FWDT_SWDTPS(value)                 \
     BITFIELD_SET(PIC32MM_CONF_FWDT_SWDTPS, value)
 
 #define PIC32MM_CONF_FOSCSEL_RESERVED                        0xffff2828
-#define PIC32MM_CONF_FOSCSEL_FCKSM_POS                       14
+#define PIC32MM_CONF_FOSCSEL_FCKSM_POS                       (14)
 #define PIC32MM_CONF_FOSCSEL_FCKSM_MASK         \
     (0x3 << PIC32MM_CONF_FOSCSEL_FCKSM_POS)
 #define PIC32MM_CONF_FOSCSEL_FCKSM(value)               \
     BITFIELD_SET(PIC32MM_CONF_FOSCSEL_FCKSM, value)
 #define PIC32MM_CONF_FOSCSEL_SOSCSEL                         BIT(12)
 #define PIC32MM_CONF_FOSCSEL_OSCIOFNC                        BIT(10)
-#define PIC32MM_CONF_FOSCSEL_POSCMOD_POS                     8
+#define PIC32MM_CONF_FOSCSEL_POSCMOD_POS                     (8)
 #define PIC32MM_CONF_FOSCSEL_POSCMOD_MASK       \
     (0x3 << PIC32MM_CONF_FOSCSEL_POSCMOD_POS)
 #define PIC32MM_CONF_FOSCSEL_POSCMOD(value)             \
@@ -263,7 +309,7 @@ struct pic32mm_conf_t {
 #define PIC32MM_CONF_FOSCSEL_IESO                            BIT(7)
 #define PIC32MM_CONF_FOSCSEL_SOSCEN                          BIT(6)
 #define PIC32MM_CONF_FOSCSEL_PLLSRC                          BIT(4)
-#define PIC32MM_CONF_FOSCSEL_FNOSC_POS                       0
+#define PIC32MM_CONF_FOSCSEL_FNOSC_POS                       (0)
 #define PIC32MM_CONF_FOSCSEL_FNOSC_MASK         \
     (0x7 << PIC32MM_CONF_FOSCSEL_FNOSC_POS)
 #define PIC32MM_CONF_FOSCSEL_FNOSC(value)               \
@@ -272,19 +318,46 @@ struct pic32mm_conf_t {
 #define PIC32MM_CONF_FSEC_RESERVED                           0x7fffffff
 #define PIC32MM_CONF_FSEC_CP                                 BIT(31)
 
+/* RAM configuration, device id and system lock registers map. */
+struct pic32mm_rds_conf_t {
+    struct pic32mm_reg_t CFGCON;
+    uint32_t RESERVED0[4];
+    struct pic32mm_reg_t DEVID;
+    struct pic32mm_reg_t SYSKEY;
+};
+
+#define PIC32MM_RDS_CONF_CFGCON_BMXERRDIS                    BIT(27)
+#define PIC32MM_RDS_CONF_CFGCON_BMXARB_POS                   (24)
+#define PIC32MM_RDS_CONF_CFGCON_BMXARB_MASK     \
+    (0x3 << PIC32MM_RDS_CONF_CFGCON_BMXARB_POS)
+#define PIC32MM_RDS_CONF_CFGCON_BMXARB(value)           \
+    BITFIELD_SET(PIC32MM_RDS_CONF_CFGCON_BMXARB, value)
+#define PIC32MM_RDS_CONF_CFGCON_EXECADDR_POS                 (16)
+#define PIC32MM_RDS_CONF_CFGCON_EXECADDR_MASK           \
+    (0xff << PIC32MM_RDS_CONF_CFGCON_EXECADDR_POS)
+#define PIC32MM_RDS_CONF_CFGCON_EXECADDR(value)                 \
+    BITFIELD_SET(PIC32MM_RDS_CONF_CFGCON_EXECADDR, value)
+#define PIC32MM_RDS_CONF_CFGCON_JTAGEN                       BIT(3)
+
+#define PIC32MM_RDS_CONF_SYSKEY_UNLOCK_1                     0xaa996655
+#define PIC32MM_RDS_CONF_SYSKEY_UNLOCK_2                     0x556699aa
+#define PIC32MM_RDS_CONF_SYSKEY_LOCK                         0
+
 /* Base addresses of peripherals. */
-#define PIC32MM_UART1   ((volatile struct pic32mm_uart_t *)   0xbf801800ul)
-#define PIC32MM_UART2   ((volatile struct pic32mm_uart_t *)   0xbf801900ul)
-#define PIC32MM_UART3   ((volatile struct pic32mm_uart_t *)   0xbf802000ul)
-#define PIC32MM_FLASH   ((volatile struct pic32mm_flash_t *)  0xbf802930ul)
-#define PIC32MM_PINSEL  ((volatile struct pic32mm_pinsel_t *) 0xbf802a00ul)
-#define PIC32MM_PORTA   ((volatile struct pic32mm_port_t *)   0xbf802bb0ul)
-#define PIC32MM_PORTB   ((volatile struct pic32mm_port_t *)   0xbf802cb0ul)
-#define PIC32MM_PORTC   ((volatile struct pic32mm_port_t *)   0xbf802db0ul)
-#define PIC32MM_PORTD   ((volatile struct pic32mm_port_t *)   0xbf802eb0ul)
-#define PIC32MM_TIMER1  ((volatile struct pic32mm_timer_t *)  0xbf808000ul)
-#define PIC32MM_CONF    ((volatile struct pic32mm_conf_t *)   0xbfc017c0ul)
-#define PIC32MM_INT     ((volatile struct pic32mm_int_t *)    0xbf80f000ul)
+#define PIC32MM_UART1    ((volatile struct pic32mm_uart_t *)     0xbf801800ul)
+#define PIC32MM_UART2    ((volatile struct pic32mm_uart_t *)     0xbf801900ul)
+#define PIC32MM_UART3    ((volatile struct pic32mm_uart_t *)     0xbf802000ul)
+#define PIC32MM_OSC      ((volatile struct pic32mm_osc_t *)      0xbf802680ul)
+#define PIC32MM_FLASH    ((volatile struct pic32mm_flash_t *)    0xbf802930ul)
+#define PIC32MM_PINSEL   ((volatile struct pic32mm_pinsel_t *)   0xbf802a00ul)
+#define PIC32MM_PORTA    ((volatile struct pic32mm_port_t *)     0xbf802bb0ul)
+#define PIC32MM_PORTB    ((volatile struct pic32mm_port_t *)     0xbf802cb0ul)
+#define PIC32MM_PORTC    ((volatile struct pic32mm_port_t *)     0xbf802db0ul)
+#define PIC32MM_PORTD    ((volatile struct pic32mm_port_t *)     0xbf802eb0ul)
+#define PIC32MM_RDS_CONF ((volatile struct pic32mm_rds_conf_t *) 0xbf803640ul)
+#define PIC32MM_TIMER1   ((volatile struct pic32mm_timer_t *)    0xbf808000ul)
+#define PIC32MM_INT      ((volatile struct pic32mm_int_t *)      0xbf80f000ul)
+#define PIC32MM_CONF     ((volatile struct pic32mm_conf_t *)     0xbfc017c0ul)
 
 #define PIC32MM_RAM_ADDRESS                 0x00000000
 #define PIC32MM_RAM_SIZE                    0x00004000

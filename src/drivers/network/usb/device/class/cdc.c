@@ -47,7 +47,7 @@ static ssize_t write_cb(void *chan_p,
                           struct usb_device_class_cdc_driver_t,
                           chout);
 
-    return (usb_device_write(self_p->drv_p,
+    return (usb_device_write(self_p->base.drv_p,
                              self_p->endpoint_out,
                              buf_p,
                              size));
@@ -86,7 +86,7 @@ static int check_reset_to_bootloader(struct usb_device_class_cdc_driver_t *self_
     }
 
 #endif
-    
+
     return (0);
 }
 
@@ -95,29 +95,33 @@ static int check_reset_to_bootloader(struct usb_device_class_cdc_driver_t *self_
  */
 static int start_of_frame_isr(struct usb_device_driver_base_t *base_p)
 {
-    char c;
+    uint8_t buf[8];
     struct usb_device_class_cdc_driver_t *self_p;
+    ssize_t res;
+    size_t offset;
+    size_t size;
 
     self_p = (struct usb_device_class_cdc_driver_t *)base_p;
+    offset = 0;
+    size = usb_device_size_isr(self_p->base.drv_p,
+                               self_p->endpoint_in);
 
     /* Read data from the hardware and write it to the driver input
        queue. */
-    while (1) {
-        if (usb_device_read_isr(self_p->drv_p,
-                                self_p->endpoint_in,
-                                &c,
-                                sizeof(c)) != sizeof(c)) {
-            break;
-        }
+    do {
+        res = usb_device_read_isr(self_p->base.drv_p,
+                                  self_p->endpoint_in,
+                                  offset,
+                                  &buf[0],
+                                  sizeof(buf));
 
-        if (queue_write_isr(&self_p->chin,
-                            &c,
-                            sizeof(c)) != sizeof(c)) {
-            break;
+        if (res > 0) {
+            offset += res;
+            res = queue_write_isr(&self_p->chin, &buf[0], res);
         }
-    }
+    } while ((offset < size) && (res > 0));
 
-    return (0);
+    return (res < 0 ? res : 0);
 }
 
 /**
@@ -154,7 +158,7 @@ static int setup_isr(struct usb_device_driver_base_t *base_p,
         switch (setup_p->request) {
 
         case USB_CDC_LINE_CODING:
-            usb_device_write_isr(NULL,
+            usb_device_write_isr(self_p->base.drv_p,
                                  0,
                                  &self_p->line_info,
                                  sizeof(self_p->line_info));
@@ -172,7 +176,8 @@ static int setup_isr(struct usb_device_driver_base_t *base_p,
         switch (setup_p->request) {
 
         case USB_CDC_LINE_CODING:
-            usb_device_read_isr(NULL,
+            usb_device_read_isr(self_p->base.drv_p,
+                                0,
                                 0,
                                 &self_p->line_info,
                                 sizeof(self_p->line_info));
@@ -183,6 +188,8 @@ static int setup_isr(struct usb_device_driver_base_t *base_p,
         case USB_CDC_CONTROL_LINE_STATE:
             self_p->line_state = setup_p->u.base.value;
             check_reset_to_bootloader(self_p);
+            self_p->base.drv_p->dev_p->regs_p->DEVICE.EPTICR[0]
+                = SAM_UOTGHS_DEVICE_EPTICR_TXINIC;
             res = 0;
             break;
 
@@ -205,6 +212,35 @@ static int setup_isr(struct usb_device_driver_base_t *base_p,
     }
 
     return (res);
+}
+
+/**
+ * USB device driver endpoint numbers callback.
+ */
+static int get_endpoint_by_index(struct usb_device_driver_base_t *base_p,
+                                 int index)
+{
+    int endpoint;
+    struct usb_device_class_cdc_driver_t *self_p;
+
+    self_p = (struct usb_device_class_cdc_driver_t *)base_p;
+
+    switch (index) {
+
+    case 0:
+        endpoint = self_p->endpoint_in;
+        break;
+
+    case 1:
+        endpoint = self_p->endpoint_out;
+        break;
+
+    default:
+        endpoint = -1;
+        break;
+    }
+    
+    return (endpoint);
 }
 
 #if CONFIG_USB_DEVICE_FS_COMMAND_LIST == 1
@@ -254,6 +290,7 @@ int usb_device_class_cdc_init(struct usb_device_class_cdc_driver_t *self_p,
 {
     self_p->base.start_of_frame_isr = start_of_frame_isr;
     self_p->base.setup_isr = setup_isr;
+    self_p->base.get_endpoint_by_index = get_endpoint_by_index;
 #if CONFIG_USB_DEVICE_FS_COMMAND_LIST == 1
     self_p->base.print = print;
 #endif

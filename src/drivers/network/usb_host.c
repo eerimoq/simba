@@ -305,27 +305,31 @@ static ssize_t device_get_descriptors(struct usb_host_device_t *device_p)
 {
     struct usb_descriptor_configuration_t *desc_p;
     uint8_t *dst_p;
+    ssize_t size;
 
     dst_p = device_p->descriptors.buf;
     dst_p += device_p->descriptors.size;
 
     /* Get the configuration descriptor at index 0. */
-    if (device_get_descriptor_configuration(device_p,
-                                            0,
-                                            dst_p,
-                                            sizeof(struct usb_descriptor_configuration_t))
-        != sizeof(struct usb_descriptor_configuration_t)) {
+    size = device_get_descriptor_configuration(
+        device_p,
+        0,
+        dst_p,
+        sizeof(struct usb_descriptor_configuration_t));
+
+    if (size != sizeof(struct usb_descriptor_configuration_t)) {
         return (-1);
     }
 
     desc_p = (struct usb_descriptor_configuration_t *)dst_p;
 
     if (desc_p->total_length > sizeof(struct usb_descriptor_configuration_t)) {
-        if (device_get_descriptor_configuration(device_p,
-                                                0,
-                                                dst_p,
-                                                desc_p->total_length)
-            != desc_p->total_length) {
+        size = device_get_descriptor_configuration(device_p,
+                                                   0,
+                                                   dst_p,
+                                                   desc_p->total_length);
+
+        if (size != desc_p->total_length) {
             return (-1);
         }
     }

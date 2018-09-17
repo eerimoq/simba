@@ -99,12 +99,19 @@ int usb_device_init(struct usb_device_driver_t *self_p,
     ASSERTN(drivers_max > 0, INVAL);
     ASSERTN(descriptors_pp != NULL, INVAL);
 
+    int i;
+    
     self_p->dev_p = dev_p;
     self_p->configuration = -1;
     self_p->drivers_pp = drivers_pp;
     self_p->drivers_max = drivers_max;
     self_p->descriptors_pp = descriptors_pp;
 
+    /* Give each driver a reference to this object. */
+    for (i = 0; i < drivers_max; i++) {
+        drivers_pp[i]->drv_p = self_p;
+    }
+    
     return (usb_device_port_init(self_p, dev_p));
 }
 
@@ -139,6 +146,7 @@ ssize_t usb_device_write(struct usb_device_driver_t *self_p,
 
 ssize_t usb_device_read_isr(struct usb_device_driver_t *self_p,
                             int endpoint,
+                            size_t offset,
                             void *buf_p,
                             size_t size)
 {
@@ -147,7 +155,7 @@ ssize_t usb_device_read_isr(struct usb_device_driver_t *self_p,
     ASSERTN(buf_p != NULL, INVAL);
     ASSERTN(size > 0, INVAL);
 
-    return (usb_device_port_read_isr(self_p, endpoint, buf_p, size));
+    return (usb_device_port_read_isr(self_p, endpoint, offset, buf_p, size));
 }
 
 ssize_t usb_device_write_isr(struct usb_device_driver_t *self_p,
@@ -161,6 +169,15 @@ ssize_t usb_device_write_isr(struct usb_device_driver_t *self_p,
     ASSERTN(size > 0, INVAL);
 
     return (usb_device_port_write_isr(self_p, endpoint, buf_p, size));
+}
+
+ssize_t usb_device_size_isr(struct usb_device_driver_t *self_p,
+                            int endpoint)
+{
+    ASSERTN(self_p != NULL, INVAL);
+    ASSERTN(endpoint > 0, INVAL);
+
+    return (usb_device_port_size_isr(self_p, endpoint));
 }
 
 #endif

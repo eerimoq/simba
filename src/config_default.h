@@ -100,6 +100,7 @@
 #    define PORT_HAS_SPI
 #    define PORT_HAS_USB
 #    define PORT_HAS_USB_HOST
+#    define PORT_HAS_USB_DEVICE
 #endif
 
 #if defined(FAMILY_SAMD)
@@ -1947,16 +1948,22 @@
 #endif
 
 /**
- * Console UART reception buffer size.
+ * Console reception buffer size.
  */
-#ifndef CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE
+#ifndef CONFIG_START_CONSOLE_RX_BUFFER_SIZE
 #    if defined(BOARD_NANO32) || defined(BOARD_ESP32_DEVKITC) || defined(BOARD_MAPLE_ESP32) || defined(BOARD_LINUX)
-#        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE  512
+#        define CONFIG_START_CONSOLE_RX_BUFFER_SIZE  512
 #    elif defined(BOARD_ARDUINO_NANO) || defined(BOARD_ARDUINO_UNO) || defined(BOARD_ARDUINO_PRO_MICRO)
-#        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE    4
+#        define CONFIG_START_CONSOLE_RX_BUFFER_SIZE    4
 #    else
-#        define CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE   32
+#        define CONFIG_START_CONSOLE_RX_BUFFER_SIZE   32
 #    endif
+#endif
+
+#ifdef CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE
+#    warning "CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE has been replaced by CONFIG_START_CONSOLE_RX_BUFFER_SIZE."
+#    undef CONFIG_START_CONSOLE_RX_BUFFER_SIZE
+#    define CONFIG_START_CONSOLE_RX_BUFFER_SIZE CONFIG_START_CONSOLE_UART_RX_BUFFER_SIZE
 #endif
 
 /**

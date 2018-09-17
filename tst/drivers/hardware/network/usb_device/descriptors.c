@@ -50,8 +50,13 @@ static FAR const struct usb_descriptor_configuration_t
 configuration_descriptor = {
     .length = sizeof(configuration_descriptor),
     .descriptor_type = DESCRIPTOR_TYPE_CONFIGURATION,
+#if CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_NONE
     .total_length = 141,
     .num_interfaces = 4,
+#else
+    .total_length = 75,
+    .num_interfaces = 2,
+#endif
     .configuration_value = 1,
     .configuration = 0,
     .configuration_attributes = CONFIGURATION_ATTRIBUTES_BUS_POWERED,
@@ -147,7 +152,7 @@ endpoint_2_descriptor = {
     .endpoint_address = 0x02, /* EP 2 OUT. */
     .attributes = ENDPOINT_ATTRIBUTES_TRANSFER_TYPE_BULK,
     .max_packet_size = 64,
-    .interval = 0
+    .interval = 128
 };
 
 static FAR const struct usb_descriptor_endpoint_t
@@ -157,8 +162,10 @@ endpoint_3_descriptor = {
     .endpoint_address = 0x83, /* EP 3 IN. */
     .attributes = ENDPOINT_ATTRIBUTES_TRANSFER_TYPE_BULK,
     .max_packet_size = 64,
-    .interval = 0
+    .interval = 128
 };
+
+#if CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_NONE
 
 static FAR const struct usb_descriptor_interface_association_t
 inferface_association_1_descriptor = {
@@ -246,6 +253,8 @@ endpoint_6_descriptor = {
     .interval = 0
 };
 
+#endif
+
 /**
  * An array of all USB device descriptors.
  */
@@ -264,6 +273,7 @@ usb_device_descriptors[] = {
     (FAR const union usb_descriptor_t *)&inferface_1_descriptor,
     (FAR const union usb_descriptor_t *)&endpoint_2_descriptor,
     (FAR const union usb_descriptor_t *)&endpoint_3_descriptor,
+#if CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_NONE
     /* Interface association 1 (/dev/ttyACM1). */
     (FAR const union usb_descriptor_t *)&inferface_association_1_descriptor,
     (FAR const union usb_descriptor_t *)&inferface_2_descriptor,
@@ -275,5 +285,6 @@ usb_device_descriptors[] = {
     (FAR const union usb_descriptor_t *)&inferface_3_descriptor,
     (FAR const union usb_descriptor_t *)&endpoint_5_descriptor,
     (FAR const union usb_descriptor_t *)&endpoint_6_descriptor,
+#endif
     NULL
 };

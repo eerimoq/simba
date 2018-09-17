@@ -1700,7 +1700,6 @@ struct sam_hsmci_t {
 
 /* 39. Universal Synchrounous Asynchronous Receiver Tranceiver. */
 struct sam_uotghs_t {
-
     /* USB Device registers. */
     struct {
         uint32_t CTRL;
@@ -1786,6 +1785,296 @@ struct sam_uotghs_t {
 };
 
 /* Device */
+
+/* Device General Control Register. */
+#define SAM_UOTGHS_DEVICE_CTRL_UADD_POS                      (0)
+#define SAM_UOTGHS_DEVICE_CTRL_UADD_WIDTH                    (7)
+#define SAM_UOTGHS_DEVICE_CTRL_UADD_MASK        \
+    (0x7f << SAM_UOTGHS_DEVICE_CTRL_UADD_POS)
+#define SAM_UOTGHS_DEVICE_CTRL_UADD(value)              \
+    BITFIELD_SET(SAM_UOTGHS_DEVICE_CTRL_UADD, (value))
+#define SAM_UOTGHS_DEVICE_CTRL_ADDEN                         BIT(7)
+#define SAM_UOTGHS_DEVICE_CTRL_DETACH                        BIT(8)
+#define SAM_UOTGHS_DEVICE_CTRL_RMWKUP                        BIT(9)
+#define SAM_UOTGHS_DEVICE_CTRL_SPDCONF_POS                   (10)
+#define SAM_UOTGHS_DEVICE_CTRL_SPDCONF_MASK     \
+    (0x3 << SAM_UOTGHS_DEVICE_CTRL_SPDCONF_POS)
+#define SAM_UOTGHS_DEVICE_CTRL_SPDCONF(value)                   \
+    BITFIELD_SET(SAM_UOTGHS_DEVICE_CTRL_SPDCONF, (value))
+#define SAM_UOTGHS_DEVICE_CTRL_LS                            BIT(12)
+#define SAM_UOTGHS_DEVICE_CTRL_TSTJ                          BIT(13)
+#define SAM_UOTGHS_DEVICE_CTRL_TSTK                          BIT(14)
+#define SAM_UOTGHS_DEVICE_CTRL_TSTPCKT                       BIT(15)
+#define SAM_UOTGHS_DEVICE_CTRL_OPMODE2                       BIT(16)
+
+/* Device Global Interrupt Status Register. */
+#define SAM_UOTGHS_DEVICE_ISR_SUSP                           BIT(0)
+#define SAM_UOTGHS_DEVICE_ISR_MSOF                           BIT(1)
+#define SAM_UOTGHS_DEVICE_ISR_SOF                            BIT(2)
+#define SAM_UOTGHS_DEVICE_ISR_EORST                          BIT(3)
+#define SAM_UOTGHS_DEVICE_ISR_WAKEUP                         BIT(4)
+#define SAM_UOTGHS_DEVICE_ISR_EORSM                          BIT(5)
+#define SAM_UOTGHS_DEVICE_ISR_UPRSM                          BIT(6)
+#define SAM_UOTGHS_DEVICE_ISR_PEP_0                          BIT(12)
+#define SAM_UOTGHS_DEVICE_ISR_PEP_1                          BIT(13)
+#define SAM_UOTGHS_DEVICE_ISR_PEP_2                          BIT(14)
+#define SAM_UOTGHS_DEVICE_ISR_PEP_3                          BIT(15)
+#define SAM_UOTGHS_DEVICE_ISR_PEP_4                          BIT(16)
+#define SAM_UOTGHS_DEVICE_ISR_PEP_5                          BIT(17)
+#define SAM_UOTGHS_DEVICE_ISR_PEP_6                          BIT(18)
+#define SAM_UOTGHS_DEVICE_ISR_PEP_7                          BIT(19)
+#define SAM_UOTGHS_DEVICE_ISR_PEP_8                          BIT(20)
+#define SAM_UOTGHS_DEVICE_ISR_PEP_9                          BIT(21)
+#define SAM_UOTGHS_DEVICE_ISR_DMA_1                          BIT(25)
+#define SAM_UOTGHS_DEVICE_ISR_DMA_2                          BIT(26)
+#define SAM_UOTGHS_DEVICE_ISR_DMA_3                          BIT(27)
+#define SAM_UOTGHS_DEVICE_ISR_DMA_4                          BIT(28)
+#define SAM_UOTGHS_DEVICE_ISR_DMA_5                          BIT(29)
+#define SAM_UOTGHS_DEVICE_ISR_DMA_6                          BIT(30)
+
+/* Device Global Interrupt Clear Register. */
+#define SAM_UOTGHS_DEVICE_ICR_SUSPC                          BIT(0)
+#define SAM_UOTGHS_DEVICE_ICR_MSOFC                          BIT(1)
+#define SAM_UOTGHS_DEVICE_ICR_SOFC                           BIT(2)
+#define SAM_UOTGHS_DEVICE_ICR_EORSTC                         BIT(3)
+#define SAM_UOTGHS_DEVICE_ICR_WAKEUPC                        BIT(4)
+#define SAM_UOTGHS_DEVICE_ICR_EORSMC                         BIT(5)
+#define SAM_UOTGHS_DEVICE_ICR_UPRSMC                         BIT(6)
+
+/* Device Global Interrupt Set Register. */
+#define SAM_UOTGHS_DEVICE_IFR_SUSPS                          BIT(0)
+#define SAM_UOTGHS_DEVICE_IFR_MSOFS                          BIT(1)
+#define SAM_UOTGHS_DEVICE_IFR_SOFS                           BIT(2)
+#define SAM_UOTGHS_DEVICE_IFR_EORSTS                         BIT(3)
+#define SAM_UOTGHS_DEVICE_IFR_WAKEUPS                        BIT(4)
+#define SAM_UOTGHS_DEVICE_IFR_EORSMS                         BIT(5)
+#define SAM_UOTGHS_DEVICE_IFR_UPRSMS                         BIT(6)
+#define SAM_UOTGHS_DEVICE_IFR_DMA_1                          BIT(25)
+#define SAM_UOTGHS_DEVICE_IFR_DMA_2                          BIT(26)
+#define SAM_UOTGHS_DEVICE_IFR_DMA_3                          BIT(27)
+#define SAM_UOTGHS_DEVICE_IFR_DMA_4                          BIT(28)
+#define SAM_UOTGHS_DEVICE_IFR_DMA_5                          BIT(29)
+#define SAM_UOTGHS_DEVICE_IFR_DMA_6                          BIT(30)
+
+/* Device Global Interrupt Mask Register. */
+#define SAM_UOTGHS_DEVICE_IMR_SUSPE                          BIT(0)
+#define SAM_UOTGHS_DEVICE_IMR_MSOFE                          BIT(1)
+#define SAM_UOTGHS_DEVICE_IMR_SOFE                           BIT(2)
+#define SAM_UOTGHS_DEVICE_IMR_EORSTE                         BIT(3)
+#define SAM_UOTGHS_DEVICE_IMR_WAKEUPE                        BIT(4)
+#define SAM_UOTGHS_DEVICE_IMR_EORSME                         BIT(5)
+#define SAM_UOTGHS_DEVICE_IMR_UPRSME                         BIT(6)
+#define SAM_UOTGHS_DEVICE_IMR_PEP_0                          BIT(12)
+#define SAM_UOTGHS_DEVICE_IMR_PEP_1                          BIT(13)
+#define SAM_UOTGHS_DEVICE_IMR_PEP_2                          BIT(14)
+#define SAM_UOTGHS_DEVICE_IMR_PEP_3                          BIT(15)
+#define SAM_UOTGHS_DEVICE_IMR_PEP_4                          BIT(16)
+#define SAM_UOTGHS_DEVICE_IMR_PEP_5                          BIT(17)
+#define SAM_UOTGHS_DEVICE_IMR_PEP_6                          BIT(18)
+#define SAM_UOTGHS_DEVICE_IMR_PEP_7                          BIT(19)
+#define SAM_UOTGHS_DEVICE_IMR_PEP_8                          BIT(20)
+#define SAM_UOTGHS_DEVICE_IMR_PEP_9                          BIT(21)
+#define SAM_UOTGHS_DEVICE_IMR_DMA_1                          BIT(25)
+#define SAM_UOTGHS_DEVICE_IMR_DMA_2                          BIT(26)
+#define SAM_UOTGHS_DEVICE_IMR_DMA_3                          BIT(27)
+#define SAM_UOTGHS_DEVICE_IMR_DMA_4                          BIT(28)
+#define SAM_UOTGHS_DEVICE_IMR_DMA_5                          BIT(29)
+#define SAM_UOTGHS_DEVICE_IMR_DMA_6                          BIT(30)
+
+/* Device Global Interrupt Disable Register. */
+#define SAM_UOTGHS_DEVICE_IDR_SUSPEC                         BIT(0)
+#define SAM_UOTGHS_DEVICE_IDR_MSOFEC                         BIT(1)
+#define SAM_UOTGHS_DEVICE_IDR_SOFEC                          BIT(2)
+#define SAM_UOTGHS_DEVICE_IDR_EORSTEC                        BIT(3)
+#define SAM_UOTGHS_DEVICE_IDR_WAKEUPEC                       BIT(4)
+#define SAM_UOTGHS_DEVICE_IDR_EORSMEC                        BIT(5)
+#define SAM_UOTGHS_DEVICE_IDR_UPRSMEC                        BIT(6)
+#define SAM_UOTGHS_DEVICE_IDR_PEP_0                          BIT(12)
+#define SAM_UOTGHS_DEVICE_IDR_PEP_1                          BIT(13)
+#define SAM_UOTGHS_DEVICE_IDR_PEP_2                          BIT(14)
+#define SAM_UOTGHS_DEVICE_IDR_PEP_3                          BIT(15)
+#define SAM_UOTGHS_DEVICE_IDR_PEP_4                          BIT(16)
+#define SAM_UOTGHS_DEVICE_IDR_PEP_5                          BIT(17)
+#define SAM_UOTGHS_DEVICE_IDR_PEP_6                          BIT(18)
+#define SAM_UOTGHS_DEVICE_IDR_PEP_7                          BIT(19)
+#define SAM_UOTGHS_DEVICE_IDR_PEP_8                          BIT(20)
+#define SAM_UOTGHS_DEVICE_IDR_PEP_9                          BIT(21)
+#define SAM_UOTGHS_DEVICE_IDR_DMA_1                          BIT(25)
+#define SAM_UOTGHS_DEVICE_IDR_DMA_2                          BIT(26)
+#define SAM_UOTGHS_DEVICE_IDR_DMA_3                          BIT(27)
+#define SAM_UOTGHS_DEVICE_IDR_DMA_4                          BIT(28)
+#define SAM_UOTGHS_DEVICE_IDR_DMA_5                          BIT(29)
+#define SAM_UOTGHS_DEVICE_IDR_DMA_6                          BIT(30)
+
+/* Device Global Interrupt Enable Register. */
+#define SAM_UOTGHS_DEVICE_IER_SUSPES                         BIT(0)
+#define SAM_UOTGHS_DEVICE_IER_MSOFES                         BIT(1)
+#define SAM_UOTGHS_DEVICE_IER_SOFES                          BIT(2)
+#define SAM_UOTGHS_DEVICE_IER_EORSTES                        BIT(3)
+#define SAM_UOTGHS_DEVICE_IER_WAKEUPES                       BIT(4)
+#define SAM_UOTGHS_DEVICE_IER_EORSMES                        BIT(5)
+#define SAM_UOTGHS_DEVICE_IER_UPRSMES                        BIT(6)
+#define SAM_UOTGHS_DEVICE_IER_PEP_0                          BIT(12)
+#define SAM_UOTGHS_DEVICE_IER_PEP_1                          BIT(13)
+#define SAM_UOTGHS_DEVICE_IER_PEP_2                          BIT(14)
+#define SAM_UOTGHS_DEVICE_IER_PEP_3                          BIT(15)
+#define SAM_UOTGHS_DEVICE_IER_PEP_4                          BIT(16)
+#define SAM_UOTGHS_DEVICE_IER_PEP_5                          BIT(17)
+#define SAM_UOTGHS_DEVICE_IER_PEP_6                          BIT(18)
+#define SAM_UOTGHS_DEVICE_IER_PEP_7                          BIT(19)
+#define SAM_UOTGHS_DEVICE_IER_PEP_8                          BIT(20)
+#define SAM_UOTGHS_DEVICE_IER_PEP_9                          BIT(21)
+#define SAM_UOTGHS_DEVICE_IER_DMA_1                          BIT(25)
+#define SAM_UOTGHS_DEVICE_IER_DMA_2                          BIT(26)
+#define SAM_UOTGHS_DEVICE_IER_DMA_3                          BIT(27)
+#define SAM_UOTGHS_DEVICE_IER_DMA_4                          BIT(28)
+#define SAM_UOTGHS_DEVICE_IER_DMA_5                          BIT(29)
+#define SAM_UOTGHS_DEVICE_IER_DMA_6                          BIT(30)
+
+/* Device . */
+
+/* Device Endpoint Configuration Register. */
+#define SAM_UOTGHS_DEVICE_EPTCFG_ALLOC                       BIT(1)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPBK_POS                    (2)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPBK_MASK      \
+    (0x3 << SAM_UOTGHS_DEVICE_EPTCFG_EPBK_POS)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPBK(value)                    \
+    BITFIELD_SET(SAM_UOTGHS_DEVICE_EPTCFG_EPBK, (value))
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPBK_1_BANK    \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPBK(0)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPBK_2_BANK    \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPBK(1)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPBK_3_BANK    \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPBK(2)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE_POS                  (4)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE_MASK            \
+    (0x7 << SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE_POS)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE(value)                  \
+    BITFIELD_SET(SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE, (value))
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE_8_BYTES \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE(0)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE_16_BYTES        \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE(1)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE_32_BYTES        \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE(2)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE_64_BYTES        \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE(3)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE_128_BYTES       \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE(4)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE_256_BYTES       \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE(5)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE_512_BYTES       \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE(6)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE_1024_BYTES      \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPSIZE(7)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPDIR                       BIT(8)
+#define SAM_UOTGHS_DEVICE_EPTCFG_AUTOSW                      BIT(9)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPTYPE_POS                  (11)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPTYPE_MASK            \
+    (0x3 << SAM_UOTGHS_DEVICE_EPTCFG_EPTYPE_POS)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPTYPE(value)                  \
+    BITFIELD_SET(SAM_UOTGHS_DEVICE_EPTCFG_EPTYPE, (value))
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPTYPE_CTRL    \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPTYPE(0)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPTYPE_ISO     \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPTYPE(1)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPTYPE_BLK     \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPTYPE(2)
+#define SAM_UOTGHS_DEVICE_EPTCFG_EPTYPE_INTRPT  \
+    SAM_UOTGHS_DEVICE_EPTCFG_EPTYPE(3)
+#define SAM_UOTGHS_DEVICE_EPTCFG_NBTRANS_POS                 (13)
+#define SAM_UOTGHS_DEVICE_EPTCFG_NBTRANS_MASK           \
+    (0x3 << SAM_UOTGHS_DEVICE_EPTCFG_NBTRANS_POS)
+#define SAM_UOTGHS_DEVICE_EPTCFG_NBTRANS(value)                 \
+    BITFIELD_SET(SAM_UOTGHS_DEVICE_EPTCFG_NBTRANS, (value))
+
+/* Device Endpoint Status Register. */
+#define SAM_UOTGHS_DEVICE_EPTISR_TXINI                       BIT(0)
+#define SAM_UOTGHS_DEVICE_EPTISR_RXOUTI                      BIT(1)
+#define SAM_UOTGHS_DEVICE_EPTISR_RXSTPI_UNDERFI              BIT(2)
+#define SAM_UOTGHS_DEVICE_EPTISR_NAKOUTI_HBISOINERRI         BIT(3)
+#define SAM_UOTGHS_DEVICE_EPTISR_NAKINI_HBISOFLUSHI          BIT(4)
+#define SAM_UOTGHS_DEVICE_EPTISR_OVERFI                      BIT(5)
+#define SAM_UOTGHS_DEVICE_EPTISR_STALLEDI_CRCERRI            BIT(6)
+#define SAM_UOTGHS_DEVICE_EPTISR_SHORTPACKET                 BIT(7)
+
+/* Device Endpoint Clear Register. */
+#define SAM_UOTGHS_DEVICE_EPTICR_TXINIC                      BIT(0)
+#define SAM_UOTGHS_DEVICE_EPTICR_RXOUTIC                     BIT(1)
+#define SAM_UOTGHS_DEVICE_EPTICR_RXSTPIC_UNDERFIC            BIT(2)
+#define SAM_UOTGHS_DEVICE_EPTICR_NAKOUTIC_HBISOINERRIC       BIT(3)
+#define SAM_UOTGHS_DEVICE_EPTICR_NAKINIC_HBISOFLUSHIC        BIT(4)
+#define SAM_UOTGHS_DEVICE_EPTICR_OVERFIC                     BIT(5)
+#define SAM_UOTGHS_DEVICE_EPTICR_STALLEDIC_CRCERRIC          BIT(6)
+#define SAM_UOTGHS_DEVICE_EPTICR_SHORTPACKETC                BIT(7)
+
+/* Device Endpoint Set Register. */
+#define SAM_UOTGHS_DEVICE_EPTIFR_TXINIS                      BIT(0)
+#define SAM_UOTGHS_DEVICE_EPTIFR_RXOUTIS                     BIT(1)
+#define SAM_UOTGHS_DEVICE_EPTIFR_RXSTPIS_UNDERFIS            BIT(2)
+#define SAM_UOTGHS_DEVICE_EPTIFR_NAKOUTIS_HBISOINERRIS       BIT(3)
+#define SAM_UOTGHS_DEVICE_EPTIFR_NAKINIS_HBISOFLUSHIS        BIT(4)
+#define SAM_UOTGHS_DEVICE_EPTIFR_OVERFIS                     BIT(5)
+#define SAM_UOTGHS_DEVICE_EPTIFR_STALLEDIS_CRCERRIS          BIT(6)
+#define SAM_UOTGHS_DEVICE_EPTIFR_SHORTPACKETS                BIT(7)
+#define SAM_UOTGHS_DEVICE_EPTIFR_NBUSYBKS                    BIT(12)
+
+/* Device Endpoint Mask Register. */
+#define SAM_UOTGHS_DEVICE_EPTIMR_TXINE                       BIT(0)
+#define SAM_UOTGHS_DEVICE_EPTIMR_RXOUTE                      BIT(1)
+#define SAM_UOTGHS_DEVICE_EPTIMR_RXSTPE_UNDERFE              BIT(2)
+#define SAM_UOTGHS_DEVICE_EPTIMR_NAKOUTE_HBISOINERRE         BIT(3)
+#define SAM_UOTGHS_DEVICE_EPTIMR_NAKINE_HBISOFLUSHE          BIT(4)
+#define SAM_UOTGHS_DEVICE_EPTIMR_OVERFE                      BIT(5)
+#define SAM_UOTGHS_DEVICE_EPTIMR_STALLEDE_CRCERRE            BIT(6)
+#define SAM_UOTGHS_DEVICE_EPTIMR_SHORTPACKETE                BIT(7)
+#define SAM_UOTGHS_DEVICE_EPTIMR_MDATAE                      BIT(8)
+#define SAM_UOTGHS_DEVICE_EPTIMR_DATAXE                      BIT(9)
+#define SAM_UOTGHS_DEVICE_EPTIMR_ERRORTRANSE                 BIT(10)
+#define SAM_UOTGHS_DEVICE_EPTIMR_NBUSYBKE                    BIT(12)
+#define SAM_UOTGHS_DEVICE_EPTIMR_KILLBK                      BIT(13)
+#define SAM_UOTGHS_DEVICE_EPTIMR_FIFOCON                     BIT(14)
+#define SAM_UOTGHS_DEVICE_EPTIMR_EPDISHDMA                   BIT(16)
+#define SAM_UOTGHS_DEVICE_EPTIMR_NYETDIS                     BIT(17)
+#define SAM_UOTGHS_DEVICE_EPTIMR_RSTDT                       BIT(18)
+#define SAM_UOTGHS_DEVICE_EPTIMR_STALLRQ                     BIT(19)
+
+/* Device Endpoint Disable Register. */
+#define SAM_UOTGHS_DEVICE_EPTIDR_TXINEC                      BIT(0)
+#define SAM_UOTGHS_DEVICE_EPTIDR_RXOUTEC                     BIT(1)
+#define SAM_UOTGHS_DEVICE_EPTIDR_RXSTPEC_UNDERFEC            BIT(2)
+#define SAM_UOTGHS_DEVICE_EPTIDR_NAKOUTEC_HBISOINERREC       BIT(3)
+#define SAM_UOTGHS_DEVICE_EPTIDR_NAKINEC_HBISOFLUSHEC        BIT(4)
+#define SAM_UOTGHS_DEVICE_EPTIDR_OVERFEC                     BIT(5)
+#define SAM_UOTGHS_DEVICE_EPTIDR_STALLEDEC_CRCERREC          BIT(6)
+#define SAM_UOTGHS_DEVICE_EPTIDR_SHORTPACKETEC               BIT(7)
+#define SAM_UOTGHS_DEVICE_EPTIDR_MDATAEC                     BIT(8)
+#define SAM_UOTGHS_DEVICE_EPTIDR_DATAXEC                     BIT(9)
+#define SAM_UOTGHS_DEVICE_EPTIDR_ERRORTRANSEC                BIT(10)
+#define SAM_UOTGHS_DEVICE_EPTIDR_NBUSYBKEC                   BIT(12)
+#define SAM_UOTGHS_DEVICE_EPTIDR_FIFOCONC                    BIT(14)
+#define SAM_UOTGHS_DEVICE_EPTIDR_EPDISHDMAC                  BIT(16)
+#define SAM_UOTGHS_DEVICE_EPTIDR_NYETDISC                    BIT(17)
+#define SAM_UOTGHS_DEVICE_EPTIDR_STALLRQC                    BIT(19)
+
+/* Device Endpoint Enable Register. */
+#define SAM_UOTGHS_DEVICE_EPTIER_TXINES                      BIT(0)
+#define SAM_UOTGHS_DEVICE_EPTIER_RXOUTES                     BIT(1)
+#define SAM_UOTGHS_DEVICE_EPTIER_RXSTPES_UNDERFES            BIT(2)
+#define SAM_UOTGHS_DEVICE_EPTIER_NAKOUTES_HBISOINERRES       BIT(3)
+#define SAM_UOTGHS_DEVICE_EPTIER_NAKINES_HBISOFLUSHES        BIT(4)
+#define SAM_UOTGHS_DEVICE_EPTIER_OVERFES                     BIT(5)
+#define SAM_UOTGHS_DEVICE_EPTIER_STALLEDES_CRCERRES          BIT(6)
+#define SAM_UOTGHS_DEVICE_EPTIER_SHORTPACKETES               BIT(7)
+#define SAM_UOTGHS_DEVICE_EPTIER_MDATAES                     BIT(8)
+#define SAM_UOTGHS_DEVICE_EPTIER_DATAXES                     BIT(9)
+#define SAM_UOTGHS_DEVICE_EPTIER_ERRORTRANSES                BIT(10)
+#define SAM_UOTGHS_DEVICE_EPTIER_NBUSYBKES                   BIT(12)
+#define SAM_UOTGHS_DEVICE_EPTIER_KILLBKS                     BIT(13)
+#define SAM_UOTGHS_DEVICE_EPTIER_EPDISHDMAS                  BIT(16)
+#define SAM_UOTGHS_DEVICE_EPTIER_NYETDISS                    BIT(17)
+#define SAM_UOTGHS_DEVICE_EPTIER_RSTDTS                      BIT(18)
+#define SAM_UOTGHS_DEVICE_EPTIER_STALLRQS                    BIT(19)
 
 /* Host. */
 

@@ -28,10 +28,6 @@
 
 #include "usb_host_port.h"
 
-/* Events set by the interrupt service routine to notify the main
- * thread about new events. */
-#define EVENT_CONNECT 0x1
-
 void state(int pipe)
 {
     /* std_printf(FSTR("  HOST.CTRL = 0x%lx\r\n"), SAM_UOTGHS->HOST.CTRL); */
@@ -51,42 +47,6 @@ void state(int pipe)
     /* std_printf(FSTR("      HOST.PIPCFG[2] = 0x%08lx\r\n"), SAM_UOTGHS->HOST.PIPCFG[2]); */
     /* std_printf(FSTR("      HOST.PIPISR[2] = 0x%08lx\r\n"), SAM_UOTGHS->HOST.PIPISR[2]); */
     /* std_printf(FSTR("      HOST.PIPIMR[2] = 0x%08lx\r\n\r\n"), SAM_UOTGHS->HOST.PIPIMR[2]); */
-}
-
-ISR(uotghs)
-{
-    struct usb_device_t *dev_p = &usb_device[0];
-    struct usb_host_driver_t *drv_p = dev_p->drv_p;
-    uint32_t mask;
-    uint32_t isr;
-    int i;
-
-    if (drv_p == NULL) {
-        return;
-    }
-
-    isr = dev_p->regs_p->HOST.ISR;
-
-    /* Connection interrupt. */
-    if (isr & SAM_UOTGHS_HOST_ISR_DCONNI) {
-        /* Clear the connection interrupt since it's handled now. */
-        dev_p->regs_p->HOST.ICR = SAM_UOTGHS_HOST_ICR_DCONNIC;
-
-        /* Notify the USB thread about the interrupt. */
-        mask = EVENT_CONNECT;
-        event_write_isr(&drv_p->event, &mask, sizeof(mask));
-    }
-
-    /* Pipe interrupts. */
-    for (i = 0; i < 10; i++) {
-        if (isr & (SAM_UOTGHS_HOST_ISR_PEP_0 << i)) {
-            dev_p->regs_p->HOST.IDR = (SAM_UOTGHS_HOST_IDR_PEP_0 << i);
-
-            if (dev_p->pipes[i].thrd_p != NULL) {
-                thrd_resume_isr(dev_p->pipes[i].thrd_p, 0);
-            }
-        }
-    }
 }
 
 /**
@@ -115,10 +75,10 @@ static void *usb_main(struct usb_host_driver_t *self_p)
     thrd_set_name("usb");
 
     while (1) {
-        mask = EVENT_CONNECT;
+        mask = USB_HOST_PORT_EVENT_CONNECT;
         event_read(&self_p->event, &mask, sizeof(mask));
 
-        if (mask & EVENT_CONNECT) {
+        if (mask & USB_HOST_PORT_EVENT_CONNECT) {
             handle_event_connect(self_p);
         }
     }
@@ -358,20 +318,28 @@ static ssize_t pipe_transfer(struct usb_device_t *dev_p,
 /**
  * Write a SETUP packet to the device.
  */
-static ssize_t 
+static ssize_t
 usb_host_port_device_write_setup(struct usb_host_device_t *device_p,
                                  struct usb_setup_t *setup_p)
 {
-    struct usb_device_t *dev_p = device_p->self_p->dev_p;
-    volatile struct sam_uotghs_t *regs_p = dev_p->regs_p;
-    uint8_t *fifo_p, *buf8_p = (uint8_t *)setup_p;
-    int pipe = 0, i;
+    struct usb_device_t *dev_p;
+    volatile struct sam_uotghs_t *regs_p;
+    uint8_t *fifo_p;
+    uint8_t *buf8_p;
+    int pipe, i;
+    uint8_t *dpram_p;
+
+    dev_p = device_p->self_p->dev_p;
+    regs_p = dev_p->regs_p;
+    buf8_p = (uint8_t *)setup_p;
+    pipe = 0;
+    dpram_p = (uint8_t *)SAM_UOTGHS_DPRAM_ADDRESS;
 
     regs_p->HOST.PIPCFG[pipe] = SAM_UOTGHS_HOST_PIPCFG_PTOKEN_SET(
         regs_p->HOST.PIPCFG[pipe], SETUP);
 
     /* Write data to the pipe fifo. */
-    fifo_p = (&((uint8_t *)SAM_UOTGHS_DPRAM_ADDRESS)[SAM_UOTGHS_DPRAM_PIPE_SIZE * pipe]);
+    fifo_p = &dpram_p[SAM_UOTGHS_DPRAM_PIPE_SIZE * pipe];
 
     for (i = 0; i < sizeof(*setup_p); i++) {
         *fifo_p++ = *buf8_p++;
@@ -394,15 +362,22 @@ static ssize_t usb_host_port_device_write(struct usb_host_device_t *device_p,
                                           const void *buf_p,
                                           size_t size)
 {
-    struct usb_device_t *dev_p = device_p->self_p->dev_p;
-    volatile struct sam_uotghs_t *regs_p = dev_p->regs_p;
+    struct usb_device_t *dev_p;
+    volatile struct sam_uotghs_t *regs_p;
     uint8_t *fifo_p;
-    const uint8_t *buf8_p = buf_p;
-    int pipe = endpoint;
+    uint8_t *dpram_p;
+    const uint8_t *buf8_p;
+    int pipe;
     size_t left, n, i;
 
+    dev_p = device_p->self_p->dev_p;
+    regs_p = dev_p->regs_p;
+    buf8_p = buf_p;
+    pipe = endpoint;
+    dpram_p = (uint8_t *)SAM_UOTGHS_DPRAM_ADDRESS;
+
     /* This shold already be comfigured to the pipe. Should be removed
-     * from this function. */
+       from this function. */
     regs_p->HOST.PIPCFG[pipe] = SAM_UOTGHS_HOST_PIPCFG_PTOKEN_SET(
         regs_p->HOST.PIPCFG[pipe], OUT);
 
@@ -416,10 +391,10 @@ static ssize_t usb_host_port_device_write(struct usb_host_device_t *device_p,
         }
 
         /* Write data to the pipe fifo. */
-        fifo_p = (&((uint8_t *)SAM_UOTGHS_DPRAM_ADDRESS)[SAM_UOTGHS_DPRAM_PIPE_SIZE * pipe]);
+        fifo_p = &dpram_p[SAM_UOTGHS_DPRAM_PIPE_SIZE * pipe];
 
         /* Copy data from the local buffer to the transmission
-         * fifo. */
+           fifo. */
         for (i = 0; i < n; i++) {
             *fifo_p++ = *buf8_p++;
         }
@@ -445,16 +420,24 @@ static ssize_t usb_host_port_device_read(struct usb_host_device_t *device_p,
                                          void *buf_p,
                                          size_t size)
 {
-    struct usb_device_t *dev_p = device_p->self_p->dev_p;
-    volatile struct sam_uotghs_t *regs_p = dev_p->regs_p;
-    uint8_t *fifo_p, *buf8_p = buf_p;
-    int pipe = endpoint;
+    struct usb_device_t *dev_p;
+    volatile struct sam_uotghs_t *regs_p;
+    uint8_t *fifo_p;
+    uint8_t *buf8_p;
+    uint8_t *dpram_p;
+    int pipe;
     size_t i, left, n;
     size_t count;
     int short_packet = 0;
 
-    /* This shold already be comfigured to the pipe. Should be removed
-     * from this function. */
+    dev_p = device_p->self_p->dev_p;
+    regs_p = dev_p->regs_p;
+    buf8_p = buf_p;
+    pipe = endpoint;
+    dpram_p = (uint8_t *)SAM_UOTGHS_DPRAM_ADDRESS;
+
+    /* This shold already be configured to the pipe. Should be removed
+       from this function. */
     regs_p->HOST.PIPCFG[pipe] = SAM_UOTGHS_HOST_PIPCFG_PTOKEN_SET(
         regs_p->HOST.PIPCFG[pipe], IN);
 
@@ -476,10 +459,11 @@ static ssize_t usb_host_port_device_read(struct usb_host_device_t *device_p,
         regs_p->HOST.PIPICR[pipe] = SAM_UOTGHS_HOST_PIPICR_RXINIC;
 
         /* Read data from the pipe fifo. */
-        fifo_p = (&((uint8_t *)SAM_UOTGHS_DPRAM_ADDRESS)[SAM_UOTGHS_DPRAM_PIPE_SIZE * pipe]);
+        fifo_p = &dpram_p[SAM_UOTGHS_DPRAM_PIPE_SIZE * pipe];
 
         count = ((SAM_UOTGHS->HOST.PIPISR[pipe] & SAM_UOTGHS_HOST_PIPISR_PBYCT_MASK)
                  >> SAM_UOTGHS_HOST_PIPISR_PBYCT_POS);
+
         /* Needed to make a mouse work. Unclear why. */
         /* std_printf(FSTR("n = %lu, rx count = %lu\r\n"), n, count); */
 
@@ -489,12 +473,12 @@ static ssize_t usb_host_port_device_read(struct usb_host_device_t *device_p,
         }
 
         /* Copy the data received from the device to the local
-         * buffer. */
+           buffer. */
         for (i = 0; i < n; i++) {
             *buf8_p++ = *fifo_p++;
         }
 
-        /* Data read. */
+        /* Data read, disable the interrupt. */
         regs_p->HOST.PIPIDR[pipe] = SAM_UOTGHS_HOST_PIPIDR_FIFOCONC;
 
         left -= n;

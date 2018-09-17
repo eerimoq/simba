@@ -75,14 +75,14 @@ ifeq ($(TYPE),suite)
     DRIVERS_SRC += storage/eeprom_soft.c
   endif
 
-  ifeq ($(MCU),atmega32u4)
+#  ifeq ($(MCU),atmega32u4)
     DRIVERS_SRC += \
-	usb.c \
-	usb_device.c \
-	usb/device/descriptors.c \
-	usb/device/class/cdc.c \
-	watchdog.c
-  endif
+	network/usb.c \
+	network/usb_device.c \
+	network/usb/device/descriptors.c \
+	network/usb/device/class/cdc.c \
+	basic/watchdog.c
+#  endif
 endif
 
 INC += $(SIMBA_ROOT)/src

@@ -262,6 +262,22 @@ ssize_t chan_read(void *self_p,
                   size_t size);
 
 /**
+ * Read data from given channel with timeout. The behaviour of this
+ * function depends on the channel implementation.
+ *
+ * @param[in] self_p Channel to read from.
+ * @param[out] buf_p Buffer to read into.
+ * @param[in] size Number of bytes to read.
+ * @param[in] timeout_p Timeout.
+ *
+ * @return Number of read bytes or negative error code.
+ */
+ssize_t chan_read_with_timeout(void *self_p,
+                               void *buf_p,
+                               size_t size,
+                               const struct time_t *timeout_p);
+
+/**
  * Write data to given channel. The behaviour of this function depends
  * on the channel implementation. Some channel implementations blocks
  * until the receiver has read the data, and some returns immediately.

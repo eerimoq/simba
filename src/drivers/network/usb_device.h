@@ -107,6 +107,7 @@ ssize_t usb_device_write(struct usb_device_driver_t *self_p,
  */
 ssize_t usb_device_read_isr(struct usb_device_driver_t *self_p,
                             int endpoint,
+                            size_t offset,
                             void *buf_p,
                             size_t size);
 
@@ -125,5 +126,8 @@ ssize_t usb_device_write_isr(struct usb_device_driver_t *self_p,
                              int endpoint,
                              const void *buf_p,
                              size_t size);
+
+ssize_t usb_device_size_isr(struct usb_device_driver_t *self_p,
+                            int endpoint);
 
 #endif

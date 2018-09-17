@@ -33,7 +33,6 @@
 
 struct usb_device_class_cdc_driver_t {
     struct usb_device_driver_base_t base;
-    struct usb_device_driver_t *drv_p;
     int control_interface;
     int endpoint_in;
     int endpoint_out;
