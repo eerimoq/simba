@@ -254,9 +254,10 @@ union usb_descriptor_t {
     struct usb_descriptor_string_t string;
 };
 
-#define USB_CDC_LINE_CODING             0x20
-#define USB_CDC_CONTROL_LINE_STATE      0x22
-#define USB_CDC_SEND_BREAK              0x23
+#define USB_CDC_SET_LINE_CODING                              0x20
+#define USB_CDC_GET_LINE_CODING                              0x21
+#define USB_CDC_SET_CONTROL_LINE_STATE                       0x22
+#define USB_CDC_SEND_BREAK                                   0x23
 
 struct usb_cdc_line_info_t {
   uint32_t dte_rate;

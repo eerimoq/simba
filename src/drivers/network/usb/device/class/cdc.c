@@ -130,11 +130,12 @@ static int start_of_frame_isr(struct usb_device_driver_base_t *base_p)
 static int setup_isr(struct usb_device_driver_base_t *base_p,
                      struct usb_setup_t *setup_p)
 {
-    int res = 0;
+    int res;
     uint8_t direction;
     uint8_t type;
     struct usb_device_class_cdc_driver_t *self_p;
 
+    res = 0;
     self_p = (struct usb_device_class_cdc_driver_t *)base_p;
 
     type = (setup_p->request_type & REQUEST_TYPE_RECIPIENT_MASK);
@@ -157,12 +158,11 @@ static int setup_isr(struct usb_device_driver_base_t *base_p,
     case REQUEST_TYPE_DATA_DIRECTION_DEVICE_TO_HOST:
         switch (setup_p->request) {
 
-        case USB_CDC_LINE_CODING:
+        case USB_CDC_GET_LINE_CODING:
             usb_device_write_isr(self_p->base.drv_p,
                                  0,
                                  &self_p->line_info,
                                  sizeof(self_p->line_info));
-            res = 0;
             break;
 
         default:
@@ -175,28 +175,25 @@ static int setup_isr(struct usb_device_driver_base_t *base_p,
     case REQUEST_TYPE_DATA_DIRECTION_HOST_TO_DEVICE:
         switch (setup_p->request) {
 
-        case USB_CDC_LINE_CODING:
+        case USB_CDC_SET_LINE_CODING:
             usb_device_read_isr(self_p->base.drv_p,
                                 0,
                                 0,
                                 &self_p->line_info,
                                 sizeof(self_p->line_info));
             check_reset_to_bootloader(self_p);
-            res = 0;
             break;
 
-        case USB_CDC_CONTROL_LINE_STATE:
+        case USB_CDC_SET_CONTROL_LINE_STATE:
             self_p->line_state = setup_p->u.base.value;
             check_reset_to_bootloader(self_p);
             self_p->base.drv_p->dev_p->regs_p->DEVICE.EPTICR[0]
                 = SAM_UOTGHS_DEVICE_EPTICR_TXINIC;
-            res = 0;
             break;
 
         case USB_CDC_SEND_BREAK:
             /* Lost serial connection; mark line state as gone. */
             self_p->line_state = 0;
-            res = 0;
             break;
 
         default:
@@ -239,7 +236,7 @@ static int get_endpoint_by_index(struct usb_device_driver_base_t *base_p,
         endpoint = -1;
         break;
     }
-    
+
     return (endpoint);
 }
 

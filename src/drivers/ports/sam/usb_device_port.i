@@ -96,6 +96,24 @@ static void control_rx_release(volatile struct sam_uotghs_t *regs_p)
 }
 
 /**
+ * Stall given endpoint. Stall tells the host that something failed or
+ * is unsupported.
+ */
+static void stall(volatile struct sam_uotghs_t *regs_p,
+                  int endpoint)
+{
+    regs_p->DEVICE.EPTIER[endpoint] = SAM_UOTGHS_DEVICE_EPTIMR_STALLRQ;
+}
+
+/**
+ * Stall the control endpoint.
+ */
+static void control_stall(volatile struct sam_uotghs_t *regs_p)
+{
+    stall(regs_p, 0);
+}
+
+/**
  * Intialize given endpoint.
  */
 static void endpoint_init(volatile struct sam_uotghs_t *regs_p,
@@ -162,7 +180,7 @@ static void control_endpoint_read(void* buf_p, uint8_t size)
 /**
  * Transmit given control packet.
  */
-static void control_write(volatile struct sam_uotghs_t *regs_p,
+static int control_write(volatile struct sam_uotghs_t *regs_p,
                           const void* buf_p,
                           size_t size,
                           size_t offset)
@@ -178,6 +196,8 @@ static void control_write(volatile struct sam_uotghs_t *regs_p,
     }
 
     control_tx_start(regs_p);
+
+    return (0);
 }
 
 /**
@@ -199,9 +219,9 @@ static int control_write_descriptors(volatile struct sam_uotghs_t *regs_p,
     while (size > 0) {
         desc_p = *descs_pp++;
 
-        /* Abort if the host requested too many bytes. */
+        /* Break if the host requested too many bytes. */
         if (desc_p == NULL) {
-            return (-EPROTO);
+            break;
         }
 
         buf_p = (const uint8_t *)desc_p;
@@ -237,8 +257,8 @@ static int control_write_descriptors(volatile struct sam_uotghs_t *regs_p,
     return (0);
 }
 
-static void handle_set_address(volatile struct sam_uotghs_t *regs_p,
-                               uint16_t address)
+static int handle_set_address(volatile struct sam_uotghs_t *regs_p,
+                              uint16_t address)
 {
     /* Send an empty status packet before changing the address. */
     control_tx_start(regs_p);
@@ -248,40 +268,46 @@ static void handle_set_address(volatile struct sam_uotghs_t *regs_p,
                                          SAM_UOTGHS_DEVICE_CTRL_UADD_POS,
                                          SAM_UOTGHS_DEVICE_CTRL_UADD_WIDTH,
                                          address);
+
+    return (0);
 }
 
-static void handle_get_descriptor(struct usb_device_driver_t *self_p,
-                                  uint8_t index,
-                                  uint8_t type,
-                                  uint16_t length)
+static int handle_get_descriptor(struct usb_device_driver_t *self_p,
+                                 uint8_t index,
+                                 uint8_t type,
+                                 uint16_t length)
 {
+    int res;
+
     switch (type) {
 
     case DESCRIPTOR_TYPE_CONFIGURATION:
-        control_write_descriptors(self_p->dev_p->regs_p,
-                                  &self_p->descriptors_pp[1],
-                                  length);
+        res = control_write_descriptors(self_p->dev_p->regs_p,
+                                        &self_p->descriptors_pp[1],
+                                        length);
         break;
 
     case DESCRIPTOR_TYPE_DEVICE:
-        control_write(self_p->dev_p->regs_p,
-                      self_p->descriptors_pp[0],
-                      length,
-                      0);
+        res = control_write(self_p->dev_p->regs_p,
+                            self_p->descriptors_pp[0],
+                            length,
+                            0);
         break;
 
     case DESCRIPTOR_TYPE_STRING:
-        while (1);
+        res = -1;
         break;
 
     default:
-        while (1);
+        res = -1;
         break;
     }
+
+    return (res);
 }
 
-static void handle_set_configuration(struct usb_device_driver_t *self_p,
-                                     struct usb_setup_t *setup_p)
+static int handle_set_configuration(struct usb_device_driver_t *self_p,
+                                    struct usb_setup_t *setup_p)
 {
     uint32_t mask;
 
@@ -293,41 +319,47 @@ static void handle_set_configuration(struct usb_device_driver_t *self_p,
     }
 
     control_tx_start(self_p->dev_p->regs_p);
+
+    return (0);
 }
 
-static void handle_type_standard(struct usb_device_driver_t *self_p,
-                                 struct usb_setup_t *setup_p)
+static int handle_type_standard(struct usb_device_driver_t *self_p,
+                                struct usb_setup_t *setup_p)
 {
+    int res;
+
     switch (setup_p->request) {
 
     case REQUEST_GET_STATUS:
-        while (1);
+        res = -1;
         break;
 
     case REQUEST_SET_ADDRESS:
-        handle_set_address(self_p->dev_p->regs_p,
-                           setup_p->u.set_address.device_address);
+        res = handle_set_address(self_p->dev_p->regs_p,
+                                 setup_p->u.set_address.device_address);
         break;
 
     case REQUEST_GET_DESCRIPTOR:
-        handle_get_descriptor(self_p,
-                              setup_p->u.get_descriptor.descriptor_index,
-                              setup_p->u.get_descriptor.descriptor_type,
-                              setup_p->length);
+        res = handle_get_descriptor(self_p,
+                                    setup_p->u.get_descriptor.descriptor_index,
+                                    setup_p->u.get_descriptor.descriptor_type,
+                                    setup_p->length);
         break;
 
     case REQUEST_SET_CONFIGURATION:
-        handle_set_configuration(self_p, setup_p);
+        res = handle_set_configuration(self_p, setup_p);
         break;
 
     default:
-        while (1);
+        res = -1;
         break;
     }
+
+    return (res);
 }
 
-static void handle_type_class(struct usb_device_driver_t *self_p,
-                              struct usb_setup_t *setup_p)
+static int handle_type_class(struct usb_device_driver_t *self_p,
+                             struct usb_setup_t *setup_p)
 {
     int i;
     struct usb_device_driver_base_t *driver_p;
@@ -336,15 +368,19 @@ static void handle_type_class(struct usb_device_driver_t *self_p,
         driver_p = self_p->drivers_pp[i];
 
         if (driver_p->setup_isr(driver_p, setup_p) == 0) {
-            return;
+            control_tx_start(self_p->dev_p->regs_p);
+            return (0);
         }
     }
+
+    return (-ENOSYS);
 }
 
 static void handle_setup(struct usb_device_driver_t *self_p,
                          volatile struct sam_uotghs_t *regs_p)
 {
     struct usb_setup_t setup;
+    int res;
 
     /* Read the setup packet. */
     control_endpoint_read(&setup, sizeof(setup));
@@ -359,20 +395,24 @@ static void handle_setup(struct usb_device_driver_t *self_p,
     switch (setup.request_type & REQUEST_TYPE_TYPE_MASK) {
 
     case REQUEST_TYPE_TYPE_STANDARD:
-        handle_type_standard(self_p, &setup);
+        res = handle_type_standard(self_p, &setup);
         break;
 
     case REQUEST_TYPE_TYPE_CLASS:
-        handle_type_class(self_p, &setup);
+        res = handle_type_class(self_p, &setup);
         break;
 
     default:
-        while (1);
+        res = -1;
         break;
     }
-}
 
-extern struct usb_device_class_cdc_driver_t cdc;
+    /* A stall tells the host that the command is not supported or
+       that an error occurred. */
+    if (res != 0) {
+        control_stall(regs_p);
+    }
+}
 
 static void endpoint_isr(struct usb_device_driver_t *self_p,
                          volatile struct sam_uotghs_t *regs_p,
