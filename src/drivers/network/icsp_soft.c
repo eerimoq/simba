@@ -30,13 +30,15 @@
 
 #if CONFIG_ICSP_SOFT == 1
 
-#define P6_US  1
-#define P7_US  1
-#define P14_US 1
-#define P19_US 1
-#define P20_US 250
+#define P6_US                                               1
+#define P7_US                                               1
+#define P14_US                                              1
+#define P19_US                                              1
+#define P20_US                                              250
 
-#define KEY    0x4d434850
+#define KEY                                                 0x4d434850
+
+#define PRACC_TIMEOUT_NS                                    500000000
 
 static inline int clock_low(struct icsp_soft_driver_t *self_p)
 {
@@ -220,22 +222,68 @@ static int send_key(struct icsp_soft_driver_t *self_p)
     return (0);
 }
 
-static void wait_for_pracc_set(struct icsp_soft_driver_t *self_p)
+static int wait_for_pracc_set_fast(struct icsp_soft_driver_t *self_p)
 {
     int pracc;
+    int attempt;
 
     move_to_capture_dr_from_idle(self_p);
 
     /* PrACC must be 1 for a successful transfer. */
-    while (1) {
+    for (attempt = 1; attempt < 10000; attempt++) {
         pracc = clock_bit_in(self_p);
 
         if (pracc == 1) {
-            break;
+            return (0);
         }
 
         move_to_capture_dr_from_shift_dr(self_p);
     }
+
+    return (-ETIMEDOUT);
+}
+
+static int wait_for_pracc_set_slow(struct icsp_soft_driver_t *self_p)
+{
+    int res;
+    struct time_t time;
+    struct time_t end_time;
+
+    time.seconds = 0;
+    time.nanoseconds = PRACC_TIMEOUT_NS;
+
+    time_get(&end_time);
+    time_add(&end_time, &end_time, &time);
+
+    do {
+        res = wait_for_pracc_set_fast(self_p);
+
+        if (res == 0) {
+            break;
+        }
+
+        res = 0;
+        time_get(&time);
+
+        if (time_compare_greater_than_t == time_compare(&time, &end_time)) {
+            res = -ETIMEDOUT;
+        }
+    } while (res == 0);
+
+    return (res);
+}
+
+static int wait_for_pracc_set(struct icsp_soft_driver_t *self_p)
+{
+    int res;
+
+    res = wait_for_pracc_set_fast(self_p);
+
+    if (res != 0) {
+        res = wait_for_pracc_set_slow(self_p);
+    }
+
+    return (res);
 }
 
 int icsp_soft_module_init(void)
@@ -369,9 +417,14 @@ int icsp_soft_fast_data_transfer(struct icsp_soft_driver_t *self_p,
 {
     ASSERTN(self_p != NULL, EINVAL);
 
+    int res;
     int value;
 
-    wait_for_pracc_set(self_p);
+    res = wait_for_pracc_set(self_p);
+
+    if (res != 0) {
+        return (res);
+    }
 
     /* First read bit in the data transfer. */
     value = clock_bit_in(self_p);
@@ -384,9 +437,14 @@ int icsp_soft_fast_data_read(struct icsp_soft_driver_t *self_p,
 {
     ASSERTN(self_p != NULL, EINVAL);
 
+    int res;
     size_t i;
 
-    wait_for_pracc_set(self_p);
+    res = wait_for_pracc_set(self_p);
+
+    if (res != 0) {
+        return (res);
+    }
 
     /* First read bit in the data transfer. */
     *data_p = clock_bit_in(self_p);
@@ -421,9 +479,14 @@ int icsp_soft_fast_data_write(struct icsp_soft_driver_t *self_p,
 {
     ASSERTN(self_p != NULL, EINVAL);
 
+    int res;
     size_t i;
 
-    wait_for_pracc_set(self_p);
+    res = wait_for_pracc_set(self_p);
+
+    if (res != 0) {
+        return (res);
+    }
 
     /* First read bit in the data transfer. */
     clock_bit(self_p);
