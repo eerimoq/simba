@@ -297,6 +297,56 @@ ssize_t __attribute__ ((weak)) STUB(chan_read)(void *self_p,
     return (res);
 }
 
+int mock_write_chan_read_with_timeout(void *buf_p,
+                                      size_t size,
+                                      const struct time_t *timeout_p,
+                                      ssize_t res)
+{
+    harness_mock_write("chan_read_with_timeout(): return (buf_p)",
+                       buf_p,
+                       size);
+
+    harness_mock_write("chan_read_with_timeout(size)",
+                       &size,
+                       sizeof(size));
+
+    harness_mock_write("chan_read_with_timeout(timeout_p)",
+                       timeout_p,
+                       sizeof(*timeout_p));
+
+    harness_mock_write("chan_read_with_timeout(): return (res)",
+                       &res,
+                       sizeof(res));
+
+    return (0);
+}
+
+ssize_t __attribute__ ((weak)) STUB(chan_read_with_timeout)(void *self_p,
+                                                            void *buf_p,
+                                                            size_t size,
+                                                            const struct time_t *timeout_p)
+{
+    ssize_t res;
+
+    harness_mock_read("chan_read_with_timeout(): return (buf_p)",
+                      buf_p,
+                      size);
+
+    harness_mock_assert("chan_read_with_timeout(size)",
+                        &size,
+                        sizeof(size));
+
+    harness_mock_assert("chan_read_with_timeout(timeout_p)",
+                        timeout_p,
+                        sizeof(*timeout_p));
+
+    harness_mock_read("chan_read_with_timeout(): return (res)",
+                      &res,
+                      sizeof(res));
+
+    return (res);
+}
+
 int mock_write_chan_write(const void *buf_p,
                           size_t size,
                           ssize_t res)

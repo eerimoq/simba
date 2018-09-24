@@ -57,6 +57,11 @@ int mock_write_chan_read(void *buf_p,
                          size_t size,
                          ssize_t res);
 
+int mock_write_chan_read_with_timeout(void *buf_p,
+                                      size_t size,
+                                      const struct time_t *timeout_p,
+                                      ssize_t res);
+
 int mock_write_chan_write(const void *buf_p,
                           size_t size,
                           ssize_t res);

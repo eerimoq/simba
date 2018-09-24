@@ -97,6 +97,7 @@ SRC += $(ALLOC_SRC:%=$(SIMBA_ROOT)/src/alloc/%)
 # Collections package.
 COLLECTIONS_SRC ?= \
 	binary_tree.c \
+	bits.c \
 	circular_buffer.c \
 	hash_map.c \
 	list.c
