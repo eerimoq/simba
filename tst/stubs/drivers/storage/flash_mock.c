@@ -298,3 +298,73 @@ int __attribute__ ((weak)) STUB(flash_erase)(struct flash_driver_t *self_p,
 
     return (res);
 }
+
+int mock_write_flash_async_write(uintptr_t dst,
+                                 const void *src_p,
+                                 size_t size,
+                                 int res)
+{
+    harness_mock_write("flash_async_write(dst)",
+                       &dst,
+                       sizeof(dst));
+
+    harness_mock_write("flash_async_write(src_p)",
+                       src_p,
+                       size);
+
+    harness_mock_write("flash_async_write(size)",
+                       &size,
+                       sizeof(size));
+
+    harness_mock_write("flash_async_write(): return (res)",
+                       &res,
+                       sizeof(res));
+
+    return (0);
+}
+
+int __attribute__ ((weak)) STUB(flash_async_write)(struct flash_driver_t *self_p,
+                                                   uintptr_t dst,
+                                                   const void *src_p,
+                                                   size_t size)
+{
+    int res;
+
+    harness_mock_assert("flash_async_write(dst)",
+                        &dst,
+                        sizeof(dst));
+
+    harness_mock_assert("flash_async_write(src_p)",
+                        src_p,
+                        size);
+
+    harness_mock_assert("flash_async_write(size)",
+                        &size,
+                        sizeof(size));
+
+    harness_mock_read("flash_async_write(): return (res)",
+                      &res,
+                      sizeof(res));
+
+    return (res);
+}
+
+int mock_write_flash_async_wait(int res)
+{
+    harness_mock_write("flash_async_wait(): return (res)",
+                       &res,
+                       sizeof(res));
+
+    return (0);
+}
+
+int __attribute__ ((weak)) STUB(flash_async_wait)(struct flash_driver_t *self_p)
+{
+    int res;
+
+    harness_mock_read("flash_async_wait(): return (res)",
+                      &res,
+                      sizeof(res));
+
+    return (res);
+}

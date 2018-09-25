@@ -99,4 +99,28 @@ int flash_erase(struct flash_driver_t *self_p,
                 uintptr_t addr,
                 size_t size);
 
+/**
+ * Start an asynchronous flash write operation.
+ *
+ * @param[in] self_p Initialized driver object.
+ * @param[in] dst Address in flash memory to write to.
+ * @param[in] src_p Buffer to write.
+ * @param[in] size Number of bytes to write.
+ *
+ * @return zero(0) or negative error code.
+ */
+int flash_async_write(struct flash_driver_t *self_p,
+                      uintptr_t dst,
+                      const void *src_p,
+                      size_t size);
+
+/**
+ * Wait for current asynchronous flash operations to finish.
+ *
+ * @param[in] self_p Initialized driver object.
+ *
+ * @return zero(0) or negative error code.
+ */
+int flash_async_wait(struct flash_driver_t *self_p);
+
 #endif

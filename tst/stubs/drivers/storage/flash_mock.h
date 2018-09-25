@@ -62,4 +62,11 @@ int mock_write_flash_erase(uintptr_t addr,
                            size_t size,
                            int res);
 
+int mock_write_flash_async_write(uintptr_t dst,
+                                 const void *src_p,
+                                 size_t size,
+                                 int res);
+
+int mock_write_flash_async_wait(int res);
+
 #endif

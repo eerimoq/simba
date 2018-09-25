@@ -146,9 +146,10 @@ static int flash_port_erase(struct flash_driver_t *self_p,
     return (res);
 }
 
-int flash_async_write_row(struct flash_driver_t *self_p,
-                          uintptr_t dst,
-                          const void *src_p)
+int flash_async_write(struct flash_driver_t *self_p,
+                      uintptr_t dst,
+                      const void *src_p,
+                      size_t size)
 {
     volatile struct pic32mm_flash_t *regs_p;
 
