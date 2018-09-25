@@ -399,12 +399,17 @@ int __attribute__ ((weak)) STUB(icsp_soft_fast_data_read)(struct icsp_soft_drive
     return (res);
 }
 
-int mock_write_icsp_soft_fast_data_write(uint32_t data,
+int mock_write_icsp_soft_fast_data_write(uint8_t *buf_p,
+                                         size_t size,
                                          int res)
 {
-    harness_mock_write("icsp_soft_fast_data_write(data)",
-                       &data,
-                       sizeof(data));
+    harness_mock_write("icsp_soft_fast_data_write(): return (size)",
+                       &size,
+                       sizeof(size));
+
+    harness_mock_write("icsp_soft_fast_data_write(buf_p)",
+                       buf_p,
+                       size);
 
     harness_mock_write("icsp_soft_fast_data_write(): return (res)",
                        &res,
@@ -417,10 +422,22 @@ int __attribute__ ((weak)) STUB(icsp_soft_fast_data_write)(struct icsp_soft_driv
                                                            uint32_t data)
 {
     int res;
+    uint8_t buf[4];
+    size_t size;
 
-    harness_mock_assert("icsp_soft_fast_data_write(data)",
-                        &data,
-                        sizeof(data));
+    harness_mock_read("icsp_soft_fast_data_write(): return (size)",
+                      &size,
+                      sizeof(size));
+
+    buf[0] = (data >> 24);
+    buf[1] = (data >> 16);
+    buf[2] = (data >> 8);
+    buf[3] = (data >> 0);
+
+    harness_mock_assert("icsp_soft_fast_data_write(buf_p)",
+                        &buf[0],
+                        size);
+
 
     harness_mock_read("icsp_soft_fast_data_write(): return (res)",
                       &res,

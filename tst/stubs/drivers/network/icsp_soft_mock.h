@@ -51,7 +51,8 @@ int mock_write_icsp_soft_fast_data_transfer(void *rxbuf_p,
 int mock_write_icsp_soft_fast_data_read(uint32_t *data_p,
                                         int res);
 
-int mock_write_icsp_soft_fast_data_write(uint32_t data,
+int mock_write_icsp_soft_fast_data_write(uint8_t *buf_p,
+                                         size_t size,
                                          int res);
 
 int mock_write_icsp_soft_make_transition(int transition,
