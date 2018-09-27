@@ -32,4 +32,6 @@ NAME = bits_suite
 TYPE = suite
 BOARD ?= linux
 
+SRC += $(SIMBA_ROOT)/src/collections/bits.c
+
 include $(SIMBA_ROOT)/make/app.mk

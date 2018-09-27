@@ -74,11 +74,47 @@ static int test_mask(void)
     return (0);
 }
 
+static int test_reverse_8(void)
+{
+    int i;
+
+    for (i = 0; i < 8; i++) {
+        BTASSERT(bits_reverse_8(1 << i) == (0x80 >> i));
+    }
+
+    return (0);
+}
+
+static int test_reverse_16(void)
+{
+    int i;
+
+    for (i = 0; i < 16; i++) {
+        BTASSERT(bits_reverse_16(1 << i) == (0x8000 >> i));
+    }
+
+    return (0);
+}
+
+static int test_reverse_32(void)
+{
+    int i;
+
+    for (i = 0; i < 32; i++) {
+        BTASSERT(bits_reverse_32(1 << i) == (0x80000000 >> i));
+    }
+
+    return (0);
+}
+
 int main()
 {
     struct harness_testcase_t testcases[] = {
         { test_insert, "test_insert" },
         { test_mask, "test_mask" },
+        { test_reverse_8, "test_reverse_8" },
+        { test_reverse_16, "test_reverse_16" },
+        { test_reverse_32, "test_reverse_32" },
         { NULL, NULL }
     };
 

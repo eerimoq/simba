@@ -71,4 +71,25 @@ static inline uint32_t bits_insert_32(uint32_t dst,
     return (dst);
 }
 
+/**
+ * Reverse the order of given 8 bits.
+ *
+ * @return Reversed bits.
+ */
+uint8_t bits_reverse_8(uint8_t value);
+
+/**
+ * Reverse the order of given 16 bits.
+ *
+ * @return Reversed bits.
+ */
+uint16_t bits_reverse_16(uint16_t value);
+
+/**
+ * Reverse the order of given 32 bits.
+ *
+ * @return Reversed bits.
+ */
+uint32_t bits_reverse_32(uint32_t value);
+
 #endif
