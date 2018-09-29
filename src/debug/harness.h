@@ -157,18 +157,23 @@
 typedef int (*harness_testcase_cb_t)(void);
 
 /**
- * The read/assert callback function.
+ * The read/assert callback function. Modifies a copy of the original
+ * mock entry. The modified mock entry is read by read/assert
+ * functions.
  *
  * @param[in] arg_p `arg_size` bytes copied from `arg_p` given to
  *                  `harness_mock_cwrite()`.
- * @param[in] buf_p Mock entry data buffer, equivalent to `buf_p`
- *                  given to `harness_mock_cwrite()`.
+ * @param[in,out] buf_p Mock entry data buffer, equivalent to `buf_p`
+ *                      given to `harness_mock_cwrite()`.
+ * @param[in,out] size_p Mock entry size, equivalent to `size` given
+ *                       to `harness_mock_cwrite()`.
  *
  * @return true(1) if the mock entry shall be removed, otherwise
  *         false(0).
  */
 typedef int (*harness_mock_cb_t)(void *arg_p,
-                                 void *buf_p);
+                                 void *buf_p,
+                                 size_t *size_p);
 
 struct harness_testcase_t {
     harness_testcase_cb_t callback;

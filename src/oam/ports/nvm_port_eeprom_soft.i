@@ -80,3 +80,13 @@ static ssize_t nvm_port_write(size_t dst, const void *src_p, size_t size)
 {
     return (eeprom_soft_write(&module.port.eeprom_soft, dst, src_p, size));
 }
+
+static ssize_t nvm_port_vwrite(struct aiov_t *dst_p,
+                               struct iov_t *src_p,
+                               size_t length)
+{
+    return (eeprom_soft_vwrite(&module.port.eeprom_soft,
+                               dst_p,
+                               src_p,
+                               length));
+}

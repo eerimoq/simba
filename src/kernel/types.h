@@ -169,4 +169,35 @@ struct thrd_prio_list_t {
     struct thrd_prio_list_elem_t *head_p;
 };
 
+/**
+ * Input-output vector.
+ */
+struct iov_t {
+    void *buf_p;
+    size_t size;
+};
+
+/**
+ * Input-output vector with address.
+ */
+struct iov_uintptr_t {
+    uintptr_t address;
+    size_t size;
+};
+
+static inline size_t iov_uintptr_size(struct iov_uintptr_t *iov_p,
+                                      size_t length)
+{
+    size_t i;
+    size_t size;
+
+    size = 0;
+
+    for (i = 0; i < length; i++) {
+        size += iov_p[i].size;
+    }
+
+    return (size);
+}
+
 #endif

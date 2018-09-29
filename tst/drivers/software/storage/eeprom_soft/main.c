@@ -41,8 +41,8 @@ static const struct eeprom_soft_block_t blocks[2] = {
 };
 static struct flash_driver_t flash;
 
-static int mock_write_calculate_chunk_crc_blank(uintptr_t address,
-                                                size_t size)
+static int write_calculate_chunk_crc_blank(uintptr_t address,
+                                           size_t size)
 {
     uint8_t buf[8];
 
@@ -57,14 +57,13 @@ static int mock_write_calculate_chunk_crc_blank(uintptr_t address,
     return (0);
 }
 
-static int mock_write_write_header_blank(uintptr_t address,
-                                         uint16_t revision,
-                                         uint16_t valid)
+static int write_write_header_blank(uintptr_t address,
+                                    uint16_t revision,
+                                    uint16_t valid)
 {
     struct header_t header;
 
-    mock_write_calculate_chunk_crc_blank(address,
-                                         512);
+    write_calculate_chunk_crc_blank(address, 512);
 
     header.crc = 0xa3295e14;
     header.revision = revision;
@@ -78,10 +77,10 @@ static int mock_write_write_header_blank(uintptr_t address,
     return (0);
 }
 
-static int mock_write_read_header(uintptr_t address,
-                                  uint32_t crc,
-                                  uint16_t revision,
-                                  uint16_t valid)
+static int write_read_header(uintptr_t address,
+                             uint32_t crc,
+                             uint16_t revision,
+                             uint16_t valid)
 {
     struct header_t header;
 
@@ -97,34 +96,34 @@ static int mock_write_read_header(uintptr_t address,
     return (0);
 }
 
-static int mock_write_read_header_blank(uintptr_t address,
-                                        uint16_t revision,
-                                        uint16_t valid)
+static int write_read_header_blank(uintptr_t address,
+                                   uint16_t revision,
+                                   uint16_t valid)
 {
-    return (mock_write_read_header(address,
-                                   0xa3295e14,
-                                   revision,
-                                   valid));
+    return (write_read_header(address,
+                              0xa3295e14,
+                              revision,
+                              valid));
 }
 
-static int mock_write_mount_read_chunks(struct header_t headers[2][4])
+static int write_mount_read_chunks(struct header_t headers[2][4])
 {
     int i;
     int j;
 
     for (i = 0; i < membersof(blocks); i++) {
         for (j = 0; j < membersof(headers[0]); j++) {
-            mock_write_read_header(blocks[i].address + j * 512,
-                                   headers[i][j].crc,
-                                   headers[i][j].revision,
-                                   headers[i][j].valid);
+            write_read_header(blocks[i].address + j * 512,
+                              headers[i][j].crc,
+                              headers[i][j].revision,
+                              headers[i][j].valid);
         }
     }
 
     return (0);
 }
 
-static int mock_write_mount_block_0_chunk_0_latest(void)
+static int write_mount_block_0_chunk_0_latest(void)
 {
     struct header_t headers[2][4] = {
         /* Block 0. */
@@ -143,12 +142,12 @@ static int mock_write_mount_block_0_chunk_0_latest(void)
         }
     };
 
-    mock_write_mount_read_chunks(headers);
+    write_mount_read_chunks(headers);
 
     return (0);
 }
 
-static int mock_write_get_blank_chunk_block_0_chunk_1_blank()
+static int write_get_blank_chunk_block_0_chunk_1_blank()
 {
     uint8_t data;
 
@@ -191,9 +190,9 @@ static int test_format(void)
                                0);
     }
 
-    mock_write_write_header_blank(blocks[0].address,
-                                  0,
-                                  0xa5c3);
+    write_write_header_blank(blocks[0].address,
+                             0,
+                             0xa5c3);
 
     BTASSERT(eeprom_soft_format(&eeprom) == 0);
 
@@ -230,12 +229,12 @@ static int test_mount(void)
                               512) == 0);
 
     /* Block (revision 0) is latest and valid. */
-    mock_write_mount_block_0_chunk_0_latest();
-    mock_write_read_header_blank(blocks[0].address,
+    write_mount_block_0_chunk_0_latest();
+    write_read_header_blank(blocks[0].address,
                                  0,
                                  0xa5c3);
-    mock_write_calculate_chunk_crc_blank(blocks[0].address,
-                                         512);
+    write_calculate_chunk_crc_blank(blocks[0].address,
+                                    512);
 
     BTASSERT(eeprom_soft_mount(&eeprom) == 0);
 
@@ -295,12 +294,12 @@ static int test_mount_revision_1_later_than_0(void)
                               membersof(blocks),
                               512) == 0);
 
-    mock_write_mount_read_chunks(headers);
-    mock_write_read_header_blank(blocks[0].address + 1024,
-                                 1,
-                                 0xa5c3);
-    mock_write_calculate_chunk_crc_blank(blocks[0].address + 1024,
-                                         512);
+    write_mount_read_chunks(headers);
+    write_read_header_blank(blocks[0].address + 1024,
+                            1,
+                            0xa5c3);
+    write_calculate_chunk_crc_blank(blocks[0].address + 1024,
+                                    512);
 
     BTASSERT(eeprom_soft_mount(&eeprom) == 0);
 
@@ -333,11 +332,11 @@ static int test_mount_revision_1_later_than_33000(void)
                               membersof(blocks),
                               512) == 0);
 
-    mock_write_mount_read_chunks(headers);
-    mock_write_read_header_blank(blocks[0].address + 1024,
+    write_mount_read_chunks(headers);
+    write_read_header_blank(blocks[0].address + 1024,
                                  1,
                                  0xa5c3);
-    mock_write_calculate_chunk_crc_blank(blocks[0].address + 1024,
+    write_calculate_chunk_crc_blank(blocks[0].address + 1024,
                                          512);
 
     BTASSERT(eeprom_soft_mount(&eeprom) == 0);
@@ -356,7 +355,7 @@ static int test_mount_is_valid_chunk_flash_read_fail(void)
                               membersof(blocks),
                               512) == 0);
 
-    mock_write_mount_block_0_chunk_0_latest();
+    write_mount_block_0_chunk_0_latest();
 
     /* Header read of latest chunk fails. */
     mock_write_flash_read(&header,
@@ -379,10 +378,10 @@ static int test_mount_is_valid_chunk_not_valid(void)
                               membersof(blocks),
                               512) == 0);
 
-    mock_write_mount_block_0_chunk_0_latest();
-    mock_write_read_header_blank(blocks[0].address,
-                                 0,
-                                 0xffff);
+    write_mount_block_0_chunk_0_latest();
+    write_read_header_blank(blocks[0].address,
+                            0,
+                            0xffff);
 
     BTASSERT(eeprom_soft_mount(&eeprom) == -1);
 
@@ -400,10 +399,10 @@ static int test_mount_is_valid_chunk_calculate_crc_fail(void)
                               membersof(blocks),
                               512) == 0);
 
-    mock_write_mount_block_0_chunk_0_latest();
-    mock_write_read_header_blank(blocks[0].address,
-                                 0,
-                                 0xa5c3);
+    write_mount_block_0_chunk_0_latest();
+    write_read_header_blank(blocks[0].address,
+                            0,
+                            0xa5c3);
 
     /* Flash read of the CRC fails. */
     mock_write_flash_read(&buf[0],
@@ -426,13 +425,13 @@ static int test_mount_is_valid_chunk_crc_mismatch(void)
                               membersof(blocks),
                               512) == 0);
 
-    mock_write_mount_block_0_chunk_0_latest();
-    mock_write_read_header(blocks[0].address,
-                           0x12345678, /* Does not match a blank chunk
-                                          CRC. */
-                           0,
-                           0xa5c3);
-    mock_write_calculate_chunk_crc_blank(blocks[0].address,
+    write_mount_block_0_chunk_0_latest();
+    write_read_header(blocks[0].address,
+                      0x12345678, /* Does not match a blank chunk
+                                     CRC. */
+                      0,
+                      0xa5c3);
+    write_calculate_chunk_crc_blank(blocks[0].address,
                                          512);
 
     BTASSERT(eeprom_soft_mount(&eeprom) == -1);
@@ -452,16 +451,16 @@ static int test_write(void)
                               membersof(blocks),
                               512) == 0);
 
-    mock_write_mount_block_0_chunk_0_latest();
-    mock_write_read_header_blank(blocks[0].address,
-                                 0,
-                                 0xa5c3);
-    mock_write_calculate_chunk_crc_blank(blocks[0].address,
-                                         512);
+    write_mount_block_0_chunk_0_latest();
+    write_read_header_blank(blocks[0].address,
+                            0,
+                            0xa5c3);
+    write_calculate_chunk_crc_blank(blocks[0].address,
+                                    512);
 
     BTASSERT(eeprom_soft_mount(&eeprom) == 0);
 
-    mock_write_get_blank_chunk_block_0_chunk_1_blank();
+    write_get_blank_chunk_block_0_chunk_1_blank();
 
     memset(&buf[0], -1, sizeof(buf));
 
@@ -487,14 +486,88 @@ static int test_write(void)
                                sizeof(buf),
                                (512 - 16) / sizeof(buf));
 
-    mock_write_write_header_blank(blocks[0].address + 512,
-                                  1,
-                                  0xa5c3);
+    write_write_header_blank(blocks[0].address + 512,
+                             1,
+                             0xa5c3);
 
-    BTASSERT(eeprom_soft_write(&eeprom,
-                               0,
-                               &data,
-                               sizeof(data)) == 1);
+    BTASSERTI(eeprom_soft_write(&eeprom,
+                                0,
+                                &data,
+                                sizeof(data)), ==, 1);
+
+    return (0);
+}
+
+static int test_vwrite(void)
+{
+    struct eeprom_soft_driver_t eeprom;
+    uint8_t buf[504];
+    char part_1[] = "012";
+    char part_2[] = "3456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLM";
+    char part_3[] = "NOPQRSTUVWXYZ";
+    struct iov_uintptr_t dst[3];
+    struct iov_t src[3];
+    ssize_t size;
+
+    BTASSERT(eeprom_soft_init(&eeprom,
+                              &flash,
+                              &blocks[0],
+                              membersof(blocks),
+                              512) == 0);
+
+    /* Mount. */
+    write_mount_block_0_chunk_0_latest();
+    write_read_header_blank(blocks[0].address,
+                            0,
+                            0xa5c3);
+    write_calculate_chunk_crc_blank(blocks[0].address,
+                                    512);
+
+    BTASSERT(eeprom_soft_mount(&eeprom) == 0);
+
+    /* Write. */
+    write_get_blank_chunk_block_0_chunk_1_blank();
+    memset(&buf[0], -1, sizeof(buf));
+    mock_write_flash_read_seq2(&buf[0],
+                               blocks[0].address + 8,
+                               sizeof(buf),
+                               8,
+                               sizeof(buf) / 8);
+    memcpy(&buf[33],
+           &part_1[0],
+           strlen(part_1));
+    memcpy(&buf[33 + strlen(part_1)],
+           &part_2[0],
+           strlen(part_2));
+    memcpy(&buf[33 + strlen(part_1) + strlen(part_2)],
+           &part_3[0],
+           strlen(part_3));
+    mock_write_flash_write_seq2(blocks[0].address + 512 + 8,
+                                &buf[0],
+                                sizeof(buf),
+                                8,
+                                sizeof(buf) / 8);
+    write_write_header_blank(blocks[0].address + 512,
+                             1,
+                             0xa5c3);
+
+    dst[0].address = 33;
+    dst[0].size = strlen(part_1);
+    dst[1].address = (33 + strlen(part_1));
+    dst[1].size = strlen(part_2);
+    dst[2].address = (33 + strlen(part_1) + strlen(part_2));
+    dst[2].size = strlen(part_3);
+
+    src[0].buf_p = part_1;
+    src[1].buf_p = part_2;
+    src[2].buf_p = part_3;
+
+    size = iov_uintptr_size(&dst[0], membersof(dst));
+
+    BTASSERT(eeprom_soft_vwrite(&eeprom,
+                                &dst[0],
+                                &src[0],
+                                membersof(dst)) == size);
 
     return (0);
 }
@@ -511,14 +584,14 @@ static int test_read_write_after_failed_mount(void)
                               512) == 0);
 
     /* Mount fails (with chunk CRC mismatch). */
-    mock_write_mount_block_0_chunk_0_latest();
-    mock_write_read_header(blocks[0].address,
-                           0x12345678, /* Does not match a blank chunk
-                                          CRC. */
-                           0,
-                           0xa5c3);
-    mock_write_calculate_chunk_crc_blank(blocks[0].address,
-                                         512);
+    write_mount_block_0_chunk_0_latest();
+    write_read_header(blocks[0].address,
+                      0x12345678, /* Does not match a blank chunk
+                                     CRC. */
+                      0,
+                      0xa5c3);
+    write_calculate_chunk_crc_blank(blocks[0].address,
+                                    512);
 
     BTASSERT(eeprom_soft_mount(&eeprom) == -1);
 
@@ -573,6 +646,7 @@ int main()
             "test_mount_is_valid_chunk_crc_mismatch"
         },
         { test_write, "test_write" },
+        { test_vwrite, "test_vwrite" },
         {
             test_read_write_after_failed_mount,
             "test_read_write_after_failed_mount"

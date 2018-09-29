@@ -197,3 +197,14 @@ ssize_t nvm_write(uint32_t dst, const void *src_p, size_t size)
 
     return (nvm_port_write(dst, src_p, size));
 }
+
+ssize_t nvm_vwrite(struct iov_uintptr_t *dst_p,
+                   struct iov_t *src_p,
+                   size_t length)
+{
+    ASSERTN(module.initialized == 1, EINVAL);
+    ASSERTN(dst_p != NULL, EINVAL);
+    ASSERTN(src_p != NULL, EINVAL);
+
+    return (nvm_port_vwrite(dst_p, src_p, length));
+}

@@ -100,3 +100,10 @@ static ssize_t nvm_port_write(size_t dst, const void *src_p, size_t size)
 
     return (fwrite(src_p, 1, size, module.port.nvm_p));
 }
+
+static ssize_t nvm_port_vwrite(struct iov_uintptr_t *dst_p,
+                               struct iov_t *src_p,
+                               size_t length)
+{
+    return (-ENOSYS);
+}

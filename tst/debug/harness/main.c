@@ -30,6 +30,11 @@
 #include "my_module.h"
 #include "my_module_mock.h"
 
+struct arg_t {
+    size_t offset;
+    size_t length;
+};
+
 static THRD_STACK(mock_thread_stack, 512);
 
 static int asserti(int actual, int expected)
@@ -66,18 +71,19 @@ static void *mock_thread(void *arg_p)
     return (NULL);
 }
 
-static int cwrite_cb(void *arg_p, void *buf_p)
+static int cwrite_cb(void *v_arg_p, void *buf_p, size_t *size_p)
 {
-    int *length_p;
+    struct arg_t *arg_p;
     int *value_p;
 
-    length_p = arg_p;
+    arg_p = v_arg_p;
     value_p = buf_p;
 
-    (*length_p)--;
-    *value_p += 2;
+    arg_p->length--;
+    *value_p = (1 + 2 * arg_p->offset);
+    arg_p->offset++;
 
-    return (*length_p == 0);
+    return (arg_p->length == 0);
 }
 
 static int test_asserti(void)
@@ -213,28 +219,29 @@ static int test_mock_mwrite(void)
 static int test_mock_cwrite(void)
 {
     int value;
-    int length;
+    struct arg_t arg;
 
     value = 1;
-    length = 2;
+    arg.length = 2;
+    arg.offset = 0;
 
     BTASSERT(harness_mock_cwrite("cwrite(value)",
                                  &value,
                                  sizeof(value),
                                  cwrite_cb,
-                                 &length,
-                                 sizeof(length)) == sizeof(value));
+                                 &arg,
+                                 sizeof(arg)) == sizeof(value));
 
     value = 0;
     BTASSERT(harness_mock_read("cwrite(value)",
                                &value,
                                sizeof(value)) == sizeof(value));
-    BTASSERT(value == 1);
+    BTASSERTI(value, ==, 1);
 
     BTASSERT(harness_mock_read("cwrite(value)",
                                &value,
                                sizeof(value)) == sizeof(value));
-    BTASSERT(value == 3);
+    BTASSERTI(value, ==, 3);
 
     BTASSERT(harness_mock_read("cwrite(value)",
                                &value,

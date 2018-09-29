@@ -82,4 +82,19 @@ ssize_t nvm_read(void *dst_p, uint32_t src, size_t size);
  */
 ssize_t nvm_write(uint32_t dst, const void *src_p, size_t size);
 
+/**
+ * Write given buffers to given NVM addresses.
+ *
+ * @param[in] dst_p Address ranges in NVM to write, sorted from lowest
+ *                  to highest. Addressing starts at zero(0).
+ * @param[in] src_p Buffers to write in the same order as in
+ *                  `dst_p`. The size fields are not used.
+ * @param[in] length Number of elements in `dst_p` and `src_p`.
+ *
+ * @return Number of bytes written or negative error code.
+ */
+ssize_t nvm_vwrite(struct iov_uintptr_t *dst_p,
+                   struct iov_t *src_p,
+                   size_t length);
+
 #endif

@@ -47,12 +47,24 @@ int mock_write_flash_read_seq(void *dst_p,
                               ssize_t res,
                               size_t length);
 
+int mock_write_flash_read_seq2(void *dst_p,
+                               uintptr_t src,
+                               size_t size,
+                               ssize_t res,
+                               size_t length);
+
 int mock_write_flash_write(uintptr_t dst,
                            const void *src_p,
                            size_t size,
                            ssize_t res);
 
 int mock_write_flash_write_seq(uintptr_t dst,
+                               const void *src_p,
+                               size_t size,
+                               ssize_t res,
+                               size_t length);
+
+int mock_write_flash_write_seq2(uintptr_t dst,
                                const void *src_p,
                                size_t size,
                                ssize_t res,

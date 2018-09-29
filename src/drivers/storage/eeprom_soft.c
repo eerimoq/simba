@@ -240,31 +240,39 @@ static int write_header(struct eeprom_soft_driver_t *self_p,
     return (0);
 }
 
-static ssize_t write_inner(struct eeprom_soft_driver_t *self_p,
-                           uintptr_t dst,
-                           const void *src_p,
-                           size_t size)
+static ssize_t vwrite_inner(struct eeprom_soft_driver_t *self_p,
+                            struct iov_uintptr_t *dst_p,
+                            struct iov_t *src_p,
+                            size_t length)
 {
     const struct eeprom_soft_block_t *block_p;
     uint8_t buf[8];
     uintptr_t chunk_address;
     uint16_t revision;
     uintptr_t offset;
-    const uint8_t *u8_src_p;
+    uint8_t *u8_src_p;
     int overwrite_index;
     size_t overwrite_size;
     ssize_t res;
+    size_t i;
+    uintptr_t dst;
+    size_t size;
 
     if (self_p->current.block_p == NULL) {
         return (-ENOTMOUNTED);
     }
 
-    if (dst >= self_p->eeprom_size) {
-        return (-EINVAL);
-    }
+    for (i = 0; i < length; i++) {
+        dst = dst_p[i].address;
+        size = dst_p[i].size;
 
-    if (dst + size > self_p->eeprom_size) {
-        return (-EINVAL);
+        if (dst >= self_p->eeprom_size) {
+            return (-EINVAL);
+        }
+
+        if (dst + size > self_p->eeprom_size) {
+            return (-EINVAL);
+        }
     }
 
     if (get_blank_chunk(self_p, &block_p, &chunk_address) != 0) {
@@ -272,8 +280,6 @@ static ssize_t write_inner(struct eeprom_soft_driver_t *self_p,
     }
 
     /* Write to new chunk. */
-    u8_src_p = src_p;
-
     for (offset = 0; offset < self_p->eeprom_size; offset += sizeof(buf)) {
         /* Read from old chunk. */
         res = flash_read(self_p->flash_p,
@@ -285,24 +291,29 @@ static ssize_t write_inner(struct eeprom_soft_driver_t *self_p,
             return (-1);
         }
 
-        /* Overwrite given data region. */
-        if ((dst < offset + sizeof(buf)) && (dst + size > offset)) {
-            if (dst <= offset) {
-                overwrite_index = 0;
-            } else {
-                overwrite_index = (dst - offset);
+        /* Overwrite given data regions. */
+        for (i = 0; i < length; i++) {
+            dst = dst_p[i].address;
+            size = dst_p[i].size;
+            u8_src_p = src_p[i].buf_p;
+
+            if ((dst < offset + sizeof(buf)) && (dst + size > offset)) {
+                if (dst <= offset) {
+                    overwrite_index = 0;
+                } else {
+                    overwrite_index = (dst - offset);
+                }
+
+                if (dst + size >= offset + sizeof(buf)) {
+                    overwrite_size = sizeof(buf);
+                } else {
+                    overwrite_size = (dst + size - offset);
+                }
+
+                overwrite_size -= overwrite_index;
+                memcpy(&buf[overwrite_index], u8_src_p, overwrite_size);
+                src_p[i].buf_p = (u8_src_p + overwrite_size);
             }
-
-            if (dst + size >= offset + sizeof(buf)) {
-                overwrite_size = sizeof(buf);
-            } else {
-                overwrite_size = (dst + size - offset);
-            }
-
-            overwrite_size -= overwrite_index;
-
-            memcpy(&buf[overwrite_index], u8_src_p, overwrite_size);
-            u8_src_p += overwrite_size;
         }
 
         /* Write to new chunk. */
@@ -331,7 +342,7 @@ static ssize_t write_inner(struct eeprom_soft_driver_t *self_p,
     self_p->current.chunk_address = chunk_address;
     self_p->current.revision = revision;
 
-    return (size);
+    return (iov_uintptr_size(dst_p, length));
 }
 
 int eeprom_soft_module_init()
@@ -492,13 +503,32 @@ ssize_t eeprom_soft_write(struct eeprom_soft_driver_t *self_p,
     ASSERTN(self_p != NULL, EINVAL);
     ASSERTN(src_p != NULL, EINVAL);
 
+    struct iov_uintptr_t iov_dst;
+    struct iov_t iov_src;
+
+    iov_dst.address = dst;
+    iov_dst.size = size;
+    iov_src.buf_p = (void *)src_p;
+
+    return (eeprom_soft_vwrite(self_p, &iov_dst, &iov_src, 1));
+}
+
+ssize_t eeprom_soft_vwrite(struct eeprom_soft_driver_t *self_p,
+                           struct iov_uintptr_t *dst_p,
+                           struct iov_t *src_p,
+                           size_t length)
+{
+    ASSERTN(self_p != NULL, EINVAL);
+    ASSERTN(dst_p != NULL, EINVAL);
+    ASSERTN(src_p != NULL, EINVAL);
+
     ssize_t res;
 
 #if CONFIG_EEPROM_SOFT_SEMAPHORE == 1
     mutex_lock(&self_p->mutex);
 #endif
 
-    res = write_inner(self_p, dst, src_p, size);
+    res = vwrite_inner(self_p, dst_p, src_p, length);
 
 #if CONFIG_EEPROM_SOFT_SEMAPHORE == 1
     mutex_unlock(&self_p->mutex);

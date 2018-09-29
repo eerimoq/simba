@@ -272,7 +272,7 @@ static struct mock_entry_t *find_mock_entry(const char *id_p)
 {
     struct list_iter_t iter;
     struct mock_entry_t *entry_p;
-    struct mock_entry_t *unmodified_entry_p;
+    struct mock_entry_t *new_entry_p;
     struct mock_entry_cb_t *entry_cb_p;
     int res;
 
@@ -295,10 +295,11 @@ static struct mock_entry_t *find_mock_entry(const char *id_p)
             } else {
                 /* Make a copy of the mock entry since the mock
                    callback may modify it. */
-                unmodified_entry_p = copy_mock_entry_no_lock(entry_p);
+                new_entry_p = copy_mock_entry_no_lock(entry_p);
 
                 res = entry_cb_p->fn(&entry_cb_p->arg[0],
-                                     &entry_p->data.buf[0]);
+                                     &new_entry_p->data.buf[0],
+                                     &new_entry_p->data.size);
 
                 if (res == 1) {
                     list_remove(&module.mock.list, entry_p);
@@ -307,7 +308,7 @@ static struct mock_entry_t *find_mock_entry(const char *id_p)
                     list_add_tail(&module.mock.cb_list, entry_cb_p);
                 }
 
-                entry_p = unmodified_entry_p;
+                entry_p = new_entry_p;
             }
 
             break;
@@ -370,7 +371,7 @@ static int read_mock_entry(struct mock_entry_t *entry_p,
     return (res);
 }
 
-static int mwrite_cb(void *arg_p, void *buf_p)
+static int mwrite_cb(void *arg_p, void *buf_p, size_t *size_p)
 {
     int *length_p;
 
