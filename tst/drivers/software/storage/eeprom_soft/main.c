@@ -48,11 +48,11 @@ static int write_calculate_chunk_crc_blank(uintptr_t address,
 
     memset(&buf[0], -1, sizeof(buf));
 
-    mock_write_flash_read_seq(&buf[0],
-                              address + 8,
-                              sizeof(buf),
-                              sizeof(buf),
-                              (size - 8) / sizeof(buf));
+    mock_write_flash_read_seq_repeat(&buf[0],
+                                     address + 8,
+                                     sizeof(buf),
+                                     sizeof(buf),
+                                     (size - 8) / sizeof(buf));
 
     return (0);
 }
@@ -153,11 +153,11 @@ static int write_get_blank_chunk_block_0_chunk_1_blank()
 
     data = 0xff;
 
-    mock_write_flash_read_seq(&data,
-                              blocks[0].address + 512,
-                              sizeof(data),
-                              sizeof(data),
-                              512);
+    mock_write_flash_read_seq_repeat(&data,
+                                     blocks[0].address + 512,
+                                     sizeof(data),
+                                     sizeof(data),
+                                     512);
 
     return (0);
 }
@@ -464,11 +464,11 @@ static int test_write(void)
 
     memset(&buf[0], -1, sizeof(buf));
 
-    mock_write_flash_read_seq(&buf[0],
-                              blocks[0].address + 8,
-                              sizeof(buf),
-                              sizeof(buf),
-                              (512 - 8) / 8);
+    mock_write_flash_read_seq_repeat(&buf[0],
+                                     blocks[0].address + 8,
+                                     sizeof(buf),
+                                     sizeof(buf),
+                                     (512 - 8) / 8);
 
     data = 1;
     buf[0] = data;
@@ -480,11 +480,11 @@ static int test_write(void)
 
     memset(&buf[0], -1, sizeof(buf));
 
-    mock_write_flash_write_seq(blocks[0].address + 512 + 16,
-                               &buf[0],
-                               sizeof(buf),
-                               sizeof(buf),
-                               (512 - 16) / sizeof(buf));
+    mock_write_flash_write_seq_repeat(blocks[0].address + 512 + 16,
+                                      &buf[0],
+                                      sizeof(buf),
+                                      sizeof(buf),
+                                      (512 - 16) / sizeof(buf));
 
     write_write_header_blank(blocks[0].address + 512,
                              1,
@@ -528,11 +528,11 @@ static int test_vwrite(void)
     /* Write. */
     write_get_blank_chunk_block_0_chunk_1_blank();
     memset(&buf[0], -1, sizeof(buf));
-    mock_write_flash_read_seq2(&buf[0],
-                               blocks[0].address + 8,
-                               sizeof(buf),
-                               8,
-                               sizeof(buf) / 8);
+    mock_write_flash_read_seq(&buf[0],
+                              blocks[0].address + 8,
+                              sizeof(buf),
+                              8,
+                              sizeof(buf) / 8);
     memcpy(&buf[33],
            &part_1[0],
            strlen(part_1));
@@ -542,11 +542,11 @@ static int test_vwrite(void)
     memcpy(&buf[33 + strlen(part_1) + strlen(part_2)],
            &part_3[0],
            strlen(part_3));
-    mock_write_flash_write_seq2(blocks[0].address + 512 + 8,
-                                &buf[0],
-                                sizeof(buf),
-                                8,
-                                sizeof(buf) / 8);
+    mock_write_flash_write_seq(blocks[0].address + 512 + 8,
+                               &buf[0],
+                               sizeof(buf),
+                               8,
+                               sizeof(buf) / 8);
     write_write_header_blank(blocks[0].address + 512,
                              1,
                              0xa5c3);

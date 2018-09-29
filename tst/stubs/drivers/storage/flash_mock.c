@@ -146,11 +146,11 @@ int __attribute__ ((weak)) STUB(flash_init)(struct flash_driver_t *self_p,
     return (res);
 }
 
-int mock_write_flash_read_seq(void *dst_p,
-                              uintptr_t src,
-                              size_t size,
-                              ssize_t res,
-                              size_t length)
+int mock_write_flash_read_seq_repeat(void *dst_p,
+                                     uintptr_t src,
+                                     size_t size,
+                                     ssize_t res,
+                                     size_t length)
 {
     struct seq_arg_t arg;
 
@@ -183,11 +183,11 @@ int mock_write_flash_read_seq(void *dst_p,
     return (0);
 }
 
-int mock_write_flash_read_seq2(void *dst_p,
-                               uintptr_t src,
-                               size_t size,
-                               ssize_t res,
-                               size_t length)
+int mock_write_flash_read_seq(void *dst_p,
+                              uintptr_t src,
+                              size_t size,
+                              ssize_t res,
+                              size_t length)
 {
     struct seq_data_arg_t data_arg;
     struct seq_arg_t src_arg;
@@ -233,11 +233,11 @@ int mock_write_flash_read(void *dst_p,
                           size_t size,
                           ssize_t res)
 {
-    return (mock_write_flash_read_seq(dst_p,
-                                      src,
-                                      size,
-                                      res,
-                                      1));
+    return (mock_write_flash_read_seq_repeat(dst_p,
+                                             src,
+                                             size,
+                                             res,
+                                             1));
 }
 
 ssize_t __attribute__ ((weak)) STUB(flash_read)(struct flash_driver_t *self_p,
@@ -266,11 +266,11 @@ ssize_t __attribute__ ((weak)) STUB(flash_read)(struct flash_driver_t *self_p,
     return (res);
 }
 
-int mock_write_flash_write_seq(uintptr_t dst,
-                               const void *src_p,
-                               size_t size,
-                               ssize_t res,
-                               size_t length)
+int mock_write_flash_write_seq_repeat(uintptr_t dst,
+                                      const void *src_p,
+                                      size_t size,
+                                      ssize_t res,
+                                      size_t length)
 {
     struct seq_arg_t arg;
 
@@ -303,11 +303,11 @@ int mock_write_flash_write_seq(uintptr_t dst,
     return (0);
 }
 
-int mock_write_flash_write_seq2(uintptr_t dst,
-                                const void *src_p,
-                                size_t size,
-                                ssize_t res,
-                                size_t length)
+int mock_write_flash_write_seq(uintptr_t dst,
+                               const void *src_p,
+                               size_t size,
+                               ssize_t res,
+                               size_t length)
 {
     struct seq_arg_t dst_arg;
     struct seq_data_arg_t data_arg;
@@ -353,11 +353,11 @@ int mock_write_flash_write(uintptr_t dst,
                            size_t size,
                            ssize_t res)
 {
-    return (mock_write_flash_write_seq(dst,
-                                       src_p,
-                                       size,
-                                       res,
-                                       1));
+    return (mock_write_flash_write_seq_repeat(dst,
+                                              src_p,
+                                              size,
+                                              res,
+                                              1));
 }
 
 ssize_t __attribute__ ((weak)) STUB(flash_write)(struct flash_driver_t *self_p,
