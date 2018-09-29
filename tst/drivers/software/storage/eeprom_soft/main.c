@@ -453,6 +453,72 @@ static int test_mount_is_valid_chunk_crc_mismatch(void)
     return (0);
 }
 
+static int test_read(void)
+{
+    struct eeprom_soft_driver_t eeprom;
+    uint8_t data;
+
+    BTASSERT(eeprom_soft_init(&eeprom,
+                              &flash,
+                              &blocks[0],
+                              membersof(blocks),
+                              512) == 0);
+
+    BTASSERT(mount(&eeprom) == 0);
+
+    data = 1;
+    mock_write_flash_read(&data,
+                          blocks[0].address + 8,
+                          sizeof(data),
+                          sizeof(data));
+
+    BTASSERT(eeprom_soft_read(&eeprom,
+                              &data,
+                              0,
+                              sizeof(data)) == sizeof(data));
+
+    return (0);
+}
+
+static int test_read_range_check(void)
+{
+    struct eeprom_soft_driver_t eeprom;
+    uint8_t buf[4];
+
+    BTASSERT(eeprom_soft_init(&eeprom,
+                              &flash,
+                              &blocks[0],
+                              membersof(blocks),
+                              512) == 0);
+
+    BTASSERT(mount(&eeprom) == 0);
+
+    /* Ok. */
+    memset(&buf[0], 0, sizeof(buf));
+    mock_write_flash_read(&buf[0],
+                          blocks[0].address + 508,
+                          sizeof(buf),
+                          sizeof(buf));
+    BTASSERT(eeprom_soft_read(&eeprom,
+                              &buf[0],
+                              500,
+                              sizeof(buf)) == sizeof(buf));
+
+    /* Three bytes inside, one outside. */
+    BTASSERT(eeprom_soft_read(&eeprom,
+                              &buf[0],
+                              501,
+                              sizeof(buf)) == -EINVAL);
+
+    /* All bytes outside. */
+    BTASSERT(eeprom_soft_read(&eeprom,
+                              &buf[0],
+                              504,
+                              sizeof(buf)) == -EINVAL);
+
+    return (0);
+}
+
 static int test_write(void)
 {
     struct eeprom_soft_driver_t eeprom;
@@ -710,6 +776,8 @@ int main()
             test_mount_is_valid_chunk_crc_mismatch,
             "test_mount_is_valid_chunk_crc_mismatch"
         },
+        { test_read, "test_read" },
+        { test_read_range_check, "test_read_range_check" },
         { test_write, "test_write" },
         { test_vwrite, "test_vwrite" },
         { test_vwrite_out_of_order, "test_vwrite_out_of_order" },
