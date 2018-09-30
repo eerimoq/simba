@@ -80,7 +80,7 @@ static int cwrite_cb(void *v_arg_p, void *buf_p, size_t *size_p)
     value_p = buf_p;
 
     arg_p->length--;
-    *value_p = (1 + 2 * arg_p->offset);
+    *value_p += (1 + 2 * arg_p->offset);
     arg_p->offset++;
 
     return (arg_p->length == 0);
@@ -232,17 +232,39 @@ static int test_mock_cwrite(void)
                                  &arg,
                                  sizeof(arg)) == sizeof(value));
 
+    value = 2;
+    BTASSERT(harness_mock_cwrite("cwrite(value)",
+                                 &value,
+                                 sizeof(value),
+                                 cwrite_cb,
+                                 &arg,
+                                 sizeof(arg)) == sizeof(value));
+
+
+    /* Read from first cwrite mock entry. */
     value = 0;
     BTASSERT(harness_mock_read("cwrite(value)",
                                &value,
                                sizeof(value)) == sizeof(value));
-    BTASSERTI(value, ==, 1);
+    BTASSERTI(value, ==, 2);
 
+    BTASSERT(harness_mock_read("cwrite(value)",
+                               &value,
+                               sizeof(value)) == sizeof(value));
+    BTASSERTI(value, ==, 4);
+
+    /* Read from second cwrite mock entry. */
     BTASSERT(harness_mock_read("cwrite(value)",
                                &value,
                                sizeof(value)) == sizeof(value));
     BTASSERTI(value, ==, 3);
 
+    BTASSERT(harness_mock_read("cwrite(value)",
+                               &value,
+                               sizeof(value)) == sizeof(value));
+    BTASSERTI(value, ==, 5);
+
+    /* Nothing left to read. */
     BTASSERT(harness_mock_read("cwrite(value)",
                                &value,
                                sizeof(value)) == -1);
