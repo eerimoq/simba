@@ -533,36 +533,64 @@ static int test_write(void)
 
     BTASSERT(mount(&eeprom) == 0);
 
+    memset(&buf[0], -1, sizeof(buf));
+    mock_write_flash_read_seq_repeat(&buf[0],
+                                     blocks[0].address + 8,
+                                     sizeof(buf),
+                                     sizeof(buf),
+                                     (512 - 8) / 8);
     write_get_blank_chunk_block_0_chunk_1_blank();
+    mock_write_flash_read_seq_repeat(&buf[0],
+                                     blocks[0].address + 8,
+                                     sizeof(buf),
+                                     sizeof(buf),
+                                     (512 - 8) / 8);
+    data = 1;
+    buf[0] = data;
+    mock_write_flash_write(blocks[0].address + 512 + 8,
+                           &buf[0],
+                           sizeof(buf),
+                           sizeof(buf));
+    memset(&buf[0], -1, sizeof(buf));
+    mock_write_flash_write_seq_repeat(blocks[0].address + 512 + 16,
+                                      &buf[0],
+                                      sizeof(buf),
+                                      sizeof(buf),
+                                      (512 - 16) / sizeof(buf));
+    write_write_header_blank(blocks[0].address + 512,
+                             1,
+                             0xa5c3);
+
+    BTASSERTI(eeprom_soft_write(&eeprom,
+                                0,
+                                &data,
+                                sizeof(data)), ==, 1);
+
+    return (0);
+}
+
+static int test_write_identical(void)
+{
+    struct eeprom_soft_driver_t eeprom;
+    uint8_t data;
+    uint8_t buf[8];
+
+    BTASSERT(eeprom_soft_init(&eeprom,
+                              &flash,
+                              &blocks[0],
+                              membersof(blocks),
+                              512) == 0);
+
+    BTASSERT(mount(&eeprom) == 0);
 
     memset(&buf[0], -1, sizeof(buf));
-
     mock_write_flash_read_seq_repeat(&buf[0],
                                      blocks[0].address + 8,
                                      sizeof(buf),
                                      sizeof(buf),
                                      (512 - 8) / 8);
 
-    data = 1;
-    buf[0] = data;
-
-    mock_write_flash_write(blocks[0].address + 512 + 8,
-                           &buf[0],
-                           sizeof(buf),
-                           sizeof(buf));
-
-    memset(&buf[0], -1, sizeof(buf));
-
-    mock_write_flash_write_seq_repeat(blocks[0].address + 512 + 16,
-                                      &buf[0],
-                                      sizeof(buf),
-                                      sizeof(buf),
-                                      (512 - 16) / sizeof(buf));
-
-    write_write_header_blank(blocks[0].address + 512,
-                             1,
-                             0xa5c3);
-
+    data = -1;
     BTASSERTI(eeprom_soft_write(&eeprom,
                                 0,
                                 &data,
@@ -591,8 +619,13 @@ static int test_vwrite(void)
     BTASSERT(mount(&eeprom) == 0);
 
     /* Write. */
-    write_get_blank_chunk_block_0_chunk_1_blank();
     memset(&buf[0], -1, sizeof(buf));
+    mock_write_flash_read_seq(&buf[0],
+                              blocks[0].address + 8,
+                              sizeof(buf),
+                              8,
+                              sizeof(buf) / 8);
+    write_get_blank_chunk_block_0_chunk_1_blank();
     mock_write_flash_read_seq(&buf[0],
                               blocks[0].address + 8,
                               sizeof(buf),
@@ -637,6 +670,134 @@ static int test_vwrite(void)
     return (0);
 }
 
+static int test_vwrite_holes(void)
+{
+    struct eeprom_soft_driver_t eeprom;
+    uint8_t buf[504];
+    char part_1[] = "012";
+    char part_2[] = "stuvwxyzABCDEFGHIJKLM";
+    char part_3[] = "PQRSTUVWXYZ";
+    struct iov_uintptr_t dst[3];
+    struct iov_t src[3];
+    ssize_t size;
+
+    BTASSERT(eeprom_soft_init(&eeprom,
+                              &flash,
+                              &blocks[0],
+                              membersof(blocks),
+                              512) == 0);
+
+    BTASSERT(mount(&eeprom) == 0);
+
+    /* Write. */
+    memset(&buf[0], -1, sizeof(buf));
+    mock_write_flash_read_seq(&buf[0],
+                              blocks[0].address + 8,
+                              sizeof(buf),
+                              8,
+                              sizeof(buf) / 8);
+    write_get_blank_chunk_block_0_chunk_1_blank();
+    mock_write_flash_read_seq(&buf[0],
+                              blocks[0].address + 8,
+                              sizeof(buf),
+                              8,
+                              sizeof(buf) / 8);
+    memcpy(&buf[32],
+           &part_1[0],
+           strlen(part_1));
+    memcpy(&buf[32 + strlen(part_1) + 25],
+           &part_2[0],
+           strlen(part_2));
+    memcpy(&buf[32 + strlen(part_1) + 25 + strlen(part_2) + 2],
+           &part_3[0],
+           strlen(part_3));
+    mock_write_flash_write_seq(blocks[0].address + 512 + 8,
+                               &buf[0],
+                               sizeof(buf),
+                               8,
+                               sizeof(buf) / 8);
+    write_write_header_blank(blocks[0].address + 512,
+                             1,
+                             0xa5c3);
+
+    dst[0].address = 32;
+    dst[0].size = strlen(part_1);
+    dst[1].address = (32 + strlen(part_1) + 25);
+    dst[1].size = strlen(part_2);
+    dst[2].address = (32 + strlen(part_1) + 25 + strlen(part_2) + 2);
+    dst[2].size = strlen(part_3);
+
+    src[0].buf_p = part_1;
+    src[1].buf_p = part_2;
+    src[2].buf_p = part_3;
+
+    size = iov_uintptr_size(&dst[0], membersof(dst));
+
+    BTASSERT(eeprom_soft_vwrite(&eeprom,
+                                &dst[0],
+                                &src[0],
+                                membersof(dst)) == size);
+
+    return (0);
+}
+
+static int test_vwrite_identical(void)
+{
+    struct eeprom_soft_driver_t eeprom;
+    uint8_t buf[504];
+    char part_1[] = "012";
+    char part_2[] = "3456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLM";
+    char part_3[] = "NOPQRSTUVWXYZ";
+    struct iov_uintptr_t dst[3];
+    struct iov_t src[3];
+    ssize_t size;
+
+    BTASSERT(eeprom_soft_init(&eeprom,
+                              &flash,
+                              &blocks[0],
+                              membersof(blocks),
+                              512) == 0);
+
+    BTASSERT(mount(&eeprom) == 0);
+
+    /* Write. */
+    memset(&buf[0], -1, sizeof(buf));
+    memcpy(&buf[33],
+           &part_1[0],
+           strlen(part_1));
+    memcpy(&buf[33 + strlen(part_1)],
+           &part_2[0],
+           strlen(part_2));
+    memcpy(&buf[33 + strlen(part_1) + strlen(part_2)],
+           &part_3[0],
+           strlen(part_3));
+    mock_write_flash_read_seq(&buf[0],
+                              blocks[0].address + 8,
+                              sizeof(buf),
+                              8,
+                              sizeof(buf) / 8);
+
+    dst[0].address = 33;
+    dst[0].size = strlen(part_1);
+    dst[1].address = (33 + strlen(part_1));
+    dst[1].size = strlen(part_2);
+    dst[2].address = (33 + strlen(part_1) + strlen(part_2));
+    dst[2].size = strlen(part_3);
+
+    src[0].buf_p = part_1;
+    src[1].buf_p = part_2;
+    src[2].buf_p = part_3;
+
+    size = iov_uintptr_size(&dst[0], membersof(dst));
+
+    BTASSERT(eeprom_soft_vwrite(&eeprom,
+                                &dst[0],
+                                &src[0],
+                                membersof(dst)) == size);
+
+    return (0);
+}
+
 static int test_vwrite_out_of_order(void)
 {
     struct eeprom_soft_driver_t eeprom;
@@ -657,8 +818,13 @@ static int test_vwrite_out_of_order(void)
     BTASSERT(mount(&eeprom) == 0);
 
     /* Write. */
-    write_get_blank_chunk_block_0_chunk_1_blank();
     memset(&buf[0], -1, sizeof(buf));
+    mock_write_flash_read_seq(&buf[0],
+                              blocks[0].address + 8,
+                              sizeof(buf),
+                              8,
+                              sizeof(buf) / 8);
+    write_get_blank_chunk_block_0_chunk_1_blank();
     mock_write_flash_read_seq(&buf[0],
                               blocks[0].address + 8,
                               sizeof(buf),
@@ -779,7 +945,10 @@ int main()
         { test_read, "test_read" },
         { test_read_range_check, "test_read_range_check" },
         { test_write, "test_write" },
+        { test_write_identical, "test_write_identical" },
         { test_vwrite, "test_vwrite" },
+        { test_vwrite_holes, "test_vwrite_holes" },
+        { test_vwrite_identical, "test_vwrite_identical" },
         { test_vwrite_out_of_order, "test_vwrite_out_of_order" },
         {
             test_read_write_after_failed_mount,

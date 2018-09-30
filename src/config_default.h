@@ -2663,6 +2663,13 @@
 #endif
 
 /**
+ * Overwrite identical data in software eeprom.
+ */
+#ifndef CONFIG_EEPROM_SOFT_OVERWRITE_IDENTICAL_DATA
+#    define CONFIG_EEPROM_SOFT_OVERWRITE_IDENTICAL_DATA     0
+#endif
+
+/**
  * Configuration validation.
  */
 #if (CONFIG_START_SHELL == 1) &&  (CONFIG_START_CONSOLE == CONFIG_START_CONSOLE_NONE)

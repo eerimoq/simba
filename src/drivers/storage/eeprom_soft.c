@@ -35,7 +35,9 @@
  */
 #define VALID_PATTERN                                  0xa5c3
 
-#define CHUNK_HEADER_SIZE        sizeof(struct chunk_header_t)
+#define CHUNK_HEADER_SIZE       sizeof(struct chunk_header_t)
+
+#define BUFFER_SIZE                                         8
 
 struct chunk_header_t {
     uint32_t crc;
@@ -51,7 +53,7 @@ static uint32_t calculate_chunk_crc(struct eeprom_soft_driver_t *self_p,
                                     uintptr_t address)
 {
     ssize_t size;
-    uint8_t buf[8];
+    uint8_t buf[BUFFER_SIZE];
     size_t offset;
 #if CONFIG_EEPROM_SOFT_CRC == CONFIG_EEPROM_SOFT_CRC_32
     uint32_t crc = 0;
@@ -240,13 +242,104 @@ static int write_header(struct eeprom_soft_driver_t *self_p,
     return (0);
 }
 
+static int are_overlapping(struct iov_uintptr_t *iov_p,
+                           size_t offset)
+{
+    return ((iov_p->address < offset + BUFFER_SIZE)
+            && (iov_p->address + iov_p->size > offset));
+}
+
+static void calc_overlapping_range(struct iov_uintptr_t *iov_p,
+                                   size_t offset,
+                                   int *index_p,
+                                   size_t *size_p)
+{
+    if (iov_p->address <= offset) {
+        *index_p = 0;
+    } else {
+        *index_p = (iov_p->address - offset);
+    }
+
+    *size_p = (iov_p->address + iov_p->size - offset);
+
+    if (*size_p > BUFFER_SIZE) {
+        *size_p = BUFFER_SIZE;
+    }
+
+    *size_p -= *index_p;
+}
+
+#if CONFIG_EEPROM_SOFT_OVERWRITE_IDENTICAL_DATA == 0
+
+static int check_identical(struct eeprom_soft_driver_t *self_p,
+                           struct iov_uintptr_t *dst_p,
+                           struct iov_t *src_p,
+                           size_t length)
+{
+    uint8_t buf[BUFFER_SIZE];
+    uintptr_t offset;
+    uint8_t *u8_src_p;
+    int compare_index;
+    size_t compare_size;
+    ssize_t res;
+    size_t i;
+    int identical;
+
+    identical = 1;
+
+    for (offset = 0; offset < self_p->eeprom_size; offset += sizeof(buf)) {
+        /* Read from current chunk. */
+        res = flash_read(self_p->flash_p,
+                         &buf[0],
+                         self_p->current.chunk_address + CHUNK_HEADER_SIZE + offset,
+                         sizeof(buf));
+
+        if (res != sizeof(buf)) {
+            return (-1);
+        }
+
+        /* Compare given data regions. */
+        for (i = 0; i < length; i++) {
+            u8_src_p = src_p[i].buf_p;
+
+            if (are_overlapping(&dst_p[i], offset)) {
+                calc_overlapping_range(&dst_p[i],
+                                       offset,
+                                       &compare_index,
+                                       &compare_size);
+
+                res = memcmp(&buf[compare_index], u8_src_p, compare_size);
+
+                if (res != 0) {
+                    identical = 0;
+                }
+
+                src_p[i].buf_p = (u8_src_p + compare_size);
+            }
+        }
+
+#if CONFIG_PREEMPTIVE_SCHEDULER == 0
+        thrd_yield();
+#endif
+    }
+
+    /* Reset source pointers. */
+    for (i = 0; i < length; i++) {
+        src_p[i].buf_p -= dst_p[i].size;
+    }
+
+    return (identical);
+}
+
+#endif
+
 static ssize_t vwrite_inner(struct eeprom_soft_driver_t *self_p,
                             struct iov_uintptr_t *dst_p,
                             struct iov_t *src_p,
                             size_t length)
 {
     const struct eeprom_soft_block_t *block_p;
-    uint8_t buf[8];
+    uint8_t buf[BUFFER_SIZE];
     uintptr_t chunk_address;
     uint16_t revision;
     uintptr_t offset;
@@ -275,6 +368,19 @@ static ssize_t vwrite_inner(struct eeprom_soft_driver_t *self_p,
         }
     }
 
+#if CONFIG_EEPROM_SOFT_OVERWRITE_IDENTICAL_DATA == 0
+
+    /* Do not overwrite identical data. */
+    res = check_identical(self_p, dst_p, src_p, length);
+
+    if (res < 0) {
+        return (res);
+    } else if (res == 1) {
+        return (iov_uintptr_size(dst_p, length));
+    }
+
+#endif
+
     if (get_blank_chunk(self_p, &block_p, &chunk_address) != 0) {
         return (-1);
     }
@@ -293,24 +399,13 @@ static ssize_t vwrite_inner(struct eeprom_soft_driver_t *self_p,
 
         /* Overwrite given data regions. */
         for (i = 0; i < length; i++) {
-            dst = dst_p[i].address;
-            size = dst_p[i].size;
             u8_src_p = src_p[i].buf_p;
 
-            if ((dst < offset + sizeof(buf)) && (dst + size > offset)) {
-                if (dst <= offset) {
-                    overwrite_index = 0;
-                } else {
-                    overwrite_index = (dst - offset);
-                }
-
-                if (dst + size >= offset + sizeof(buf)) {
-                    overwrite_size = sizeof(buf);
-                } else {
-                    overwrite_size = (dst + size - offset);
-                }
-
-                overwrite_size -= overwrite_index;
+            if (are_overlapping(&dst_p[i], offset)) {
+                calc_overlapping_range(&dst_p[i],
+                                       offset,
+                                       &overwrite_index,
+                                       &overwrite_size);
                 memcpy(&buf[overwrite_index], u8_src_p, overwrite_size);
                 src_p[i].buf_p = (u8_src_p + overwrite_size);
             }
