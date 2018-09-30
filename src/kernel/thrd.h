@@ -94,7 +94,7 @@ struct thrd_t {
     struct timer_t *timer_p;
     const char *name_p;
     struct thrd_t *next_p;
-# if CONFIG_THRD_TERMINATE == 1
+#if CONFIG_THRD_TERMINATE == 1
     struct sem_t join_sem;
 #endif
     struct {

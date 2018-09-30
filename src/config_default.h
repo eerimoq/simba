@@ -1668,6 +1668,13 @@
 #endif
 
 /**
+ * Maximum number of command arguments, including the command name.
+ */
+#ifndef CONFIG_FS_COMMAND_ARGS_MAX
+#    define CONFIG_FS_COMMAND_ARGS_MAX                     16
+#endif
+
+/**
  * Debug file system command to append to a file.
  */
 #ifndef CONFIG_FS_FS_COMMAND_APPEND
@@ -2234,6 +2241,20 @@
 #    else
 #        define CONFIG_START_SOAM_STACK_SIZE              840
 #    endif
+#endif
+
+/**
+ * SOAM reception buffer size.
+ */
+#ifndef CONFIG_START_SOAM_RX_BUFFER_SIZE
+#    define CONFIG_START_SOAM_RX_BUFFER_SIZE              128
+#endif
+
+/**
+ * SOAM transmission buffer size.
+ */
+#ifndef CONFIG_START_SOAM_TX_BUFFER_SIZE
+#    define CONFIG_START_SOAM_TX_BUFFER_SIZE              128
 #endif
 
 /**

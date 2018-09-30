@@ -29,8 +29,7 @@
 #include "simba.h"
 #include <ctype.h>
 
-#define FS_COMMAND_ARGS_MAX 16
-#define FS_NAME_MAX 64
+#define FS_NAME_MAX                                          64
 
 struct module_t {
     int8_t initialized;
@@ -526,7 +525,7 @@ static int command_parse(char *command_p, const char *argv[])
 
     while (*command_p != '\0') {
         /* Too many arguemnts? */
-        if (argc == FS_COMMAND_ARGS_MAX) {
+        if (argc == CONFIG_FS_COMMAND_ARGS_MAX) {
             return (-E2BIG);
         }
 
@@ -659,7 +658,7 @@ int fs_call(char *command_p,
     ASSERTN(command_p != NULL, EINVAL);
 
     int argc, skip_slash;
-    const char *argv[FS_COMMAND_ARGS_MAX];
+    const char *argv[CONFIG_FS_COMMAND_ARGS_MAX];
     struct fs_command_t *current_p;
 
     argc = command_parse(command_p, argv);

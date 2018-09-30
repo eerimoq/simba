@@ -27,10 +27,10 @@
  */
 
 static struct slip_t slip;
-static uint8_t slip_buf[128];
+static uint8_t slip_buf[CONFIG_START_SOAM_RX_BUFFER_SIZE];
 
 static struct soam_t soam;
-static uint8_t soam_buf[128];
+static uint8_t soam_tx_buf[CONFIG_START_SOAM_TX_BUFFER_SIZE];
 
 static THRD_STACK(soam_stack, CONFIG_START_SOAM_STACK_SIZE);
 
@@ -59,17 +59,23 @@ static void *soam_main(void *arg_p)
 
 static int start_soam(void)
 {
-    if (slip_init(&slip,
-                  &slip_buf[0],
-                  sizeof(slip_buf),
-                  sys_get_stdout()) != 0) {
+    int res;
+
+    res = slip_init(&slip,
+                    &slip_buf[0],
+                    sizeof(slip_buf),
+                    sys_get_stdout());
+
+    if (res != 0) {
         return (-1);
     }
 
-    if (soam_init(&soam,
-                  &soam_buf[0],
-                  sizeof(soam_buf),
-                  slip_get_output_channel(&slip)) != 0) {
+    res = soam_init(&soam,
+                    &soam_buf[0],
+                    sizeof(soam_buf),
+                    slip_get_output_channel(&slip));
+
+    if (res != 0) {
         return (-1);
     }
 

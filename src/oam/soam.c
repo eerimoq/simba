@@ -206,8 +206,7 @@ static ssize_t command_write(void *chan_p,
                                    SOAM_TYPE_COMMAND_RESPONSE_DATA_BINARY));
 }
 
-static int handle_database_id_request(struct soam_t *self_p,
-                                      uint8_t *buf_p)
+static int handle_database_id_request(struct soam_t *self_p)
 {
     if (soam_write(self_p,
                    SOAM_TYPE_DATABASE_ID_RESPONSE,
@@ -221,18 +220,18 @@ static int handle_database_id_request(struct soam_t *self_p,
 
 #if CONFIG_SOAM_EMBEDDED_DATABASE == 1
 
-static int handle_database_request(struct soam_t *self_p,
-                                   uint8_t *buf_p)
+static int handle_database_request(struct soam_t *self_p)
 {
     size_t size;
     size_t left;
     size_t offset;
     int i;
+    uint8_t buf[BUFFER_SIZE];
 
     if (soam_write_begin(self_p, SOAM_TYPE_DATABASE_RESPONSE) != 0) {
         return (-1);
     }
-    
+
     left = soam_database_compressed_size;
     offset = 0;
 
@@ -244,10 +243,10 @@ static int handle_database_request(struct soam_t *self_p,
         }
 
         for (i = 0; i < size; i++) {
-            buf_p[i] = soam_database_compressed[offset + i];
+            buf[i] = soam_database_compressed[offset + i];
         }
 
-        (void)soam_write_chunk(self_p, &buf_p[0], size);
+        (void)soam_write_chunk(self_p, &buf[0], size);
 
         left -= size;
         offset += size;
@@ -263,11 +262,11 @@ static int handle_database_request(struct soam_t *self_p,
 #endif
 
 static int handle_command_request(struct soam_t *self_p,
-                                  uint8_t *input_p,
-                                  uint8_t *buf_p)
+                                  uint8_t *input_p)
 {
     int32_t res;
-    
+    uint8_t buf[4];
+
     res = fs_call((char *)&input_p[5],
                   &self_p->command_chan,
                   &self_p->command_chan,
@@ -275,12 +274,12 @@ static int handle_command_request(struct soam_t *self_p,
 
     /* Create the response packet with received transaction id and
        command result. */
-    buf_p[0] = (res >> 24);
-    buf_p[1] = (res >> 16);
-    buf_p[2] = (res >> 8);
-    buf_p[3] = res;
-    
-    if (soam_write(self_p, SOAM_TYPE_COMMAND_RESPONSE, &buf_p[0], 4) != 4) {
+    buf[0] = (res >> 24);
+    buf[1] = (res >> 16);
+    buf[2] = (res >> 8);
+    buf[3] = res;
+
+    if (soam_write(self_p, SOAM_TYPE_COMMAND_RESPONSE, &buf[0], 4) != 4) {
         return (-1);
     }
 
@@ -334,10 +333,9 @@ int soam_input(struct soam_t *self_p,
 {
     uint8_t type;
     size_t payload_crc_size;
-    uint16_t crc;
-    uint16_t input_crc;
+    uint16_t actual_crc;
+    uint16_t expected_crc;
     int res;
-    uint8_t buf[BUFFER_SIZE];
 
     if (size < SOAM_PACKET_SIZE_MIN) {
         return (-1);
@@ -349,13 +347,13 @@ int soam_input(struct soam_t *self_p,
         return (-1);
     }
 
-    input_crc = ((buf_p[payload_crc_size + 3] << 8)
-                 | buf_p[payload_crc_size + 4]);
-    crc = crc_ccitt(0xffff, &buf_p[0], payload_crc_size + 3);
+    actual_crc = ((buf_p[payload_crc_size + 3] << 8)
+                  | buf_p[payload_crc_size + 4]);
+    expected_crc = crc_ccitt(0xffff, &buf_p[0], payload_crc_size + 3);
 
     /* std_printf(FSTR("crc: 0x%04x, 0x%04x\r\n"), crc, input_crc); */
 
-    if (crc != input_crc) {
+    if (actual_crc != expected_crc) {
         return (-1);
     }
 
@@ -365,19 +363,19 @@ int soam_input(struct soam_t *self_p,
     switch (type) {
 
     case SOAM_TYPE_DATABASE_ID_REQUEST:
-        res = handle_database_id_request(self_p, &buf[0]);
+        res = handle_database_id_request(self_p);
         break;
 
 #if CONFIG_SOAM_EMBEDDED_DATABASE == 1
 
     case SOAM_TYPE_DATABASE_REQUEST:
-        res = handle_database_request(self_p, &buf[0]);
+        res = handle_database_request(self_p);
         break;
 
 #endif
 
     case SOAM_TYPE_COMMAND_REQUEST:
-        res = handle_command_request(self_p, buf_p, &buf[0]);
+        res = handle_command_request(self_p, buf_p);
         break;
 
     default:
@@ -415,9 +413,10 @@ ssize_t soam_write_chunk(struct soam_t *self_p,
 
     while (left > 0) {
         /* Output if the transmission buffer is full. */
-        if (self_p->tx.pos == self_p->tx.size - 2) {
+        if (self_p->tx.pos == (self_p->tx.size - 2)) {
             if (packet_output(self_p) <= 0) {
                 self_p->tx.pos = -1;
+
                 return (-1);
             }
 
