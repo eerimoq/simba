@@ -11,7 +11,6 @@ ignore:
   - "src/drivers/sensors/ds18b20.*"
   - "src/drivers/various/ds3231.*"
   - "src/drivers/storage/eeprom_i2c.*"
-  - "src/drivers/storage/eeprom_soft.*"
   - "src/drivers/network/esp_wifi"
   - "src/drivers/network/esp_wifi.*"
   - "src/drivers/basic/exti.*"
