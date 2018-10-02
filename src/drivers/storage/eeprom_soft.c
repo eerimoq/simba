@@ -276,59 +276,43 @@ static int check_identical(struct eeprom_soft_driver_t *self_p,
                            struct iov_t *src_p,
                            size_t length)
 {
-    uint8_t buf[BUFFER_SIZE];
-    uintptr_t offset;
+    uint8_t byte;
     uint8_t *u8_src_p;
-    int compare_index;
-    size_t compare_size;
     ssize_t res;
     size_t i;
-    int identical;
+    size_t j;
+    uintptr_t address;
 
-    identical = 1;
+    /* Compare given data regions to current EEPROM content. */
+    for (i = 0; i < length; i++) {
+        u8_src_p = src_p[i].buf_p;
 
-    for (offset = 0; offset < self_p->eeprom_size; offset += sizeof(buf)) {
-        /* Read from current chunk. */
-        res = flash_read(self_p->flash_p,
-                         &buf[0],
-                         self_p->current.chunk_address + CHUNK_HEADER_SIZE + offset,
-                         sizeof(buf));
+        for (j = 0; j < dst_p[i].size; j++) {
+            /* Read from current chunk. */
+            address = (self_p->current.chunk_address
+                       + CHUNK_HEADER_SIZE
+                       + dst_p[i].address
+                       + j);
+            res = flash_read(self_p->flash_p,
+                             &byte,
+                             address,
+                             sizeof(byte));
 
-        if (res != sizeof(buf)) {
-            return (-1);
-        }
-
-        /* Compare given data regions. */
-        for (i = 0; i < length; i++) {
-            u8_src_p = src_p[i].buf_p;
-
-            if (are_overlapping(&dst_p[i], offset)) {
-                calc_overlapping_range(&dst_p[i],
-                                       offset,
-                                       &compare_index,
-                                       &compare_size);
-
-                res = memcmp(&buf[compare_index], u8_src_p, compare_size);
-
-                if (res != 0) {
-                    identical = 0;
-                }
-
-                src_p[i].buf_p = (u8_src_p + compare_size);
+            if (res != sizeof(byte)) {
+                return (-1);
             }
-        }
+
+            if (u8_src_p[j] != byte) {
+                return (0);
+            }
 
 #if CONFIG_PREEMPTIVE_SCHEDULER == 0
-        thrd_yield();
+            thrd_yield();
 #endif
+        }
     }
 
-    /* Reset source pointers. */
-    for (i = 0; i < length; i++) {
-        src_p[i].buf_p -= dst_p[i].size;
-    }
-
-    return (identical);
+    return (1);
 }
 
 #endif

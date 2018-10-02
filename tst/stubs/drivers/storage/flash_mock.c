@@ -74,15 +74,15 @@ static int write_seq_data(void *v_arg_p,
     u8_buf_p = buf_p;
 
     *size_p = arg_p->size;
+    memmove(&u8_buf_p[0],
+            &u8_buf_p[arg_p->offset * arg_p->size],
+            arg_p->size);
 
     if (arg_p->length == 1) {
         return (1);
     }
 
     arg_p->length--;
-    memmove(&u8_buf_p[0],
-            &u8_buf_p[arg_p->offset * arg_p->size],
-            arg_p->size);
     arg_p->offset++;
 
     return (0);
