@@ -150,4 +150,15 @@ ssize_t circular_buffer_array_two(struct circular_buffer_t *self_p,
                                   void **buf_pp,
                                   size_t size);
 
+/**
+ * Find the offset of the first location of given character.
+ *
+ * @param[in] self_p Circular buffer.
+ * @param[in] value Character so find the offset of.
+ *
+ * @return Found offset, or negative error code.
+ */
+ssize_t circular_buffer_find(struct circular_buffer_t *self_p,
+                             char value);
+
 #endif

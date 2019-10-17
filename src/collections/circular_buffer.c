@@ -28,6 +28,20 @@
 
 #include "simba.h"
 
+static ssize_t find(const char *buf_p, ssize_t pos, ssize_t size, char value)
+{
+    while (pos < size) {
+        if (*buf_p == value) {
+            return (pos);
+        }
+
+        pos++;
+        buf_p++;
+    }
+
+    return (-1);
+}
+
 int circular_buffer_init(struct circular_buffer_t *self_p,
                          void *buf_p,
                          size_t size)
@@ -218,4 +232,29 @@ ssize_t circular_buffer_array_two(struct circular_buffer_t *self_p,
     }
 
     return (size);
+}
+
+ssize_t circular_buffer_find(struct circular_buffer_t *self_p,
+                             char value)
+{
+    ssize_t pos;
+    ssize_t size_one;
+    ssize_t size_two;
+    char *buf_p;
+
+    /* Find before wrap. */
+    size_one = circular_buffer_array_one(self_p,
+                                         (void **)&buf_p,
+                                         self_p->size);
+    pos = find(buf_p, 0, size_one, value);
+
+    if (pos == -1) {
+        /* Find after wrap. */
+        size_two = circular_buffer_array_two(self_p,
+                                             (void **)&buf_p,
+                                             self_p->size);
+        pos = find(buf_p, size_one, size_one + size_two, value);
+    }
+
+    return (pos);
 }

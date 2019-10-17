@@ -185,12 +185,54 @@ int test_array(void)
     return (0);
 }
 
+int test_find(void)
+{
+    struct circular_buffer_t foo;
+    uint8_t buf[8];
+    char data[8];
+
+    BTASSERT(circular_buffer_init(&foo, &buf[0], sizeof(buf)) == 0);
+
+    BTASSERT(circular_buffer_write(&foo, "123", 3) == 3);
+    BTASSERT(circular_buffer_find(&foo, '1') == 0);
+    BTASSERT(circular_buffer_find(&foo, '2') == 1);
+    BTASSERT(circular_buffer_find(&foo, '3') == 2);
+
+    BTASSERT(circular_buffer_read(&foo, &data[0], 1) == 1);
+    BTASSERT(circular_buffer_find(&foo, '1') == -1);
+    BTASSERT(circular_buffer_find(&foo, '2') == 0);
+    BTASSERT(circular_buffer_find(&foo, '3') == 1);
+
+    BTASSERT(circular_buffer_read(&foo, &data[0], 2) == 2);
+    BTASSERT(circular_buffer_find(&foo, '1') == -1);
+    BTASSERT(circular_buffer_find(&foo, '2') == -1);
+    BTASSERT(circular_buffer_find(&foo, '3') == -1);
+
+    BTASSERT(circular_buffer_write(&foo, "4567890", 7) == 7);
+    BTASSERT(circular_buffer_find(&foo, '4') == 0);
+    BTASSERT(circular_buffer_find(&foo, '5') == 1);
+    BTASSERT(circular_buffer_find(&foo, '6') == 2);
+    BTASSERT(circular_buffer_find(&foo, '7') == 3);
+    BTASSERT(circular_buffer_find(&foo, '8') == 4);
+    BTASSERT(circular_buffer_find(&foo, '9') == 5);
+    BTASSERT(circular_buffer_find(&foo, '0') == 6);
+
+    BTASSERT(circular_buffer_read(&foo, &data[0], 7) == 7);
+    BTASSERT(circular_buffer_find(&foo, '0') == -1);
+
+    BTASSERT(circular_buffer_write(&foo, "11", 2) == 2);
+    BTASSERT(circular_buffer_find(&foo, '1') == 0);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_testcase_t testcases[] = {
         { test_read_write, "test_read_write" },
         { test_skip, "test_skip" },
         { test_array, "test_array" },
+        { test_find, "test_find" },
         { NULL, NULL }
     };
 
