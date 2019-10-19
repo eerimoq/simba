@@ -55,6 +55,15 @@ static int test_to_bin_non_hex_character(void)
     return (0);
 }
 
+static int test_to_bin_odd_length(void)
+{
+    uint8_t encoded[1];
+
+    BTASSERT(hex_to_bin(&encoded[0], "0", 1) == -EINVAL);
+
+    return (0);
+}
+
 static int test_from_bin(void)
 {
     char decoded[17];
@@ -72,6 +81,7 @@ int main()
     struct harness_testcase_t testcases[] = {
         { test_to_bin, "test_to_bin" },
         { test_to_bin_non_hex_character, "test_to_bin_non_hex_character" },
+        { test_to_bin_odd_length, "test_to_bin_odd_length" },
         { test_from_bin, "test_from_bin" },
         { NULL, NULL }
     };

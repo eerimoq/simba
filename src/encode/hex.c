@@ -56,6 +56,10 @@ int hex_to_bin(void *dst_p, const char *src_p, size_t size)
     uint8_t *u8_dst_p;
     int ch;
 
+    if ((size % 2) != 0) {
+        return (-EINVAL);
+    }
+
     u8_dst_p = (uint8_t *)dst_p;
     size /= 2;
 

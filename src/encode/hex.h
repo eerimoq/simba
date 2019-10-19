@@ -35,9 +35,9 @@
  * Convert given hex string to binary data.
  *
  * @param[out] dst_p Binary output.
- * @param[in] src_p Input hex string data.
- * @param[in] size Length of the input hex string, not include
- *                 null-termination. Must be a multiple of 2.
+ * @param[in] src_p Input hex string.
+ * @param[in] size Length of the input hex string, not including
+ *                 null-termination.
  *
  * @return Number of bytes written to the output buffer, or negative
  *         error code.
@@ -47,9 +47,9 @@ int hex_to_bin(void *dst_p, const char *src_p, size_t size);
 /**
  * Convert given binary data to a hex string.
  *
- * @param[out] dst_p Output data.
+ * @param[out] dst_p Output hex string.
  * @param[in] src_p Input data.
- * @param[in] size Input size.
+ * @param[in] size Input size in bytes.
  *
  * @return Output hex string length, not including
  *         null-termination. Always twice the input size.
