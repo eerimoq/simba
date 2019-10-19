@@ -130,6 +130,7 @@ typedef intptr_t longptr_t;
 #include "text/emacs.h"
 
 #include "encode/base64.h"
+#include "encode/hex.h"
 #include "encode/json.h"
 #include "encode/nmea.h"
 

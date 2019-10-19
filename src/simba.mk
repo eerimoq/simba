@@ -174,6 +174,7 @@ endif
 # Encode package.
 ENCODE_SRC ?= \
 	base64.c \
+	hex.c \
 	json.c \
 	nmea.c
 
