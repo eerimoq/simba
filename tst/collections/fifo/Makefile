@@ -32,4 +32,6 @@ NAME = fifo_suite
 TYPE = suite
 BOARD ?= linux
 
+SRC += fifos.c
+
 include $(SIMBA_ROOT)/make/app.mk

@@ -27,9 +27,7 @@
  */
 
 #include "simba.h"
-
-/* Define the integer fifo. */
-FIFO_DEFINE_TEMPLATE(int);
+#include "fifos.h"
 
 static int test_put_get(void)
 {
@@ -93,11 +91,49 @@ static int test_put_get_int(void)
     return (0);
 }
 
+static int test_put_get_foo(void)
+{
+    struct fifo_foo_t fifo;
+    struct foo_t buf[4];
+    struct foo_t value;
+
+    BTASSERT(fifo_init_foo(&fifo, buf, membersof(buf)) == 0);
+
+    /* Put into the fifo. */
+    value.a = 10;
+    value.b = 11;
+    BTASSERT(fifo_put_foo(&fifo, &value) == 0);
+    value.a = 20;
+    value.b = 21;
+    BTASSERT(fifo_put_foo(&fifo, &value) == 0);
+    value.a = 30;
+    value.b = 31;
+    BTASSERT(fifo_put_foo(&fifo, &value) == 0);
+    value.a = 40;
+    value.b = 41;
+    BTASSERT(fifo_put_foo(&fifo, &value) == -1);
+
+    /* Get from the fifo. */
+    BTASSERT(fifo_get_foo(&fifo, &value) == 0);
+    BTASSERT(value.a == 10);
+    BTASSERT(value.b == 11);
+    BTASSERT(fifo_get_foo(&fifo, &value) == 0);
+    BTASSERT(value.a == 20);
+    BTASSERT(value.b == 21);
+    BTASSERT(fifo_get_foo(&fifo, &value) == 0);
+    BTASSERT(value.a == 30);
+    BTASSERT(value.b == 31);
+    BTASSERT(fifo_get_foo(&fifo, &value) == -1);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_testcase_t testcases[] = {
         { test_put_get, "test_put_get" },
         { test_put_get_int, "test_put_get_int" },
+        { test_put_get_foo, "test_put_get_foo" },
         { NULL, NULL }
     };
 
