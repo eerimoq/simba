@@ -128,12 +128,33 @@ static int test_put_get_foo(void)
     return (0);
 }
 
+static int test_put_get_strings(void)
+{
+    struct fifo_strings_t fifo;
+    string_t buf[4];
+    string_t value;
+
+    BTASSERT(fifo_init_strings(&fifo, buf, membersof(buf)) == 0);
+
+    /* Put into the fifo. */
+    strcpy(&value[0], "Hello!");
+    BTASSERT(fifo_put_strings(&fifo, &value) == 0);
+
+    /* Get from the fifo. */
+    value[0] = '\0';
+    BTASSERT(fifo_get_strings(&fifo, &value) == 0);
+    BTASSERT(strcmp(&value[0], "Hello!") == 0);
+
+    return (0);
+}
+
 int main()
 {
     struct harness_testcase_t testcases[] = {
         { test_put_get, "test_put_get" },
         { test_put_get_int, "test_put_get_int" },
         { test_put_get_foo, "test_put_get_foo" },
+        { test_put_get_strings, "test_put_get_strings" },
         { NULL, NULL }
     };
 

@@ -14,4 +14,9 @@ struct foo_t {
 
 FIFO_DECLARE_TEMPLATE(foo, struct foo_t);
 
+/* A fifo of strings. */
+typedef char string_t[10];
+
+FIFO_DECLARE_TEMPLATE(strings, string_t);
+
 #endif
