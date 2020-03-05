@@ -99,6 +99,13 @@ int http_websocket_client_connect(struct http_websocket_client_t *self_p)
     int res;
     struct inet_addr_t server_addr;
 
+    if (inet_aton(self_p->server.host_p, &server_addr.ip)  != 0) 
+    {
+        std_printf(FSTR("Bad ip address %s.\r\n"), self_p->server.host_p);
+        return (-1);
+    }
+    server_addr.port = self_p->server.port;
+
     /* Open a TCP socket and connect to the server. */
     if (socket_open_tcp(&self_p->server.socket) != 0) {
         return (-EIO);
