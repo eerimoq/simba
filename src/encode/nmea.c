@@ -50,6 +50,14 @@ static int decode_triple(char *src_p,
     long v0;
     long v1;
     long v2;
+    char *dot_p;
+
+    /* Discard any sub-seconds for now. */
+    dot_p = strchr(src_p, '.');
+
+    if (dot_p != NULL) {
+        *dot_p = '\0';
+    }
 
     /* The string length must be exactly 6. */
     if (src_p[6] != '\0') {

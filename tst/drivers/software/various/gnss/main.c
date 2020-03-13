@@ -144,14 +144,15 @@ static int test_read_rmc(void)
     BTASSERTI(speed, ==, 11.523f);
 
     BTASSERTI(gnss_print(&gnss, &queue), ==, 0);
-    BTASSERTI(harness_expect(
-                  &queue,
-                  "Date:                 12:35:19 94-03-23                   (age: 0 seconds)\r\n"
-                  "Position:             48.117298, -11.516666 degrees       (age: 0 seconds)\r\n"
-                  "Speed:                11.522999 m/s                       (age: 0 seconds)\r\n"
-                  "Number of satellites: unavailable\r\n"
-                  "Altitude:             unavailable\r\n",
-                  NULL), ==, 298);
+    BTASSERTI(
+        harness_expect(
+            &queue,
+            "Date:                 12:35:19 94-03-23                   (age: 0 seconds)\r\n"
+            "Position:             48.117298, -11.516666 degrees       (age: 0 seconds)\r\n"
+            "Speed:                11.522999 m/s                       (age: 0 seconds)\r\n"
+            "Number of satellites: unavailable\r\n"
+            "Altitude:             unavailable\r\n",
+            NULL), ==, 298);
 
     return (0);
 }
@@ -208,14 +209,93 @@ static int test_read_gga_glonass(void)
     BTASSERTI(altitude, ==, 545.4f);
 
     BTASSERTI(gnss_print(&gnss, &queue), ==, 0);
-    BTASSERTI(harness_expect(
-                  &queue,
-                  "Date:                 12:35:19 94-03-23                   (age: 0 seconds)\r\n"
-                  "Position:             49.117298, 10.516666 degrees        (age: 0 seconds)\r\n"
-                  "Speed:                11.522999 m/s                       (age: 0 seconds)\r\n"
-                  "Number of satellites: 8                                   (age: 0 seconds)\r\n"
-                  "Altitude:             545.400024 m                        (age: 0 seconds)\r\n",
-                  NULL), ==, 380);
+    BTASSERTI(
+        harness_expect(
+            &queue,
+            "Date:                 12:35:19 94-03-23                   (age: 0 seconds)\r\n"
+            "Position:             49.117298, 10.516666 degrees        (age: 0 seconds)\r\n"
+            "Speed:                11.522999 m/s                       (age: 0 seconds)\r\n"
+            "Number of satellites: 8                                   (age: 0 seconds)\r\n"
+            "Altitude:             545.400024 m                        (age: 0 seconds)\r\n",
+            NULL), ==, 380);
+
+    return (0);
+}
+
+static int test_read_gga_glonass_detailed_time(void)
+{
+    int i;
+    char sentence[] =
+        "$GNGGA,123521.00,4907.038,N,01031.000,E,1,08,0.9,545.4,M,46.9,M,,*7C\r\n";
+    struct date_t date;
+
+    for (i = 0; i < strlen(sentence); i++) {
+        mock_write_chan_read(&sentence[i], 1, 1);
+    }
+
+    BTASSERTI(gnss_read(&gnss), ==, 0);
+
+    /* Date. */
+    date.year = 1200;
+    BTASSERTI(gnss_get_date(&gnss, &date), >=, 0);
+    BTASSERTI(date.year, ==, 94);
+    BTASSERTI(date.month, ==, 3);
+    BTASSERTI(date.date, ==, 23);
+    BTASSERTI(date.hour, ==, 12);
+    BTASSERTI(date.minute, ==, 35);
+    BTASSERTI(date.second, ==, 19);
+
+    return (0);
+}
+
+static int test_read_rmc_detailed_time(void)
+{
+    int i;
+    char sentence[] =
+        "$GNRMC,155113.00,A,5823.735821,N,01533.611997,E,0.0,0.0,130320,2.0,E,A,V*51\r\n";
+    struct date_t date;
+    float latitude;
+    float longitude;
+    float speed;
+
+    for (i = 0; i < strlen(sentence); i++) {
+        mock_write_chan_read(&sentence[i], 1, 1);
+    }
+
+    BTASSERTI(gnss_read(&gnss), ==, 0);
+
+    /* Date. */
+    date.year = 1200;
+    BTASSERTI(gnss_get_date(&gnss, &date), >=, 0);
+    BTASSERTI(date.year, ==, 20);
+    BTASSERTI(date.month, ==, 3);
+    BTASSERTI(date.date, ==, 13);
+    BTASSERTI(date.hour, ==, 15);
+    BTASSERTI(date.minute, ==, 51);
+    BTASSERTI(date.second, ==, 13);
+
+    /* Position. */
+    latitude = 23;
+    longitude = 24;
+    BTASSERTI(gnss_get_position(&gnss, &latitude, &longitude), >=, 0);
+    BTASSERTI(latitude, ==, 58 + (23.735821f / 60));
+    BTASSERTI(longitude, ==, (15 + (33.611997f / 60)));
+
+    /* Speed. */
+    speed = 654;
+    BTASSERTI(gnss_get_speed(&gnss, &speed), >=, 0);
+    BTASSERTI(speed, ==, 0.0f);
+
+    BTASSERTI(gnss_print(&gnss, &queue), ==, 0);
+    BTASSERTI(
+        harness_expect(
+            &queue,
+            "Date:                 15:51:13 20-03-13                   (age: 0 seconds)\r\n"
+            "Position:             58.395595, 15.560198 degrees        (age: 0 seconds)\r\n"
+            "Speed:                .000000 m/s                         (age: 0 seconds)\r\n"
+            "Number of satellites: 8                                   (age: 0 seconds)\r\n"
+            "Altitude:             545.400024 m                        (age: 0 seconds)\r\n",
+            NULL), ==, 380);
 
     return (0);
 }
@@ -311,6 +391,8 @@ int main()
         { test_print_no_data, "test_print_no_data" },
         { test_read_rmc, "test_read_rmc" },
         { test_read_gga_glonass, "test_read_gga_glonass" },
+        { test_read_gga_glonass_detailed_time, "test_read_gga_glonass_detailed_time" },
+        { test_read_rmc_detailed_time, "test_read_rmc_detailed_time" },
         { test_read_read_failed, "test_read_read_failed" },
         { test_read_sentence_too_long, "test_read_sentence_too_long" },
         { test_read_start_not_first, "test_read_start_not_first" },
