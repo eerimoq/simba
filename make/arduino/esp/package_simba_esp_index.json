@@ -802,7 +802,7 @@
                             "size": "35385382"
                         },
                         {
-                            "url": "http://arduino.esp8266.com/linux64-xtensa-lx106-elf-gb404fb9.tar.gz",
+                            "url": "https://github.com/esp8266/Arduino/releases/download/2.3.0/linux64-xtensa-lx106-elf-gb404fb9.tgz",
                             "checksum": "SHA-256:46f057fbd8b320889a26167daf325038912096d09940b2a95489db92431473b7",
                             "host": "x86_64-pc-linux-gnu",
                             "archiveFileName": "linux64-xtensa-lx106-elf-gb404fb9.tar.gz",
