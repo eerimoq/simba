@@ -1,8 +1,3 @@
-|buildstatus|_
-|codecov|_
-|coverity|_
-|donate|_
-
 Simba
 =====
 
@@ -68,18 +63,6 @@ Simba is licensed under the MIT License. See LICENSE for a copy of the
 licence. Third party source code and libraries that Simba depends on
 may have other licenses. Most third party code is placed in the
 ``3pp`` folder.
-
-.. |buildstatus| image:: https://travis-ci.org/eerimoq/simba.svg
-.. _buildstatus: https://travis-ci.org/eerimoq/simba
-
-.. |codecov| image:: https://codecov.io/gh/eerimoq/simba/branch/master/graph/badge.svg
-.. _codecov: https://codecov.io/gh/eerimoq/simba
-
-.. |coverity| image:: https://scan.coverity.com/projects/11324/badge.svg
-.. _coverity: https://scan.coverity.com/projects/eerimoq-simba
-
-.. |donate| image:: https://img.shields.io/badge/paypal-donate-yellow.svg
-.. _donate: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=X2NWV6RHV58GC&lc=SE&item_name=Simba%20OS%20and%20Build%20Framework&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 
 .. _Arduino IDE: https://www.arduino.cc/en/Main/Software
 .. _Simba installation documentation: http://simba-os.readthedocs.io/en/latest/getting-started.html#arduino-arduino-ide
