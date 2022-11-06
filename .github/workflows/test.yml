@@ -12,4 +12,4 @@ jobs:
     - name: Test
       run: |
         source setup.sh
-        make test
+        make test -j $(nproc)
