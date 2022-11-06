@@ -26,7 +26,7 @@
  * This file is part of the Simba project.
  */
 
-static struct thrd_t main_thrd __attribute__ ((section (".main_stack")));
+static struct thrd_t main_thrd[2] __attribute__ ((section (".main_stack")));
 extern char __main_stack_end;
 
 static void thrd_port_cpu_usage_start(struct thrd_t *thrd_p);
@@ -35,7 +35,7 @@ static void thrd_port_cpu_usage_stop(struct thrd_t *thrd_p);
 
 static struct thrd_t *thrd_port_get_main_thrd(void)
 {
-    return (&main_thrd);
+    return (&main_thrd[0]);
 }
 
 static char *thrd_port_get_main_thrd_stack_top(void)

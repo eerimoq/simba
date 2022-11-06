@@ -52,7 +52,6 @@ CFLAGS += \
 	$(OPT) \
         -ffunction-sections \
         -fdata-sections \
-        -fpack-struct \
 	-fstack-usage \
 	-Wno-maybe-uninitialized \
 	-Wno-stringop-truncation \
@@ -68,7 +67,6 @@ CXXFLAGS += \
 	$(OPT) \
         -ffunction-sections \
         -fdata-sections \
-        -fpack-struct \
 	-fstack-usage \
 	-nostdlib \
 	-G0

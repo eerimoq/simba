@@ -50,16 +50,14 @@ CFLAGS += \
 	-mthumb \
         -mcpu=$(MCPU) \
         -ffunction-sections \
-        -fdata-sections \
-        -fpack-struct
+        -fdata-sections
 
 CXXFLAGS += \
 	-Werror \
 	-mthumb \
         -mcpu=$(MCPU) \
         -ffunction-sections \
-        -fdata-sections \
-        -fpack-struct
+        -fdata-sections
 
 LDFLAGS += \
 	-mcpu=$(MCPU) \

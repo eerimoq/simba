@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import serial
 import subprocess
@@ -11,8 +11,8 @@ def _upload(port, binary, bossac_port, unlock):
 
     """
 
-    print ("Setting {} to 1200 baud and setting DTR to "
-           "reset the board.".format(port))
+    print("Setting {} to 1200 baud and setting DTR to "
+          "reset the board.".format(port))
     ser = serial.Serial(port, baudrate=1200)
     ser.setDTR(1)
     ser.close()
@@ -26,7 +26,7 @@ def _upload(port, binary, bossac_port, unlock):
         "-R", binary
     ]
     command += unlock
-    print ' '.join(command)
+    print(' '.join(command))
     subprocess.check_call(command)
 
 

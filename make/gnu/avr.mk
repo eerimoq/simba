@@ -49,7 +49,6 @@ CFLAGS += \
         $(OPT) \
         -ffunction-sections \
         -fdata-sections \
-        -fpack-struct \
         -fshort-enums
 
 CXXFLAGS += \
@@ -57,7 +56,6 @@ CXXFLAGS += \
         $(OPT) \
         -ffunction-sections \
         -fdata-sections \
-        -fpack-struct \
         -fshort-enums
 
 LDFLAGS += -mmcu=$(CPU) \

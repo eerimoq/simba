@@ -49,7 +49,6 @@ CFLAGS += \
 	$(OPT) \
         -ffunction-sections \
         -fdata-sections \
-        -fpack-struct \
 	-fstack-usage
 
 CXXFLAGS += \
@@ -58,7 +57,6 @@ CXXFLAGS += \
 	$(OPT) \
         -ffunction-sections \
         -fdata-sections \
-        -fpack-struct \
 	-fstack-usage
 
 LDFLAGS += \
