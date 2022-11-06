@@ -1,20 +1,10 @@
-#!/usr/bin/env python2
-
-from __future__ import print_function
+#!/usr/bin/env python3
 
 import sys
 import time
 import getpass
 import hashlib
-
-try:
-    import lzma
-except ImportError:
-    try:
-        from backports import lzma
-    except ImportError:
-        print("Failed to import lzma. Cannot compress SOAM database.")
-
+import lzma
 import argparse
 import struct
 import os
@@ -248,6 +238,10 @@ __attribute__ ((section (".eeprom"))) = {{{data}}};
 """
 
 
+def unescape(value):
+    return value.encode().decode('unicode-escape')
+
+
 class Settings(object):
 
     def __init__(self, filename, endianess):
@@ -264,6 +258,7 @@ class Settings(object):
             return
 
         settings_parser = ConfigParser()
+
         if not settings_parser.read(filename):
             sys.exit("Failed to load config file '{}'.".format(filename))
 
@@ -332,7 +327,7 @@ class Settings(object):
                 if item["size"] != 4:
                     sys.exit("error: {}: bad int32_t size".format(item["size"]))
             elif item["type"] == "string_t":
-                value = item["value"].decode('string_escape')[1:-1]
+                value = unescape(item["value"])[1:-1]
 
                 if len(value) >= item["size"]:
                     sys.exit("error: {}: string value too long".format(
@@ -360,7 +355,7 @@ class Settings(object):
                 item["address"]))
 
             if item["type"] == "string_t":
-                data = item["value"][1:-1].decode('string_escape') + b'\x00'
+                data = unescape(item["value"])[1:-1].encode() + b'\x00'
             elif item["type"] == "blob_t":
                 data = binascii.unhexlify(item["value"])
             elif item["type"] == 'int32_t':

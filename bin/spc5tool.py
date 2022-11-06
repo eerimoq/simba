@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Erase, read from and write to SPC5 flash memory. Uploads a small
 # application to SRAM using the BAM, which in turn accesses the flash

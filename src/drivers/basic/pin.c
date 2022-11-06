@@ -45,7 +45,7 @@ struct module_t {
 
 #include "pin_port.i"
 
-struct module_t module;
+static struct module_t module;
 
 #if CONFIG_PIN_FS_COMMAND_SET_MODE == 1
 

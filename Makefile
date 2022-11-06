@@ -72,15 +72,15 @@ ifeq ($(BOARD), linux)
 	service \
 	settings \
 	shell \
-	soam \
-	upgrade \
-	upgrade/http \
-	upgrade/kermit \
-	upgrade/uds)
+	soam)
+#	upgrade \
+#	upgrade/http \
+#	upgrade/kermit \
+#	upgrade/uds)
     TESTS += $(addprefix tst/filesystems/, \
 	fat16 \
-	fs \
-	spiffs)
+	fs)
+#	spiffs)
     TESTS += $(addprefix tst/encode/, \
 	base64 \
 	json \

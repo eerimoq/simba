@@ -1,10 +1,13 @@
-#!/usr/bin/env python
-#
+#!/usr/bin/env python3
 
 import sys
 import argparse
 import re
 import base64
+
+
+def make_unique(value):
+    return base64.b32encode(value.encode()).decode().replace('=', '_').lower()
 
 
 def canonical(filename):
@@ -75,7 +78,7 @@ def process_format_strings(contents, canonical_filename):
         decoder_format_string = re.sub(r'%-?[0-9]*?l?[dsuxcfS]', "{}",
                                        format_string)
         decoder_format_string = re.sub(r'%%', "%", decoder_format_string)
-        c_variable = '__fmt_' + base64.b32encode(format_string).replace('=', '_').lower()
+        c_variable = '__fmt_' + make_unique(format_string)
         format_strings.append((format_string,
                                c_variable,
                                soam_format_string,
@@ -118,7 +121,7 @@ def process_commands(contents, canonical_filename):
             sys.exit('End of command missing.')
 
         command = pack_c_string(contents[begin+25:end-1])
-        c_variable = '__cmd_' + base64.b32encode(command).replace('=', '_').lower()
+        c_variable = '__cmd_' + make_unique(command)
         commands.append((command, c_variable))
         output_contents += c_variable
 
@@ -139,7 +142,7 @@ def main():
     parser.add_argument('filename')
     args = parser.parse_args()
 
-    with open(args.filename, 'rb') as fin:
+    with open(args.filename, 'r') as fin:
         contents = fin.read()
 
     contents, format_strings = process_format_strings(contents,
@@ -147,10 +150,10 @@ def main():
     contents, commands = process_commands(contents, canonical(args.filename))
     contents = '#include "far.h"\n' + contents
 
-    with open(args.output, 'wb') as fout:
+    with open(args.output, 'w') as fout:
         fout.write(contents)
 
-    with open(args.output + '.db', 'wb') as fout:
+    with open(args.output + '.db', 'w') as fout:
         for format_string in format_strings:
             fout.write('FMT\n{}\n{}\n{}\n{}\n\n'.format(*format_string))
 

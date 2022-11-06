@@ -99,6 +99,7 @@ static int test_start(void)
     struct pin_device_t *dev_p;
 
     /* DOUT ready. */
+    value = 1;
     harness_mock_write("pin_port_device_read(): return (value)",
                        &value,
                        sizeof(value));

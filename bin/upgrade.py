@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
-# Append the upgrade binary header to given binart file.
+# Append the upgrade binary header to given binary file.
 #
 
 import argparse

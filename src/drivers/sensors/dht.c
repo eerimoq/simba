@@ -55,7 +55,7 @@ struct module_t {
 #endif
 };
 
-struct module_t module;
+static struct module_t module;
 
 /**
  * Check if given buffer contains valid data.

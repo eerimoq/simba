@@ -222,11 +222,13 @@ static int write_header(struct eeprom_soft_driver_t *self_p,
 {
     ssize_t size;
     struct chunk_header_t header;
+    uint32_t crc;
 
-    if (calculate_chunk_crc(self_p, &header.crc, chunk_address) != 0) {
+    if (calculate_chunk_crc(self_p, &crc, chunk_address) != 0) {
         return (-1);
     }
 
+    header.crc = crc;
     header.revision = revision;
     header.valid = VALID_PATTERN;
 

@@ -1,16 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import argparse
 import re
 import struct
 import binascii
-
-try:
-    from configparser import ConfigParser
-except ImportError:
-    from ConfigParser import ConfigParser
-
+from configparser import ConfigParser
 from collections import OrderedDict
 
 
